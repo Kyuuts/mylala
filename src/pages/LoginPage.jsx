@@ -39,13 +39,6 @@ export default function LoginPage() {
     }, 250);
   };
 
-  const fillImam = () => {
-    setMode('login');
-    setUsername('imam');
-    setPassword('imam123@');
-    setError('');
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-slate-50 to-purple-50 flex flex-col justify-center items-center px-4 py-8">
       <div className="w-full max-w-md bg-white rounded-3xl p-6 sm:p-10 shadow-xl border border-slate-200/80 space-y-6">
@@ -184,19 +177,6 @@ export default function LoginPage() {
             )}
           </button>
         </form>
-
-        {/* Demo Account Helper */}
-        <div className="pt-2 border-t border-slate-100 flex flex-col items-center gap-2">
-          <p className="text-[11px] text-slate-400">Akun Demo Pemilik:</p>
-          <button
-            type="button"
-            onClick={fillImam}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-semibold transition"
-          >
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>Isi Otomatis: imam / imam123@</span>
-          </button>
-        </div>
       </div>
     </div>
   );
