@@ -116,17 +116,7 @@ export const getTimeUntilWeeklyReset = () => {
 };
 
 /**
- * Base peer contestants for the English League lobby
+ * Base peer contestants for the English League lobby (Empty for pure real-time data)
  */
-export const PEER_CONTESTANTS = [
-  { id: 'peer-1', name: 'Sarah Kirana', avatar: '👩‍🎓', streak: 9, weeklyXp: 340, cardsReviewed: 28 },
-  { id: 'peer-2', name: 'Budi Santoso', avatar: '👨‍💻', streak: 6, weeklyXp: 285, cardsReviewed: 24 },
-  { id: 'peer-3', name: 'Nadia Pratama', avatar: '👩‍💼', streak: 5, weeklyXp: 230, cardsReviewed: 19 },
-  { id: 'peer-4', name: 'Rizky Dwi', avatar: '🧑‍🚀', streak: 4, weeklyXp: 195, cardsReviewed: 16 },
-  { id: 'peer-5', name: 'Farhan Azhar', avatar: '👨‍🎨', streak: 3, weeklyXp: 160, cardsReviewed: 13 },
-  { id: 'peer-6', name: 'Alya Maharani', avatar: '👩‍🔬', streak: 2, weeklyXp: 110, cardsReviewed: 9 },
-  { id: 'peer-7', name: 'Dimas Aditya', avatar: '🧑‍💻', streak: 1, weeklyXp: 75, cardsReviewed: 6 },
-  { id: 'peer-8', name: 'Tiara Safitri', avatar: '👩‍🎓', streak: 1, weeklyXp: 40, cardsReviewed: 3 },
-  { id: 'peer-9', name: 'Kevin Christian', avatar: '👨‍🏫', streak: 0, weeklyXp: 20, cardsReviewed: 2 },
-];
+export const PEER_CONTESTANTS = [];
 

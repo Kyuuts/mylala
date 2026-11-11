@@ -54,7 +54,7 @@ export default function LanguageSelector({ activeLanguage = 'en', onSelectLangua
 
   return (
     <div className="space-y-3">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
         <div className="flex items-center gap-2 text-slate-800 font-bold text-sm sm:text-base">
           <Globe className="w-4 h-4 text-indigo-600" />
           <span>Pilih Bahasa Pembelajaran</span>

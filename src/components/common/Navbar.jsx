@@ -45,20 +45,21 @@ export default function Navbar() {
         </div>
 
         <div className="flex items-center gap-2 sm:gap-3">
-          <nav className="flex items-center gap-1 sm:gap-2">
+          {/* Desktop Navigation (hidden on mobile, handled by BottomNav) */}
+          <nav className="hidden md:flex items-center gap-1 sm:gap-2">
             <NavLink
               to="/"
               end
               className={({ isActive }) =>
                 `flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition ${
                   isActive
-                    ? 'bg-indigo-50 text-indigo-700'
+                    ? 'bg-indigo-50 text-indigo-700 font-bold'
                     : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
                 }`
               }
             >
               <BookOpen className="w-4 h-4" />
-              <span className="hidden sm:inline">Beranda</span>
+              <span>Beranda</span>
             </NavLink>
 
             <NavLink
@@ -66,7 +67,7 @@ export default function Navbar() {
               className={({ isActive }) =>
                 `flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition ${
                   isActive
-                    ? 'bg-indigo-50 text-indigo-700'
+                    ? 'bg-indigo-50 text-indigo-700 font-bold'
                     : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
                 }`
               }
@@ -86,7 +87,7 @@ export default function Navbar() {
               }
             >
               <Trophy className="w-4 h-4 text-amber-500" />
-              <span className="hidden sm:inline">Rank Liga</span>
+              <span>Rank Liga</span>
               <span className="px-1.5 py-0.2 rounded-full bg-amber-100 text-amber-800 text-[10px] font-bold">
                 {weeklyXp || 0} XP
               </span>
@@ -103,15 +104,15 @@ export default function Navbar() {
               }
             >
               <PlusCircle className="w-4 h-4" />
-              <span className="hidden sm:inline">Buat Modul</span>
+              <span>Buat Modul</span>
             </NavLink>
           </nav>
 
           {/* User Profile & Logout */}
-          <div className="flex items-center gap-2 pl-2 border-l border-slate-200">
-            <span className="hidden md:inline-flex items-center gap-1 text-xs font-bold text-slate-700 bg-slate-100 px-2.5 py-1 rounded-full">
+          <div className="flex items-center gap-1.5 sm:gap-2 pl-2 border-l border-slate-200">
+            <span className="inline-flex items-center gap-1 text-xs font-bold text-slate-700 bg-slate-100 px-2.5 py-1 rounded-full">
               <User className="w-3 h-3 text-indigo-600" />
-              {user?.name || 'Imam'}
+              <span className="max-w-[80px] sm:max-w-none truncate">{user?.name || 'Imam'}</span>
             </span>
 
             <button

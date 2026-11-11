@@ -97,7 +97,7 @@ export default function LeaderboardPage() {
           </div>
 
           {/* User Quick Stats in Banner */}
-          <div className="bg-black/25 backdrop-blur-md rounded-2xl p-4 sm:p-5 border border-white/15 flex items-center gap-5 shrink-0">
+          <div className="w-full sm:w-auto bg-black/25 backdrop-blur-md rounded-2xl p-4 sm:p-5 border border-white/15 flex items-center justify-around sm:justify-start gap-4 sm:gap-6">
             <div className="text-center">
               <span className="text-[10px] font-bold uppercase tracking-wider text-white/70">Peringkat</span>
               <p className="text-2xl sm:text-3xl font-extrabold text-amber-300">#{userEntry.rank}</p>

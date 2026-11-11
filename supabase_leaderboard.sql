@@ -35,14 +35,5 @@ CREATE POLICY "Allow public insert/update for user_weekly_stats" ON user_weekly_
 -- 5. Enable Realtime Replication
 ALTER PUBLICATION supabase_realtime ADD TABLE user_weekly_stats;
 
--- 6. Insert Starter Active Learners Benchmark for current week
-INSERT INTO user_weekly_stats (user_id, username, name, year_week, weekly_xp, cards_reviewed, streak)
-VALUES 
-    ('user-sarah', 'sarah', 'Sarah Kirana', '2026-W46', 340, 28, 9),
-    ('user-budi', 'budi', 'Budi Santoso', '2026-W46', 285, 24, 6),
-    ('user-nadia', 'nadia', 'Nadia Pratama', '2026-W46', 230, 19, 5),
-    ('user-rizky', 'rizky', 'Rizky Dwi', '2026-W46', 195, 16, 4),
-    ('user-farhan', 'farhan', 'Farhan Azhar', '2026-W46', 160, 13, 3)
-ON CONFLICT (user_id, year_week) DO UPDATE 
-SET weekly_xp = EXCLUDED.weekly_xp, updated_at = NOW();
-
+-- 6. Clean reset: remove any test/dummy rows so leaderboard starts pure from 0
+TRUNCATE TABLE user_weekly_stats;

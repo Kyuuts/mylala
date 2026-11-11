@@ -42,17 +42,82 @@ export const useAppStore = create(
       userProgress: {}, // { [flashcardId]: { repetitions, easeFactor, interval, status, next_review_date, last_reviewed_at } }
       offlineQueue: [], // [ { user_id, flashcard_id, status, next_review_date, updated_at } ]
 
-      // Action: Authentication Login (Supports Admin Imam & Multi-User Friends)
+      // Accounts Registry (Username -> Account Profile)
+      accounts: {
+        imam: { username: 'imam', name: 'Imam', password: 'imam123@', role: 'admin' },
+      },
+
+      // Action: Register new user with custom Username & Password
+      register: (username, name, password) => {
+        const cleanUser = (username || '').trim().toLowerCase();
+        const cleanName = (name || '').trim();
+        const cleanPass = (password || '').trim();
+
+        if (!cleanName || cleanName.length < 2) {
+          return { success: false, error: 'Silakan masukkan nama lengkap atau panggilan Anda!' };
+        }
+        if (!cleanUser || cleanUser.length < 3) {
+          return { success: false, error: 'Username minimal 3 karakter (huruf/angka tanpa spasi)!' };
+        }
+        if (!cleanPass || cleanPass.length < 4) {
+          return { success: false, error: 'Password minimal 4 karakter!' };
+        }
+
+        const state = get();
+        const accounts = state.accounts || {};
+        if (accounts[cleanUser]) {
+          return { success: false, error: 'Username sudah terdaftar! Silakan login di tab Masuk.' };
+        }
+
+        const newAccount = {
+          username: cleanUser,
+          name: cleanName,
+          password: cleanPass,
+          role: 'member',
+          createdAt: new Date().toISOString(),
+        };
+
+        const newUserId = generateUUID();
+
+        set({
+          accounts: {
+            ...accounts,
+            [cleanUser]: newAccount,
+          },
+          isAuthenticated: true,
+          user: { username: cleanUser, name: cleanName, role: 'member' },
+          userId: newUserId,
+          userProgress: {}, // fresh progress
+          xp: 0,
+          weeklyXp: 0,
+          streak: 1,
+          syncNotification: `Akun "${cleanUser}" berhasil dibuat! Selamat belajar, ${cleanName}.`,
+        });
+
+        // Sync initial zero stats to Supabase for the new user
+        get().syncWeeklyStatsToSupabase();
+
+        return { success: true };
+      },
+
+      // Action: Authentication Login (Supports Admin Imam & Custom Users)
       login: (username, password) => {
-        const cleanUser = (username || '').trim();
+        const cleanUser = (username || '').trim().toLowerCase();
         const cleanPass = (password || '').trim();
 
         if (!cleanUser) {
-          return { success: false, error: 'Silakan masukkan nama atau username Anda!' };
+          return { success: false, error: 'Silakan masukkan username Anda!' };
+        }
+        if (!cleanPass) {
+          return { success: false, error: 'Silakan masukkan password Anda!' };
         }
 
+        const accounts = get().accounts || {
+          imam: { username: 'imam', name: 'Imam', password: 'imam123@', role: 'admin' },
+        };
+
         // 1. Akun Khusus Pemilik (Imam)
-        if (cleanUser.toLowerCase() === 'imam') {
+        if (cleanUser === 'imam') {
           if (cleanPass === 'imam123@') {
             set({
               isAuthenticated: true,
@@ -67,20 +132,26 @@ export const useAppStore = create(
           };
         }
 
-        // 2. Akses Otomatis untuk Teman (Nama Sendiri)
-        if (cleanUser.length >= 2) {
-          const capitalized = cleanUser.charAt(0).toUpperCase() + cleanUser.slice(1);
-          set({
-            isAuthenticated: true,
-            user: { username: cleanUser.toLowerCase(), name: capitalized, role: 'member' },
-            syncNotification: `Selamat datang di MyLala, ${capitalized}!`,
-          });
-          return { success: true };
+        // 2. Akun Terdaftar
+        const existing = accounts[cleanUser];
+        if (existing) {
+          if (existing.password === cleanPass) {
+            set({
+              isAuthenticated: true,
+              user: { username: existing.username, name: existing.name, role: existing.role || 'member' },
+              syncNotification: `Selamat datang kembali, ${existing.name}!`,
+            });
+            return { success: true };
+          }
+          return {
+            success: false,
+            error: 'Password yang Anda masukkan salah!',
+          };
         }
 
         return {
           success: false,
-          error: 'Nama pengguna minimal 2 karakter!',
+          error: 'Username belum terdaftar! Silakan buat akun baru di tab "Daftar".',
         };
       },
 
@@ -595,9 +666,9 @@ export const useAppStore = create(
         return { moduleId, success: true };
       },
 
-      // Reset progress to clean slate
+      // Reset progress to clean slate (pure zero)
       resetUserProgress: () => {
-        set({ userProgress: {}, offlineQueue: [] });
+        set({ userProgress: {}, offlineQueue: [], xp: 0, weeklyXp: 0 });
       },
     }),
     {
@@ -607,6 +678,7 @@ export const useAppStore = create(
         isAuthenticated: state.isAuthenticated,
         user: state.user,
         userId: state.userId,
+        accounts: state.accounts,
         streak: state.streak,
         lastStudyDate: state.lastStudyDate,
         xp: state.xp,
