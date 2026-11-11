@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3730A3" />
+      <stop offset="50%" stop-color="#312E81" />
+      <stop offset="100%" stop-color="#1E1B4B" />
+    </linearGradient>
+    <linearGradient id="cardGradLeft" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38BDF8" />
+      <stop offset="100%" stop-color="#6366F1" />
+    </linearGradient>
+    <linearGradient id="cardGradRight" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#818CF8" />
+      <stop offset="100%" stop-color="#4F46E5" />
+    </linearGradient>
+    <linearGradient id="centerGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF" />
+      <stop offset="100%" stop-color="#E0E7FF" />
+    </linearGradient>
+  </defs>
+
+  <rect x="32" y="32" width="448" height="448" rx="112" fill="url(#bgGrad)" />
+  <rect x="34" y="34" width="444" height="444" rx="110" fill="none" stroke="#FFFFFF" stroke-opacity="0.14" stroke-width="4" />
+
+  <path
+    d="M172 168 C172 152 185 140 200 140 L312 140 C327 140 340 152 340 168 L340 200 L172 200 Z"
+    fill="#FFFFFF"
+    fill-opacity="0.12"
+  />
+
+  <rect x="132" y="180" width="64" height="180" rx="24" fill="url(#cardGradLeft)" />
+  <rect x="316" y="180" width="64" height="180" rx="24" fill="url(#cardGradRight)" />
+
+  <path
+    d="M188 188 C188 180 196 174 204 177 L256 226 L308 177 C316 174 324 180 324 188 L324 220 C324 226 320 232 314 236 L264 278 C259 282 253 282 248 278 L198 236 C192 232 188 226 188 220 Z"
+    fill="url(#centerGrad)"
+  />
+
+  <circle cx="256" cy="144" r="14" fill="#38BDF8" />
+</svg>

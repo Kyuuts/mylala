@@ -1,0 +1,129 @@
+import React from 'react';
+import { NavLink, Link, useNavigate } from 'react-router-dom';
+import { BookOpen, LayoutDashboard, PlusCircle, WifiOff, Cloud, RefreshCw, LogOut, User, Trophy } from 'lucide-react';
+import { useAppStore } from '../../store/useAppStore';
+import Logo from './Logo';
+
+export default function Navbar() {
+  const navigate = useNavigate();
+  const { isOnline, isSupabaseReady, syncStatus, offlineQueue, user, logout, weeklyXp } = useAppStore();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
+
+  return (
+    <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200">
+      <div className="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <Link to="/" className="flex items-center gap-2.5 font-extrabold text-xl text-slate-900 hover:opacity-90 transition">
+            <Logo size="sm" />
+            <span className="tracking-tight bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+              MyLala
+            </span>
+          </Link>
+
+          {!isOnline ? (
+            <span className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-amber-100 text-amber-800">
+              <WifiOff className="w-3 h-3" /> Offline
+              {offlineQueue.length > 0 && ` (${offlineQueue.length} queued)`}
+            </span>
+          ) : syncStatus === 'syncing' ? (
+            <span className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-indigo-50 text-indigo-700">
+              <RefreshCw className="w-3 h-3 animate-spin" /> Menyinkronkan...
+            </span>
+          ) : isSupabaseReady ? (
+            <span className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700">
+              <Cloud className="w-3 h-3" /> Cloud Synced
+            </span>
+          ) : (
+            <span className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-slate-100 text-slate-600">
+              Offline Ready
+            </span>
+          )}
+        </div>
+
+        <div className="flex items-center gap-2 sm:gap-3">
+          <nav className="flex items-center gap-1 sm:gap-2">
+            <NavLink
+              to="/"
+              end
+              className={({ isActive }) =>
+                `flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition ${
+                  isActive
+                    ? 'bg-indigo-50 text-indigo-700'
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                }`
+              }
+            >
+              <BookOpen className="w-4 h-4" />
+              <span className="hidden sm:inline">Beranda</span>
+            </NavLink>
+
+            <NavLink
+              to="/dashboard"
+              className={({ isActive }) =>
+                `flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition ${
+                  isActive
+                    ? 'bg-indigo-50 text-indigo-700'
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                }`
+              }
+            >
+              <LayoutDashboard className="w-4 h-4" />
+              <span>Dashboard</span>
+            </NavLink>
+
+            <NavLink
+              to="/leaderboard"
+              className={({ isActive }) =>
+                `flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition ${
+                  isActive
+                    ? 'bg-amber-50 text-amber-700 font-bold'
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                }`
+              }
+            >
+              <Trophy className="w-4 h-4 text-amber-500" />
+              <span className="hidden sm:inline">Rank Liga</span>
+              <span className="px-1.5 py-0.2 rounded-full bg-amber-100 text-amber-800 text-[10px] font-bold">
+                {weeklyXp || 0} XP
+              </span>
+            </NavLink>
+
+            <NavLink
+              to="/create"
+              className={({ isActive }) =>
+                `flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold transition shadow-2xs ${
+                  isActive
+                    ? 'bg-indigo-600 text-white'
+                    : 'bg-indigo-50 hover:bg-indigo-100 text-indigo-700'
+                }`
+              }
+            >
+              <PlusCircle className="w-4 h-4" />
+              <span className="hidden sm:inline">Buat Modul</span>
+            </NavLink>
+          </nav>
+
+          {/* User Profile & Logout */}
+          <div className="flex items-center gap-2 pl-2 border-l border-slate-200">
+            <span className="hidden md:inline-flex items-center gap-1 text-xs font-bold text-slate-700 bg-slate-100 px-2.5 py-1 rounded-full">
+              <User className="w-3 h-3 text-indigo-600" />
+              {user?.name || 'Imam'}
+            </span>
+
+            <button
+              onClick={handleLogout}
+              title="Keluar dari Akun"
+              className="p-1.5 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition"
+            >
+              <LogOut className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+  );
+}
