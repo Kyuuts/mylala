@@ -358,3 +358,4 @@ export function drawShareCard(canvas, data) {
     ctx.fillText('Kuasai TOEFL & Active Recall di 👉 mylala.vercel.app', width / 2, ctaY + 48);
   }
 }
+

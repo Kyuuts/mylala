@@ -67,7 +67,7 @@ Dua fix kritis yang disyaratkan dalam laporan sebelum rilis publik:
 
 ### 🟡 FASE 3 — Advanced Learning: Peningkatan Fitur Pembelajaran
 - [ ] Mode *"Rapid Error Hunter"* (Timer 5 detik per soal untuk latihan kilat TOEFL Structure)
-- [ ] Speech Recognition / Voice Shadowing (Pengecekan pelafalan dengan Web Speech API gratis)
+- [x] Speech Recognition / Voice Shadowing (Pengecekan pelafalan real-time dengan Web Speech API, evaluasi akurasi kata-per-kata Levenshtein, dan bonus XP latihan bicara)
 - [x] Export grafis estetik untuk Instagram/WhatsApp (Viral Share Loop terintegrasi)
 - [ ] Push notification reminder belajar harian (Notifikasi browser/PWA)
 

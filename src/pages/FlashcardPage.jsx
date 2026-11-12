@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, RefreshCw, AlertCircle, BookOpen } from 'lucide-react';
+import { ArrowLeft, RefreshCw, AlertCircle, BookOpen, Mic } from 'lucide-react';
 import { useAppStore } from '../store/useAppStore';
 import Flashcard from '../components/flashcards/Flashcard';
 import Controls from '../components/flashcards/Controls';
 import SessionSummary from '../components/flashcards/SessionSummary';
+import VoiceShadowingWidget from '../components/flashcards/VoiceShadowingWidget';
 
 export default function FlashcardPage() {
   const { module_id } = useParams();
@@ -12,6 +13,7 @@ export default function FlashcardPage() {
   const [cards, setCards] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
+  const [showVoiceShadowing, setShowVoiceShadowing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [isFinished, setIsFinished] = useState(false);
@@ -178,7 +180,38 @@ export default function FlashcardPage() {
         card={currentCard}
         isFlipped={isFlipped}
         onFlip={handleFlip}
+        onToggleShadowing={() => setShowVoiceShadowing((prev) => !prev)}
+        isShadowingActive={showVoiceShadowing}
       />
+
+      {/* Voice Shadowing Quick Bar */}
+      <div className="flex justify-center">
+        <button
+          onClick={() => setShowVoiceShadowing((prev) => !prev)}
+          className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer ${
+            showVoiceShadowing
+              ? 'bg-indigo-600 text-white shadow-md'
+              : 'bg-white hover:bg-indigo-50 text-indigo-700 border border-indigo-200'
+          }`}
+        >
+          <Mic className={`w-3.5 h-3.5 ${showVoiceShadowing ? 'text-white' : 'text-indigo-600'}`} />
+          <span>{showVoiceShadowing ? 'Sembunyikan Latihan Pelafalan' : '🎙️ Latih Pelafalan (Voice Shadowing)'}</span>
+        </button>
+      </div>
+
+      {/* Voice Shadowing Assessment Engine */}
+      {showVoiceShadowing && (
+        <VoiceShadowingWidget
+          targetSentence={
+            currentCard.example_sentence ||
+            (currentCard.front_text.includes('_') && isFlipped
+              ? currentCard.front_text.replace(/_+/g, currentCard.back_text)
+              : currentCard.front_text)
+          }
+          cardId={currentCard.id}
+          isFlipped={isFlipped}
+        />
+      )}
 
       {/* SRS Controls */}
       <Controls
