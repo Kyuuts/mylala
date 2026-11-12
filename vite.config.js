@@ -51,11 +51,12 @@ export default defineConfig({
         globPatterns: ['**/*.{js,css,html,ico,png,svg,webp}'],
         runtimeCaching: [
           {
-            // Network-First for Supabase JSON Payloads
-            urlPattern: /^https:\/\/.*\.supabase\.co\/rest\/v1\/.*/i,
+            // Network-First for Public Static Curriculum Data ONLY (modules & flashcards)
+            // Hardened for VULN-09: Excludes all user PII endpoints (user_accounts, user_progress, user_weekly_stats)
+            urlPattern: /^https:\/\/.*\.supabase\.co\/rest\/v1\/(modules|flashcards)(\?.*)?$/i,
             handler: 'NetworkFirst',
             options: {
-              cacheName: 'supabase-api-cache',
+              cacheName: 'supabase-curriculum-cache',
               expiration: {
                 maxEntries: 100,
                 maxAgeSeconds: 60 * 60 * 24 * 7, // 7 days

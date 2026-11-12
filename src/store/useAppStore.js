@@ -475,6 +475,20 @@ export const useAppStore = create(
           }
         }
 
+        // Security Remediation (VULN-09): Sanitize sensitive API caches upon logout on shared devices
+        if (typeof window !== 'undefined' && 'caches' in window) {
+          try {
+            const cacheKeys = await caches.keys();
+            for (const key of cacheKeys) {
+              if (key.includes('supabase') || key.includes('user')) {
+                await caches.delete(key);
+              }
+            }
+          } catch (e) {
+            console.warn('Cache cleanup on logout notice:', e);
+          }
+        }
+
         const updatedByUserId = { ...(userProgressByUserId || {}) };
         if (userId) {
           updatedByUserId[userId] = userProgress || {};
