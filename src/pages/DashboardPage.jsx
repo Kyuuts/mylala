@@ -90,69 +90,50 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-8">
-      {/* Title & Greeting with User Avatar */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white p-5 sm:p-6 rounded-3xl border border-slate-200/90 shadow-2xs">
-        <div className="flex items-center gap-4 min-w-0">
-          <button
-            type="button"
-            onClick={() => setEditProfileOpen(true)}
-            className="relative group shrink-0"
-            title="Klik untuk Edit Profil & Foto"
-          >
-            <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full overflow-hidden border-2 border-indigo-500 shadow-sm bg-indigo-50 flex items-center justify-center transition group-hover:scale-105">
+      {/* Title & Greeting with Clickable User Profile */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+            Dashboard Belajar
+          </h1>
+          <div className="text-sm text-slate-600 mt-1 flex items-center gap-2 flex-wrap">
+            <span>Selamat datang,</span>
+            <button
+              type="button"
+              onClick={() => setEditProfileOpen(true)}
+              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold border border-indigo-200/80 transition active:scale-95 cursor-pointer text-xs"
+              title="Klik untuk ubah nama atau foto profil"
+            >
               {user?.avatarUrl ? (
                 <img
                   src={user.avatarUrl}
                   alt={user.name || 'User'}
-                  className="w-full h-full object-cover"
+                  className="w-4 h-4 rounded-full object-cover inline-block"
                 />
               ) : (
-                <span className="text-2xl sm:text-3xl">👤</span>
+                <span className="text-xs">👤</span>
               )}
-            </div>
-            <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-indigo-600 text-white flex items-center justify-center shadow-xs">
-              <Edit3 className="w-2.5 h-2.5" />
-            </div>
-          </button>
-
-          <div className="min-w-0">
-            <div className="flex items-center gap-2 flex-wrap">
-              <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight truncate">
-                Halo, {user?.name || 'Imam'}!
-              </h1>
-              {user?.cefrLevel && (
-                <span className="px-2 py-0.5 rounded-full bg-indigo-600 text-white text-[10px] font-extrabold shrink-0">
-                  {user.cefrLevel}
-                </span>
-              )}
-            </div>
-            <p className="text-xs text-indigo-600 font-semibold truncate">
-              @{user?.username || 'imam'}
-            </p>
-            <p className="text-xs text-slate-500 mt-0.5 truncate">
-              Pantau kemajuan retensi memori dan modul bahasa Anda hari ini.
-            </p>
+              <span>{user?.name || 'Imam'}</span>
+              <Edit3 className="w-2.5 h-2.5 text-indigo-500 opacity-80" />
+            </button>
+            {user?.cefrLevel && (
+              <span className="px-2 py-0.5 rounded-full bg-indigo-600 text-white text-[9px] font-extrabold">
+                {user.cefrLevel}
+              </span>
+            )}
+            <span className="text-slate-300 hidden sm:inline">•</span>
+            <span className="text-xs text-slate-500 hidden sm:inline">Pantau retensi memori dan modul bahasa Anda.</span>
           </div>
         </div>
 
-        <div className="flex items-center gap-2 self-start sm:self-auto shrink-0 flex-wrap">
-          <button
-            onClick={() => setEditProfileOpen(true)}
-            className="inline-flex items-center gap-1.5 text-xs font-bold px-3.5 py-2 rounded-xl border border-indigo-200 bg-indigo-50/70 text-indigo-700 hover:bg-indigo-100 transition active:scale-95 cursor-pointer shadow-2xs"
-          >
-            <Edit3 className="w-3.5 h-3.5 text-indigo-600" />
-            <span>Edit Profil</span>
-          </button>
-
-          <button
-            onClick={loadData}
-            disabled={loading}
-            className="inline-flex items-center gap-1.5 text-xs font-semibold px-3.5 py-2 rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 transition active:scale-95 disabled:opacity-50 cursor-pointer shadow-2xs"
-          >
-            <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
-            <span>Segarkan</span>
-          </button>
-        </div>
+        <button
+          onClick={loadData}
+          disabled={loading}
+          className="inline-flex items-center gap-1.5 self-start sm:self-auto text-xs font-semibold px-3 py-1.5 rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 transition active:scale-95 disabled:opacity-50 cursor-pointer"
+        >
+          <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
+          <span>Segarkan Data</span>
+        </button>
       </div>
 
       {/* Metrics Section */}

@@ -29,6 +29,17 @@ export default function EditProfileModal({ isOpen, onClose }) {
     }
   }, [isOpen, user]);
 
+  // Lock body scroll when modal is open to prevent background scrolling or collisions
+  useEffect(() => {
+    if (isOpen) {
+      const prev = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = prev;
+      };
+    }
+  }, [isOpen]);
+
   // Handle ESC key to close
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -110,20 +121,20 @@ export default function EditProfileModal({ isOpen, onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-150">
-      <div className="bg-white rounded-t-3xl sm:rounded-3xl max-w-md w-full shadow-2xl border border-slate-200/90 overflow-hidden flex flex-col max-h-[92vh] sm:max-h-[88vh] animate-in slide-in-from-bottom-4 sm:zoom-in-95 duration-200">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-xs animate-in fade-in duration-150">
+      <div className="bg-white rounded-2xl max-w-sm w-full shadow-2xl border border-slate-200/90 overflow-hidden flex flex-col max-h-[85vh] animate-in zoom-in-95 duration-150">
         
         {/* Minimalist Top Bar */}
-        <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between shrink-0 bg-white">
+        <div className="px-5 py-3.5 border-b border-slate-100 flex items-center justify-between shrink-0 bg-white">
           <div>
-            <h2 className="text-base sm:text-lg font-extrabold text-slate-900">Edit Profil</h2>
-            <p className="text-xs text-slate-500">Ubah username dan foto profil Anda</p>
+            <h2 className="text-base font-extrabold text-slate-900">Edit Profil</h2>
+            <p className="text-[11px] text-slate-500">Ubah username dan foto profil Anda</p>
           </div>
           <button
             type="button"
             onClick={onClose}
             disabled={isSaving}
-            className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center transition cursor-pointer"
+            className="w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center transition cursor-pointer"
             aria-label="Tutup"
           >
             <X className="w-4 h-4" />
@@ -131,16 +142,16 @@ export default function EditProfileModal({ isOpen, onClose }) {
         </div>
 
         {/* Scrollable Form Body */}
-        <form onSubmit={handleSave} className="flex-1 overflow-y-auto px-5 py-4 space-y-5">
+        <form onSubmit={handleSave} className="flex-1 overflow-y-auto px-5 py-4 space-y-4">
           {error && (
-            <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2">
+            <div className="p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2">
               <AlertCircle className="w-4 h-4 shrink-0 text-rose-500" />
               <span>{error}</span>
             </div>
           )}
 
           {successMsg && (
-            <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold flex items-center gap-2">
+            <div className="p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold flex items-center gap-2">
               <Check className="w-4 h-4 shrink-0 text-emerald-600" />
               <span>{successMsg}</span>
             </div>
@@ -151,7 +162,7 @@ export default function EditProfileModal({ isOpen, onClose }) {
             <div className="relative">
               <div 
                 onClick={() => fileInputRef.current?.click()}
-                className="w-20 h-20 rounded-full overflow-hidden border-2 border-indigo-600 shadow-sm bg-slate-100 flex items-center justify-center cursor-pointer hover:opacity-90 transition group"
+                className="w-16 h-16 rounded-full overflow-hidden border-2 border-indigo-600 shadow-sm bg-slate-100 flex items-center justify-center cursor-pointer hover:opacity-90 transition group"
                 title="Klik untuk upload foto"
               >
                 {selectedAvatarUrl ? (
@@ -161,12 +172,12 @@ export default function EditProfileModal({ isOpen, onClose }) {
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <User className="w-10 h-10 text-slate-400" />
+                  <User className="w-8 h-8 text-slate-400" />
                 )}
 
                 {/* Hover overlay hint */}
                 <div className="absolute inset-0 bg-black/30 rounded-full opacity-0 group-hover:opacity-100 flex items-center justify-center transition">
-                  <Camera className="w-5 h-5 text-white" />
+                  <Camera className="w-4 h-4 text-white" />
                 </div>
               </div>
 
@@ -176,12 +187,12 @@ export default function EditProfileModal({ isOpen, onClose }) {
                 onClick={() => fileInputRef.current?.click()}
                 disabled={isUploading}
                 title="Pilih foto dari perangkat"
-                className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm border-2 border-white flex items-center justify-center transition cursor-pointer"
+                className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm border-2 border-white flex items-center justify-center transition cursor-pointer"
               >
                 {isUploading ? (
-                  <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                  <RefreshCw className="w-3 h-3 animate-spin" />
                 ) : (
-                  <Camera className="w-3.5 h-3.5" />
+                  <Camera className="w-3 h-3" />
                 )}
               </button>
             </div>
@@ -195,14 +206,14 @@ export default function EditProfileModal({ isOpen, onClose }) {
             />
 
             {/* Upload / Reset Quick Actions */}
-            <div className="flex items-center gap-3 mt-2 text-xs">
+            <div className="flex items-center gap-3 mt-1.5 text-xs">
               <button
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
                 disabled={isUploading}
-                className="inline-flex items-center gap-1 font-bold text-indigo-600 hover:text-indigo-800 transition cursor-pointer"
+                className="inline-flex items-center gap-1 font-bold text-indigo-600 hover:text-indigo-800 transition cursor-pointer text-[11px]"
               >
-                <Upload className="w-3.5 h-3.5" />
+                <Upload className="w-3 h-3" />
                 <span>{isUploading ? 'Mengompres...' : 'Upload Foto'}</span>
               </button>
 
@@ -212,9 +223,9 @@ export default function EditProfileModal({ isOpen, onClose }) {
                   <button
                     type="button"
                     onClick={() => setSelectedAvatarUrl('')}
-                    className="inline-flex items-center gap-1 text-slate-500 hover:text-rose-600 transition cursor-pointer"
+                    className="inline-flex items-center gap-1 text-slate-500 hover:text-rose-600 transition cursor-pointer text-[11px]"
                   >
-                    <RotateCcw className="w-3 h-3" />
+                    <RotateCcw className="w-2.5 h-2.5" />
                     <span>Reset</span>
                   </button>
                 </>
@@ -223,12 +234,12 @@ export default function EditProfileModal({ isOpen, onClose }) {
           </div>
 
           {/* 2. FIVE PRESET AVATARS (MINIMALIST CIRCLE ROW) */}
-          <div className="space-y-2">
-            <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider text-center">
+          <div className="space-y-1.5">
+            <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider text-center">
               Pilihan Avatar Karakter
             </label>
 
-            <div className="flex items-center justify-center gap-3">
+            <div className="flex items-center justify-center gap-2.5">
               {PRESET_AVATARS.map((avatar) => {
                 const isSelected = selectedAvatarUrl === avatar.svgDataUri;
                 return (
@@ -237,7 +248,7 @@ export default function EditProfileModal({ isOpen, onClose }) {
                     type="button"
                     onClick={() => setSelectedAvatarUrl(avatar.svgDataUri)}
                     title={avatar.name}
-                    className={`relative w-12 h-12 rounded-full overflow-hidden transition active:scale-95 cursor-pointer shrink-0 border-2 ${
+                    className={`relative w-10 h-10 rounded-full overflow-hidden transition active:scale-95 cursor-pointer shrink-0 border-2 ${
                       isSelected
                         ? 'border-indigo-600 ring-2 ring-indigo-500 ring-offset-2 scale-105'
                         : 'border-slate-200 hover:border-slate-400 bg-slate-50'
@@ -250,7 +261,7 @@ export default function EditProfileModal({ isOpen, onClose }) {
                     />
                     {isSelected && (
                       <div className="absolute inset-0 bg-indigo-900/20 flex items-center justify-center">
-                        <Check className="w-4 h-4 text-white stroke-[3]" />
+                        <Check className="w-3.5 h-3.5 text-white stroke-[3]" />
                       </div>
                     )}
                   </button>
@@ -260,14 +271,14 @@ export default function EditProfileModal({ isOpen, onClose }) {
           </div>
 
           {/* 3. NAME & USERNAME FIELDS */}
-          <div className="space-y-3.5 pt-1">
+          <div className="space-y-3 pt-1">
             <div>
               <label className="block text-xs font-bold text-slate-700 mb-1">
                 Nama Lengkap
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
-                  <User className="w-4 h-4" />
+                  <User className="w-3.5 h-3.5" />
                 </div>
                 <input
                   type="text"
@@ -275,7 +286,7 @@ export default function EditProfileModal({ isOpen, onClose }) {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Nama tampilan kamu"
-                  className="w-full pl-9 pr-3 py-2 text-sm rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-slate-50/60 text-slate-900"
+                  className="w-full pl-9 pr-3 py-2 text-xs sm:text-sm rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-slate-50/60 text-slate-900"
                 />
               </div>
             </div>
@@ -286,7 +297,7 @@ export default function EditProfileModal({ isOpen, onClose }) {
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
-                  <AtSign className="w-4 h-4" />
+                  <AtSign className="w-3.5 h-3.5" />
                 </div>
                 <input
                   type="text"
@@ -294,10 +305,10 @@ export default function EditProfileModal({ isOpen, onClose }) {
                   value={username}
                   onChange={(e) => setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ''))}
                   placeholder="username_kamu"
-                  className="w-full pl-9 pr-3 py-2 text-sm rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-slate-50/60 text-slate-900"
+                  className="w-full pl-9 pr-3 py-2 text-xs sm:text-sm rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-slate-50/60 text-slate-900"
                 />
               </div>
-              <p className="text-[11px] text-slate-400 mt-1">
+              <p className="text-[10px] text-slate-400 mt-1">
                 Gunakan huruf kecil, angka, atau underscore (_)
               </p>
             </div>
@@ -305,12 +316,12 @@ export default function EditProfileModal({ isOpen, onClose }) {
         </form>
 
         {/* Minimalist Bottom Actions (Sticky) */}
-        <div className="px-5 py-3.5 bg-slate-50 border-t border-slate-100 flex items-center justify-end gap-2.5 shrink-0">
+        <div className="px-5 py-3 bg-slate-50 border-t border-slate-100 flex items-center justify-end gap-2 shrink-0">
           <button
             type="button"
             onClick={onClose}
             disabled={isSaving}
-            className="px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold text-slate-600 hover:bg-slate-200 transition cursor-pointer"
+            className="px-3.5 py-1.5 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-200 transition cursor-pointer"
           >
             Batal
           </button>
@@ -318,16 +329,16 @@ export default function EditProfileModal({ isOpen, onClose }) {
             type="button"
             onClick={handleSave}
             disabled={isSaving || isUploading}
-            className="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-bold text-xs sm:text-sm transition shadow-sm flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+            className="px-4 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-bold text-xs transition shadow-xs flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
           >
             {isSaving ? (
               <>
-                <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                <RefreshCw className="w-3 h-3 animate-spin" />
                 <span>Menyimpan...</span>
               </>
             ) : (
               <>
-                <Check className="w-3.5 h-3.5 stroke-[2.5]" />
+                <Check className="w-3 h-3 stroke-[2.5]" />
                 <span>Simpan</span>
               </>
             )}
