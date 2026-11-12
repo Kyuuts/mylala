@@ -101,13 +101,14 @@ Penyelarasan ekosistem kurikulum MyLala ke dalam 3 Pilar Utama:
 - [x] Pembacaan audio native lengkap per paragraf pada pilar Bacaan (Audio player bar + speed toggle 0.85x, 1.0x, 1.15x).
 - [x] Lencana CEFR otomatis tersemat di profil pengguna dan navbar setelah tes (+50 bonus XP).
 
-### 🔵 TAHAP 3 — Implementasi Penuh 6 Mode Arena Latihan
-- [x] Mode 1: Kartu Hafalan (Active Recall SRS SM-2 + Voice Shadowing)
-- [x] Mode 2: Kesalahan Umum (Grammar Detective) - Mini-game aktif
-- [x] Mode 3: Konjungsi (Bridge Builder) - Mini-game aktif
-- [ ] Mode 4: Dikte (Ear Master) - Audio typing engine dengan fuzzy grading
-- [ ] Mode 5: Dialog (Roleplay Lounge) - Chatbot NPC percakapan situasional
-- [ ] Mode 6: Latihan Menulis (Sentence Builder) - Drag/tap scrambled word blocks
+### ✅ TAHAP 3 — Implementasi Penuh 6 Mode Arena Latihan [SELESAI]
+- [x] Mode 1: Kartu Hafalan (Active Recall SRS SM-2 + Voice Shadowing pelafalan mic)
+- [x] Mode 2: Kesalahan Umum (Grammar Detective) - Multi-round error hunting game
+- [x] Mode 3: Konjungsi (Bridge Builder) - Tantangan konektor & transisi logika kalimat
+- [x] Mode 4: Dikte (Ear Master) - Audio typing engine dengan evaluasi akurasi kata & kontrol tempo 1.0x/0.75x
+- [x] Mode 5: Dialog (Roleplay Lounge) - Simulasi chat interaktif (Kafe London, Interview Kerja) dengan audio NPC
+- [x] Mode 6: Latihan Menulis (Sentence Builder) - Puzzle interaktif tap/swap balok kata acak menjadi kalimat padu
+- [x] Fix Tahap 2: Tautan rekomendasi bacaan di Language Scanner langsung membuka artikel spesifik (`/reading?article=...`) secara otomatis.
 
 ---
 

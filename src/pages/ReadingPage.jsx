@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useSearchParams, useParams, useNavigate } from 'react-router-dom';
 import {
   BookOpen,
   Clock,
@@ -24,11 +25,27 @@ export default function ReadingPage() {
   const [savedVocab, setSavedVocab] = useState({});
   const { addFlashcard, syncNotification } = useAppStore();
 
+  const [searchParams, setSearchParams] = useSearchParams();
+  const { id: routeArticleId } = useParams();
+  const navigate = useNavigate();
+
   // Audio Speech States
   const [activeParagraphIndex, setActiveParagraphIndex] = useState(null);
   const [isPlayingAll, setIsPlayingAll] = useState(false);
   const [speechRate, setSpeechRate] = useState(1.0); // 0.85 | 1.0 | 1.15
   const isPlayingAllRef = useRef(false);
+
+  // Auto-open specific article if passed via query param ?article=... or route /reading/:id
+  useEffect(() => {
+    const targetId = routeArticleId || searchParams.get('article');
+    if (targetId) {
+      const found = GRADED_ARTICLES.find((a) => a.id === targetId);
+      if (found) {
+        setActiveArticle(found);
+        setSelectedLevel(found.cefr_level);
+      }
+    }
+  }, [routeArticleId, searchParams]);
 
   // Sync ref with state
   useEffect(() => {
@@ -142,6 +159,13 @@ export default function ReadingPage() {
   const handleCloseModal = () => {
     stopAudio();
     setActiveArticle(null);
+    if (searchParams.get('article')) {
+      const newParams = new URLSearchParams(searchParams);
+      newParams.delete('article');
+      setSearchParams(newParams, { replace: true });
+    } else if (routeArticleId) {
+      navigate('/reading', { replace: true });
+    }
   };
 
   return (

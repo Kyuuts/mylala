@@ -261,43 +261,43 @@ export default function LanguageScannerModal({ isOpen, onClose }) {
                   Rekomendasi Pertama Untukmu:
                 </span>
 
-                <div className="p-3.5 rounded-2xl border border-indigo-100 bg-indigo-50/50 flex items-center justify-between gap-3">
+                <Link
+                  to={`/module/${finalResult.recommendedModuleId}`}
+                  onClick={onClose}
+                  className="p-3.5 rounded-2xl border border-indigo-100 bg-indigo-50/50 hover:bg-indigo-100/60 hover:border-indigo-300 transition flex items-center justify-between gap-3 group"
+                >
                   <div className="flex items-center gap-2.5 min-w-0">
                     <BookOpen className="w-4 h-4 text-indigo-600 shrink-0" />
-                    <div className="min-w-0">
+                    <div className="min-w-0 text-left">
                       <span className="text-[10px] font-bold text-indigo-600 uppercase">Modul Belajar</span>
-                      <p className="text-xs font-bold text-slate-900 truncate">
+                      <p className="text-xs font-bold text-slate-900 truncate group-hover:text-indigo-700 transition">
                         {finalResult.recommendedModuleTitle}
                       </p>
                     </div>
                   </div>
-                  <Link
-                    to={`/module/${finalResult.recommendedModuleId}`}
-                    onClick={onClose}
-                    className="p-1.5 rounded-xl bg-indigo-600 text-white hover:bg-indigo-700 shrink-0 transition"
-                  >
+                  <span className="p-1.5 rounded-xl bg-indigo-600 text-white group-hover:bg-indigo-700 shrink-0 transition">
                     <ArrowRight className="w-3.5 h-3.5" />
-                  </Link>
-                </div>
+                  </span>
+                </Link>
 
-                <div className="p-3.5 rounded-2xl border border-sky-100 bg-sky-50/50 flex items-center justify-between gap-3">
+                <Link
+                  to={`/reading?article=${finalResult.recommendedArticleId}`}
+                  onClick={onClose}
+                  className="p-3.5 rounded-2xl border border-sky-100 bg-sky-50/50 hover:bg-sky-100/60 hover:border-sky-300 transition flex items-center justify-between gap-3 group"
+                >
                   <div className="flex items-center gap-2.5 min-w-0">
                     <Newspaper className="w-4 h-4 text-sky-600 shrink-0" />
-                    <div className="min-w-0">
+                    <div className="min-w-0 text-left">
                       <span className="text-[10px] font-bold text-sky-600 uppercase">Artikel Bacaan</span>
-                      <p className="text-xs font-bold text-slate-900 truncate">
+                      <p className="text-xs font-bold text-slate-900 truncate group-hover:text-sky-700 transition">
                         {finalResult.recommendedArticleTitle}
                       </p>
                     </div>
                   </div>
-                  <Link
-                    to="/reading"
-                    onClick={onClose}
-                    className="p-1.5 rounded-xl bg-sky-600 text-white hover:bg-sky-700 shrink-0 transition"
-                  >
+                  <span className="p-1.5 rounded-xl bg-sky-600 text-white group-hover:bg-sky-700 shrink-0 transition">
                     <ArrowRight className="w-3.5 h-3.5" />
-                  </Link>
-                </div>
+                  </span>
+                </Link>
               </div>
 
               {/* Action Buttons */}
@@ -342,3 +342,4 @@ export default function LanguageScannerModal({ isOpen, onClose }) {
     </div>
   );
 }
+

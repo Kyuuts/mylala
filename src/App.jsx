@@ -34,7 +34,9 @@ export default function App() {
         <Route path="practice" element={<PracticePage />} />
         <Route path="latihan" element={<PracticePage />} />
         <Route path="reading" element={<ReadingPage />} />
+        <Route path="reading/:id" element={<ReadingPage />} />
         <Route path="bacaan" element={<ReadingPage />} />
+        <Route path="bacaan/:id" element={<ReadingPage />} />
         <Route path="leaderboard" element={<LeaderboardPage />} />
         <Route path="rank" element={<LeaderboardPage />} />
         <Route path="create" element={<CreateModulePage />} />

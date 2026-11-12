@@ -201,3 +201,4 @@ export const resolvePlacementResult = (correctCount) => {
     recommendedArticleTitle: 'Neural Networks and the Evolution of Modern Syntax',
   };
 };
+
