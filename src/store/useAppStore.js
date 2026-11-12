@@ -585,20 +585,20 @@ export const useAppStore = create(
 
         const currentWeek = getCurrentWeekId();
         try {
-          let query = supabase
-            .from('user_weekly_stats')
-            .select('*')
-            .eq('year_week', currentWeek);
+          let data = null;
 
+          // 1. Primary lookup: by user_id
           if (targetUserId) {
-            query = query.eq('user_id', targetUserId);
-          } else if (targetUsername) {
-            query = query.eq('username', targetUsername.toLowerCase());
+            const { data: byId } = await supabase
+              .from('user_weekly_stats')
+              .select('*')
+              .eq('year_week', currentWeek)
+              .eq('user_id', targetUserId)
+              .maybeSingle();
+            data = byId;
           }
 
-          let { data, error } = await query.maybeSingle();
-
-          // Fallback search by username if ID didn't match
+          // 2. Fallback lookup: by username (for cross-device / fresh sessions)
           if (!data && targetUsername) {
             const { data: byUser } = await supabase
               .from('user_weekly_stats')
@@ -613,14 +613,17 @@ export const useAppStore = create(
             const remoteXp = data.weekly_xp || 0;
             const remoteStreak = data.streak || 1;
             const remoteAvatar = data.avatar_url || null;
+            const canonicalUserId = data.user_id || targetUserId;
 
             set((state) => ({
+              userId: canonicalUserId,
               weeklyXp: Math.max(state.weeklyXp || 0, remoteXp),
               xp: Math.max(state.xp || 0, remoteXp),
               streak: Math.max(state.streak || 1, remoteStreak),
               user: state.user
                 ? {
                     ...state.user,
+                    id: canonicalUserId,
                     name: data.name || state.user.name,
                     avatarUrl: remoteAvatar || state.user.avatarUrl || null,
                   }

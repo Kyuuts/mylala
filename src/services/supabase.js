@@ -3,25 +3,39 @@ import { createClient } from '@supabase/supabase-js';
 const DEFAULT_SUPABASE_URL = 'https://rnbdddalidngbigucjqx.supabase.co';
 const DEFAULT_SUPABASE_ANON_KEY = 'sb_publishable_wYyJKnqNrHdHDQxk-T-v6w_VXzMsMy1';
 
-const supabaseUrl =
-  import.meta.env.VITE_SUPABASE_URL ||
-  import.meta.env.NEXT_PUBLIC_SUPABASE_URL ||
-  DEFAULT_SUPABASE_URL;
+// Robust validator: rejects empty strings, placeholder variable names (e.g. 'VITE_SUPABASE_URL'), and invalid schemes
+const isValidUrl = (url) => {
+  return (
+    typeof url === 'string' &&
+    url.startsWith('https://') &&
+    !url.includes('your-project-ref') &&
+    !url.includes('VITE_')
+  );
+};
 
-const supabaseAnonKey =
+const isValidKey = (key) => {
+  return (
+    typeof key === 'string' &&
+    key.length > 20 &&
+    !key.includes('VITE_')
+  );
+};
+
+const envUrl =
+  import.meta.env.VITE_SUPABASE_URL ||
+  import.meta.env.NEXT_PUBLIC_SUPABASE_URL;
+
+const envKey =
   import.meta.env.VITE_SUPABASE_ANON_KEY ||
   import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ||
   import.meta.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
-  import.meta.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
-  DEFAULT_SUPABASE_ANON_KEY;
+  import.meta.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+
+const supabaseUrl = isValidUrl(envUrl) ? envUrl : DEFAULT_SUPABASE_URL;
+const supabaseAnonKey = isValidKey(envKey) ? envKey : DEFAULT_SUPABASE_ANON_KEY;
 
 export const isSupabaseConfigured = () => {
-  return (
-    Boolean(supabaseUrl) &&
-    Boolean(supabaseAnonKey) &&
-    !supabaseUrl.includes('your-project-ref') &&
-    supabaseUrl.startsWith('https://')
-  );
+  return isValidUrl(supabaseUrl) && isValidKey(supabaseAnonKey);
 };
 
 export const supabase = isSupabaseConfigured()

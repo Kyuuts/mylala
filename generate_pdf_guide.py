@@ -818,3 +818,4 @@ with sync_playwright() as p:
 
 file_size_kb = os.path.getsize(output_pdf) / 1024
 print(f"PDF successfully created: {output_pdf} ({file_size_kb:.1f} KB)")
+

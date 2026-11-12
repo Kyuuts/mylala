@@ -7,7 +7,7 @@ import { getTierFromXP, getTimeUntilWeeklyReset, TIERS } from '../utils/rankSyst
 import ShareCardModal from '../components/common/ShareCardModal';
 
 export default function LeaderboardPage() {
-  const { weeklyXp, fetchLeaderboard, streak, user, isSupabaseReady } = useAppStore();
+  const { weeklyXp, fetchLeaderboard, streak, user, isSupabaseReady, fetchUserStatsFromSupabase } = useAppStore();
   const [leaderboard, setLeaderboard] = useState([]);
   const [countdown, setCountdown] = useState(getTimeUntilWeeklyReset());
   const [loading, setLoading] = useState(true);
@@ -17,6 +17,9 @@ export default function LeaderboardPage() {
 
   const loadLeaderboardData = async () => {
     try {
+      if (user && fetchUserStatsFromSupabase) {
+        await fetchUserStatsFromSupabase(user.id, user.username);
+      }
       const data = await fetchLeaderboard();
       setLeaderboard(data || []);
     } catch (err) {

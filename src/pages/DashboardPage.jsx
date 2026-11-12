@@ -13,7 +13,7 @@ import { getModuleLevel } from '../utils/moduleLevel';
 import { getTierFromXP } from '../utils/rankSystem';
 
 export default function DashboardPage() {
-  const { fetchModules, getMetrics, user, weeklyXp, streak } = useAppStore();
+  const { fetchModules, getMetrics, user, weeklyXp, streak, fetchUserStatsFromSupabase } = useAppStore();
   const [shareModalOpen, setShareModalOpen] = useState(false);
   const [modules, setModules] = useState([]);
   const [metrics, setMetrics] = useState({
@@ -37,6 +37,9 @@ export default function DashboardPage() {
     setLoading(true);
     setError(null);
     try {
+      if (user && fetchUserStatsFromSupabase) {
+        await fetchUserStatsFromSupabase(user.id, user.username);
+      }
       const { data, error: err } = await fetchModules('All');
       if (err) throw err;
       setModules(data || []);
