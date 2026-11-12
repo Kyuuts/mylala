@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Trophy, Flame, Sparkles, Clock, ArrowUpCircle, ShieldAlert, BookOpen, Layers, Award, Radio, Share2, Edit3, UserCheck } from 'lucide-react';
+import { Trophy, Flame, Sparkles, Clock, ArrowUpCircle, ShieldAlert, BookOpen, Layers, Award, Radio, Share2 } from 'lucide-react';
 import { useAppStore } from '../store/useAppStore';
 import { supabase, isSupabaseConfigured } from '../services/supabase';
 import { getTierFromXP, getTimeUntilWeeklyReset, TIERS } from '../utils/rankSystem';
 import ShareCardModal from '../components/common/ShareCardModal';
-import EditProfileModal from '../components/profile/EditProfileModal';
 
 export default function LeaderboardPage() {
   const { weeklyXp, fetchLeaderboard, streak, user, isSupabaseReady } = useAppStore();
@@ -13,7 +12,6 @@ export default function LeaderboardPage() {
   const [countdown, setCountdown] = useState(getTimeUntilWeeklyReset());
   const [loading, setLoading] = useState(true);
   const [shareModalOpen, setShareModalOpen] = useState(false);
-  const [editProfileOpen, setEditProfileOpen] = useState(false);
 
   const currentTier = getTierFromXP(weeklyXp || 0);
 
@@ -144,24 +142,13 @@ export default function LeaderboardPage() {
               </div>
             </div>
 
-            <div className="flex items-center gap-2 w-full sm:w-auto">
-              <button
-                onClick={() => setEditProfileOpen(true)}
-                className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-white/20 hover:bg-white/30 text-white text-xs font-bold transition active:scale-95 cursor-pointer shadow-2xs"
-                title="Ganti Foto & Username"
-              >
-                <Edit3 className="w-3.5 h-3.5 text-white" />
-                <span>Edit Profil</span>
-              </button>
-
-              <button
-                onClick={() => setShareModalOpen(true)}
-                className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-900 text-xs font-bold transition active:scale-95 cursor-pointer shadow-2xs"
-              >
-                <Share2 className="w-3.5 h-3.5" />
-                <span>Bagikan</span>
-              </button>
-            </div>
+            <button
+              onClick={() => setShareModalOpen(true)}
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-900 text-xs font-bold transition active:scale-95 cursor-pointer shadow-2xs"
+            >
+              <Share2 className="w-3.5 h-3.5" />
+              <span>Bagikan</span>
+            </button>
           </div>
         </div>
 
@@ -204,14 +191,6 @@ export default function LeaderboardPage() {
           </div>
 
           <div className="flex items-center gap-2 self-start sm:self-auto shrink-0 flex-wrap">
-            <button
-              onClick={() => setEditProfileOpen(true)}
-              className="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 font-bold text-xs sm:text-sm transition active:scale-95 cursor-pointer shadow-2xs"
-            >
-              <UserCheck className="w-4 h-4 text-indigo-600" />
-              <span>Edit Profil & Foto</span>
-            </button>
-
             <button
               onClick={() => setShareModalOpen(true)}
               className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-700 border border-amber-300 font-bold text-xs sm:text-sm transition active:scale-95 cursor-pointer shadow-2xs"
@@ -281,20 +260,9 @@ export default function LeaderboardPage() {
                           {contestant.name}
                         </p>
                         {contestant.isCurrentUser && (
-                          <div className="flex items-center gap-1.5 shrink-0">
-                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-indigo-600 text-white">
-                              Kamu
-                            </span>
-                            <button
-                              type="button"
-                              onClick={() => setEditProfileOpen(true)}
-                              className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-indigo-100 hover:bg-indigo-200 text-indigo-700 transition active:scale-95 cursor-pointer"
-                              title="Ganti Foto atau Username"
-                            >
-                              <Edit3 className="w-2.5 h-2.5" />
-                              <span>Ubah Foto</span>
-                            </button>
-                          </div>
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-indigo-600 text-white shrink-0">
+                            Kamu
+                          </span>
                         )}
                       </div>
                       <div className="flex items-center gap-3 text-xs text-slate-500 mt-0.5">
@@ -388,15 +356,6 @@ export default function LeaderboardPage() {
           weeklyXp: weeklyXp || 0,
           streak: streak || 1,
           tierName: currentTier.name,
-        }}
-      />
-
-      {/* Edit Profile & Avatar Modal */}
-      <EditProfileModal
-        isOpen={editProfileOpen}
-        onClose={() => {
-          setEditProfileOpen(false);
-          loadLeaderboardData();
         }}
       />
     </div>

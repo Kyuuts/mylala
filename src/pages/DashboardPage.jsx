@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { PlayCircle, Sparkles, RefreshCw, AlertCircle, PlusCircle, Filter, Trophy, Flame, Share2, Compass, X, CheckCircle2, Edit3 } from 'lucide-react';
+import { PlayCircle, Sparkles, RefreshCw, AlertCircle, PlusCircle, Filter, Trophy, Flame, Share2, Compass, X, CheckCircle2 } from 'lucide-react';
 import { useAppStore } from '../store/useAppStore';
 import MetricsOverview from '../components/dashboard/MetricsOverview';
 import LanguageSelector from '../components/dashboard/LanguageSelector';
@@ -9,14 +9,12 @@ import CategoryFilter from '../components/dashboard/CategoryFilter';
 import ModuleCard from '../components/dashboard/ModuleCard';
 import ShareCardModal from '../components/common/ShareCardModal';
 import LanguageScannerModal from '../components/scanner/LanguageScannerModal';
-import EditProfileModal from '../components/profile/EditProfileModal';
 import { getModuleLevel } from '../utils/moduleLevel';
 import { getTierFromXP } from '../utils/rankSystem';
 
 export default function DashboardPage() {
   const { fetchModules, getMetrics, user, weeklyXp, streak } = useAppStore();
   const [shareModalOpen, setShareModalOpen] = useState(false);
-  const [editProfileOpen, setEditProfileOpen] = useState(false);
   const [modules, setModules] = useState([]);
   const [metrics, setMetrics] = useState({
     learningCount: 0,
@@ -90,7 +88,7 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-8">
-      {/* Title & Greeting with Clickable User Profile */}
+      {/* Title & Greeting */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
@@ -98,24 +96,7 @@ export default function DashboardPage() {
           </h1>
           <div className="text-sm text-slate-600 mt-1 flex items-center gap-2 flex-wrap">
             <span>Selamat datang,</span>
-            <button
-              type="button"
-              onClick={() => setEditProfileOpen(true)}
-              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold border border-indigo-200/80 transition active:scale-95 cursor-pointer text-xs"
-              title="Klik untuk ubah nama atau foto profil"
-            >
-              {user?.avatarUrl ? (
-                <img
-                  src={user.avatarUrl}
-                  alt={user.name || 'User'}
-                  className="w-4 h-4 rounded-full object-cover inline-block"
-                />
-              ) : (
-                <span className="text-xs">👤</span>
-              )}
-              <span>{user?.name || 'Imam'}</span>
-              <Edit3 className="w-2.5 h-2.5 text-indigo-500 opacity-80" />
-            </button>
+            <span className="font-extrabold text-indigo-600">{user?.name || 'Imam'}</span>
             {user?.cefrLevel && (
               <span className="px-2 py-0.5 rounded-full bg-indigo-600 text-white text-[9px] font-extrabold">
                 {user.cefrLevel}
@@ -347,12 +328,6 @@ export default function DashboardPage() {
       <LanguageScannerModal
         isOpen={scannerOpen}
         onClose={() => setScannerOpen(false)}
-      />
-
-      {/* Edit Profile & Avatar Modal */}
-      <EditProfileModal
-        isOpen={editProfileOpen}
-        onClose={() => setEditProfileOpen(false)}
       />
     </div>
   );
