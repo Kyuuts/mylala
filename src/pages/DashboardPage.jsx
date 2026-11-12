@@ -8,6 +8,7 @@ import LevelFilter from '../components/dashboard/LevelFilter';
 import CategoryFilter from '../components/dashboard/CategoryFilter';
 import ModuleCard from '../components/dashboard/ModuleCard';
 import ShareCardModal from '../components/common/ShareCardModal';
+import LanguageScannerModal from '../components/scanner/LanguageScannerModal';
 import { getModuleLevel } from '../utils/moduleLevel';
 import { getTierFromXP } from '../utils/rankSystem';
 
@@ -315,74 +316,11 @@ export default function DashboardPage() {
         onClose={() => setShareModalOpen(false)}
       />
 
-      {/* Language Scanner Diagnostic Modal (Tahap 1 Preview / Foundation) */}
-      {scannerOpen && (
-        <div role="dialog" className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/75 backdrop-blur-md animate-fade-in">
-          <div className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl overflow-hidden p-6 sm:p-7 space-y-5">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-              <div className="flex items-center gap-2.5">
-                <div className="p-2 rounded-xl bg-teal-50 text-teal-600">
-                  <Compass className="w-5 h-5" />
-                </div>
-                <div>
-                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-teal-600">
-                    The Language Scanner • CEFR Diagnostic
-                  </span>
-                  <h3 className="text-base font-extrabold text-slate-900">
-                    Tes Penempatan Level Bahasa
-                  </h3>
-                </div>
-              </div>
-              <button
-                onClick={() => setScannerOpen(false)}
-                className="p-1 rounded-full text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <div className="space-y-3">
-              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                Fitur tes penempatan adaptif 8 soal ini merupakan fokus utama <strong>Tahap 2</strong>.
-                Sistem akan menilai responsmu dari level <strong>A1 (Explorer)</strong> sampai <strong>C1 (Mastermind)</strong> dan otomatis merekomendasikan kurikulum modul serta bacaan yang paling pas untukmu.
-              </p>
-
-              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/90 space-y-2 text-xs">
-                <span className="font-bold text-slate-700">Contoh Level CEFR yang Didukung:</span>
-                <div className="grid grid-cols-2 gap-2 pt-1">
-                  <div className="p-2 rounded-xl bg-white border border-slate-200">
-                    <p className="font-extrabold text-emerald-700">🌱 A1 - Explorer</p>
-                    <p className="text-[11px] text-slate-500">Survival & perkenalan diri</p>
-                  </div>
-                  <div className="p-2 rounded-xl bg-white border border-slate-200">
-                    <p className="font-extrabold text-teal-700">🧭 A2 - Voyager</p>
-                    <p className="text-[11px] text-slate-500">Percakapan rutin harian</p>
-                  </div>
-                  <div className="p-2 rounded-xl bg-white border border-slate-200">
-                    <p className="font-extrabold text-sky-700">🌍 B1 - Global Citizen</p>
-                    <p className="text-[11px] text-slate-500">Opini & percakapan kerja</p>
-                  </div>
-                  <div className="p-2 rounded-xl bg-white border border-slate-200">
-                    <p className="font-extrabold text-indigo-700">💼 B2 - Diplomat</p>
-                    <p className="text-[11px] text-slate-500">Profesional & interview</p>
-                  </div>
-                  <div className="p-2 rounded-xl bg-white border border-slate-200 col-span-2">
-                    <p className="font-extrabold text-purple-700">👑 C1 - Mastermind</p>
-                    <p className="text-[11px] text-slate-500">Advanced, Inversi & TOEFL 600+</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <button
-              onClick={() => setScannerOpen(false)}
-              className="w-full py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs sm:text-sm shadow-xs transition active:scale-95"
-            >
-              Mulai Eksplorasi Modul Sekarang
-            </button>
-          </div>
-        </div>
-      )}
+      {/* The Language Scanner Diagnostic Modal (Adaptive 8-Question Engine) */}
+      <LanguageScannerModal
+        isOpen={scannerOpen}
+        onClose={() => setScannerOpen(false)}
+      />
     </div>
   );
 }

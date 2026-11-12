@@ -95,10 +95,11 @@ Penyelarasan ekosistem kurikulum MyLala ke dalam 3 Pilar Utama:
 - [x] Restrukturisasi Bottom Navigation (Mobile) & Navbar (Desktop): 4 tab konsisten (**Belajar**, **Latihan**, **Bacaan**, **Liga**).
 - [x] Banner kreatif *The Language Scanner (Tes Penempatan Level CEFR)* di dashboard belajar.
 
-### 🟡 TAHAP 2 — Tes Penempatan Level Adaptif & Graded Reader Enhancement [BERIKUTNYA]
-- [ ] Mesin kuis diagnostik adaptif 8 soal (The Language Scanner) untuk auto-deteksi level pengguna (A1 - C1).
-- [ ] Auto-rekomendasi kurikulum & bacaan awal berdasarkan skor scanner.
-- [ ] Pembacaan audio native lengkap per paragraf pada pilar Bacaan.
+### ✅ TAHAP 2 — Tes Penempatan Level Adaptif & Graded Reader Enhancement [SELESAI]
+- [x] Mesin kuis diagnostik adaptif 8 soal (The Language Scanner) untuk auto-deteksi level pengguna (A1 - C1).
+- [x] Auto-rekomendasi kurikulum & bacaan awal berdasarkan skor scanner.
+- [x] Pembacaan audio native lengkap per paragraf pada pilar Bacaan (Audio player bar + speed toggle 0.85x, 1.0x, 1.15x).
+- [x] Lencana CEFR otomatis tersemat di profil pengguna dan navbar setelah tes (+50 bonus XP).
 
 ### 🔵 TAHAP 3 — Implementasi Penuh 6 Mode Arena Latihan
 - [x] Mode 1: Kartu Hafalan (Active Recall SRS SM-2 + Voice Shadowing)

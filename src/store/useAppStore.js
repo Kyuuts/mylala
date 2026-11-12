@@ -371,6 +371,21 @@ export const useAppStore = create(
         set({ syncNotification: null });
       },
 
+      // Action: Set CEFR placement test result
+      setUserCefrLevel: (levelCode) => {
+        const { user } = get();
+        if (user) {
+          const updatedUser = { ...user, cefrLevel: levelCode };
+          set({ user: updatedUser });
+        }
+        get().addXP(50, `Menyelesaikan Language Scanner (${levelCode})`);
+      },
+
+      // Helper alias for case flexibility
+      addXp: (amount, reason = '') => {
+        get().addXP(amount, reason);
+      },
+
       // Action: Fetch and cache modules with seamless mock merging
       fetchModules: async (category = 'All') => {
         const { isOnline, isSupabaseReady } = get();

@@ -123,9 +123,14 @@ export default function Navbar() {
 
           {/* User Profile & Logout */}
           <div className="flex items-center gap-1.5 sm:gap-2 pl-2 border-l border-slate-200">
-            <span className="inline-flex items-center gap-1 text-xs font-bold text-slate-700 bg-slate-100 px-2.5 py-1 rounded-full">
+            <span className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-700 bg-slate-100 px-2.5 py-1 rounded-full">
               <User className="w-3 h-3 text-indigo-600" />
               <span className="max-w-[80px] sm:max-w-none truncate">{user?.name || 'Imam'}</span>
+              {user?.cefrLevel && (
+                <span className="px-1.5 py-0.2 rounded-full bg-indigo-600 text-white text-[9px] font-extrabold">
+                  {user.cefrLevel}
+                </span>
+              )}
             </span>
 
             <button
