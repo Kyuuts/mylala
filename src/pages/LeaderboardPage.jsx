@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Trophy, Flame, Sparkles, Clock, ArrowUpCircle, ShieldAlert, BookOpen, Layers, Award, Radio } from 'lucide-react';
+import { Trophy, Flame, Sparkles, Clock, ArrowUpCircle, ShieldAlert, BookOpen, Layers, Award, Radio, Share2 } from 'lucide-react';
 import { useAppStore } from '../store/useAppStore';
 import { supabase, isSupabaseConfigured } from '../services/supabase';
 import { getTierFromXP, getTimeUntilWeeklyReset, TIERS } from '../utils/rankSystem';
+import ShareCardModal from '../components/common/ShareCardModal';
 
 export default function LeaderboardPage() {
   const { weeklyXp, fetchLeaderboard, streak, user, isSupabaseReady } = useAppStore();
   const [leaderboard, setLeaderboard] = useState([]);
   const [countdown, setCountdown] = useState(getTimeUntilWeeklyReset());
   const [loading, setLoading] = useState(true);
+  const [shareModalOpen, setShareModalOpen] = useState(false);
 
   const currentTier = getTierFromXP(weeklyXp || 0);
 
@@ -97,23 +99,33 @@ export default function LeaderboardPage() {
           </div>
 
           {/* User Quick Stats in Banner */}
-          <div className="w-full sm:w-auto bg-black/25 backdrop-blur-md rounded-2xl p-4 sm:p-5 border border-white/15 flex items-center justify-around sm:justify-start gap-4 sm:gap-6">
-            <div className="text-center">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-white/70">Peringkat</span>
-              <p className="text-2xl sm:text-3xl font-extrabold text-amber-300">#{userEntry.rank}</p>
+          <div className="w-full sm:w-auto bg-black/25 backdrop-blur-md rounded-2xl p-4 sm:p-5 border border-white/15 flex flex-col sm:flex-row items-center gap-4">
+            <div className="flex items-center justify-around w-full sm:w-auto gap-4 sm:gap-6">
+              <div className="text-center">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-white/70">Peringkat</span>
+                <p className="text-2xl sm:text-3xl font-extrabold text-amber-300">#{userEntry.rank}</p>
+              </div>
+              <div className="w-px h-10 bg-white/20" />
+              <div className="text-center">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-white/70">XP Mingguan</span>
+                <p className="text-2xl sm:text-3xl font-extrabold text-white">{weeklyXp || 0}</p>
+              </div>
+              <div className="w-px h-10 bg-white/20" />
+              <div className="text-center">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-white/70">Streak</span>
+                <p className="text-2xl sm:text-3xl font-extrabold text-orange-400 flex items-center justify-center gap-1">
+                  <Flame className="w-5 h-5 fill-current" /> {streak || 1}
+                </p>
+              </div>
             </div>
-            <div className="w-px h-10 bg-white/20" />
-            <div className="text-center">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-white/70">XP Mingguan</span>
-              <p className="text-2xl sm:text-3xl font-extrabold text-white">{weeklyXp || 0}</p>
-            </div>
-            <div className="w-px h-10 bg-white/20" />
-            <div className="text-center">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-white/70">Streak</span>
-              <p className="text-2xl sm:text-3xl font-extrabold text-orange-400 flex items-center justify-center gap-1">
-                <Flame className="w-5 h-5 fill-current" /> {streak || 1}
-              </p>
-            </div>
+
+            <button
+              onClick={() => setShareModalOpen(true)}
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-white/20 hover:bg-white/30 text-white text-xs font-bold transition active:scale-95 cursor-pointer shadow-2xs"
+            >
+              <Share2 className="w-3.5 h-3.5 text-amber-300" />
+              <span>Bagikan</span>
+            </button>
           </div>
         </div>
 
@@ -155,13 +167,23 @@ export default function LeaderboardPage() {
             </p>
           </div>
 
-          <Link
-            to="/flashcards/all"
-            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-bold transition shadow-xs self-start sm:self-auto"
-          >
-            <Layers className="w-4 h-4" />
-            <span>Latihan Tambah XP</span>
-          </Link>
+          <div className="flex items-center gap-2 self-start sm:self-auto shrink-0">
+            <button
+              onClick={() => setShareModalOpen(true)}
+              className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-700 border border-amber-300 font-bold text-xs sm:text-sm transition active:scale-95 cursor-pointer shadow-2xs"
+            >
+              <Share2 className="w-4 h-4 text-amber-600" />
+              <span>Bagikan Peringkat</span>
+            </button>
+
+            <Link
+              to="/flashcards/all"
+              className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-bold transition shadow-xs"
+            >
+              <Layers className="w-4 h-4" />
+              <span>Latihan Tambah XP</span>
+            </Link>
+          </div>
         </div>
 
         <div className="divide-y divide-slate-100">
@@ -289,6 +311,18 @@ export default function LeaderboardPage() {
           </div>
         </div>
       </div>
+
+      {/* Social Viral Share Card Modal */}
+      <ShareCardModal
+        isOpen={shareModalOpen}
+        onClose={() => setShareModalOpen(false)}
+        customStats={{
+          rank: userEntry.rank,
+          weeklyXp: weeklyXp || 0,
+          streak: streak || 1,
+          tierName: currentTier.name,
+        }}
+      />
     </div>
   );
 }

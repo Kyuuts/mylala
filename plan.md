@@ -31,10 +31,12 @@ Dua fix kritis yang disyaratkan dalam laporan sebelum rilis publik:
   - Sinkronisasi otomatis XP mingguan saat latihan kartu dan membaca modul.
   - Listener realtime Supabase WebSocket (`realtime_leaderboard_changes`).
 
-- [ ] **5. Viral Share Card Generator**
-  - Pembuat kartu grafis pencapaian belajar estetik (format 9:16 untuk Instagram Story & 1:1 untuk WhatsApp Status).
-  - Menampilkan nama pengguna, XP mingguan, streak hari berturut-turut, liga saat ini, dan kartu yang dikuasai.
-  - Tombol 1-klik unduh gambar (*html2canvas / canvas API*) dan *Web Share API*.
+- [x] **5. Viral Share Card Generator**
+  - Pembuat kartu grafis pencapaian belajar estetik (format 9:16 untuk Instagram Story & 1:1 untuk WhatsApp Status / LinkedIn).
+  - Menggunakan native HTML5 Canvas API ultra-HD (1080x1920 & 1080x1080) dengan gradien dinamis sesuai Liga (Bronze, Silver, Gold, Platinum, Diamond).
+  - Menampilkan nama pengguna, XP mingguan, streak hari berturut-turut, peringkat liga, dan kartu yang dikuasai.
+  - Tombol 1-klik unduh gambar PNG resolusi tinggi, Web Share API langsung ke media sosial, dan salin teks status.
+  - Terintegrasi di Dashboard, Leaderboard, dan dialog akhir sesi Flashcard (`SessionSummary`).
 
 - [ ] **6. Campus Launch (Grassroots UMY)**
   - Peluncuran beta ke grup WhatsApp mahasiswa Universitas Muhammadiyah Yogyakarta (UMY).
@@ -66,7 +68,7 @@ Dua fix kritis yang disyaratkan dalam laporan sebelum rilis publik:
 ### 🟡 FASE 3 — Advanced Learning: Peningkatan Fitur Pembelajaran
 - [ ] Mode *"Rapid Error Hunter"* (Timer 5 detik per soal untuk latihan kilat TOEFL Structure)
 - [ ] Speech Recognition / Voice Shadowing (Pengecekan pelafalan dengan Web Speech API gratis)
-- [ ] Export grafis estetik untuk Instagram/WhatsApp (Viral Share Loop)
+- [x] Export grafis estetik untuk Instagram/WhatsApp (Viral Share Loop terintegrasi)
 - [ ] Push notification reminder belajar harian (Notifikasi browser/PWA)
 
 ---

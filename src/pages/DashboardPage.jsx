@@ -1,17 +1,19 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { PlayCircle, Sparkles, RefreshCw, AlertCircle, PlusCircle, Filter, Trophy, Flame } from 'lucide-react';
+import { PlayCircle, Sparkles, RefreshCw, AlertCircle, PlusCircle, Filter, Trophy, Flame, Share2 } from 'lucide-react';
 import { useAppStore } from '../store/useAppStore';
 import MetricsOverview from '../components/dashboard/MetricsOverview';
 import LanguageSelector from '../components/dashboard/LanguageSelector';
 import LevelFilter from '../components/dashboard/LevelFilter';
 import CategoryFilter from '../components/dashboard/CategoryFilter';
 import ModuleCard from '../components/dashboard/ModuleCard';
+import ShareCardModal from '../components/common/ShareCardModal';
 import { getModuleLevel } from '../utils/moduleLevel';
 import { getTierFromXP } from '../utils/rankSystem';
 
 export default function DashboardPage() {
   const { fetchModules, getMetrics, user, weeklyXp, streak } = useAppStore();
+  const [shareModalOpen, setShareModalOpen] = useState(false);
   const [modules, setModules] = useState([]);
   const [metrics, setMetrics] = useState({
     learningCount: 0,
@@ -115,13 +117,24 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            <Link
-              to="/leaderboard"
-              className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold border border-white/20 transition active:scale-95 self-start sm:self-auto shrink-0"
-            >
-              <Trophy className="w-4 h-4 text-amber-400" />
-              <span>Lihat Klasemen Liga</span>
-            </Link>
+            <div className="flex items-center gap-2 self-start sm:self-auto shrink-0">
+              <button
+                onClick={() => setShareModalOpen(true)}
+                className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 text-xs font-bold border border-amber-400/30 transition active:scale-95 cursor-pointer shadow-xs"
+                title="Bagikan Pencapaian Belajar"
+              >
+                <Share2 className="w-3.5 h-3.5 text-amber-300" />
+                <span>Bagikan</span>
+              </button>
+
+              <Link
+                to="/leaderboard"
+                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold border border-white/20 transition active:scale-95 shrink-0"
+              >
+                <Trophy className="w-4 h-4 text-amber-400" />
+                <span>Lihat Klasemen</span>
+              </Link>
+            </div>
           </div>
         );
       })()}
@@ -256,6 +269,12 @@ export default function DashboardPage() {
           </div>
         )}
       </div>
+
+      {/* Social Viral Share Card Modal */}
+      <ShareCardModal
+        isOpen={shareModalOpen}
+        onClose={() => setShareModalOpen(false)}
+      />
     </div>
   );
 }
