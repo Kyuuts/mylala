@@ -262,8 +262,9 @@ export const useAppStore = create(
                 syncNotification: `Selamat datang kembali, ${userName}!`,
               });
 
-              // Pull user's latest cloud progress & stats
-              get().fetchUserProgressFromSupabase(supUserId);
+              // Pull user's latest cloud progress & stats from Supabase server
+              await get().fetchUserProgressFromSupabase(supUserId);
+              await get().fetchUserStatsFromSupabase(supUserId, userUsername);
               get().syncWeeklyStatsToSupabase();
 
               return { success: true };
@@ -317,7 +318,8 @@ export const useAppStore = create(
             });
 
             if (isOnline && isSupabaseReady) {
-              get().fetchUserProgressFromSupabase(existing.id);
+              await get().fetchUserProgressFromSupabase(existing.id);
+              await get().fetchUserStatsFromSupabase(existing.id, existing.username);
             }
 
             return { success: true };
@@ -576,6 +578,60 @@ export const useAppStore = create(
         }
       },
 
+      // Action: Fetch user weekly stats & XP directly from Supabase server
+      fetchUserStatsFromSupabase: async (targetUserId, targetUsername) => {
+        const { isOnline, isSupabaseReady } = get();
+        if (!isOnline || !isSupabaseReady || (!targetUserId && !targetUsername)) return;
+
+        const currentWeek = getCurrentWeekId();
+        try {
+          let query = supabase
+            .from('user_weekly_stats')
+            .select('*')
+            .eq('year_week', currentWeek);
+
+          if (targetUserId) {
+            query = query.eq('user_id', targetUserId);
+          } else if (targetUsername) {
+            query = query.eq('username', targetUsername.toLowerCase());
+          }
+
+          let { data, error } = await query.maybeSingle();
+
+          // Fallback search by username if ID didn't match
+          if (!data && targetUsername) {
+            const { data: byUser } = await supabase
+              .from('user_weekly_stats')
+              .select('*')
+              .eq('year_week', currentWeek)
+              .eq('username', targetUsername.toLowerCase())
+              .maybeSingle();
+            data = byUser;
+          }
+
+          if (data) {
+            const remoteXp = data.weekly_xp || 0;
+            const remoteStreak = data.streak || 1;
+            const remoteAvatar = data.avatar_url || null;
+
+            set((state) => ({
+              weeklyXp: Math.max(state.weeklyXp || 0, remoteXp),
+              xp: Math.max(state.xp || 0, remoteXp),
+              streak: Math.max(state.streak || 1, remoteStreak),
+              user: state.user
+                ? {
+                    ...state.user,
+                    name: data.name || state.user.name,
+                    avatarUrl: remoteAvatar || state.user.avatarUrl || null,
+                  }
+                : state.user,
+            }));
+          }
+        } catch (err) {
+          console.warn('Could not fetch user stats from Supabase:', err.message);
+        }
+      },
+
       // Action: Fetch flashcards and enrich with user progress
       fetchFlashcards: async (moduleId = 'all') => {
         const { isOnline, isSupabaseReady, userId } = get();
@@ -758,7 +814,11 @@ export const useAppStore = create(
         let combined = [];
 
         if (remoteData.length > 0) {
-          const userIdx = remoteData.findIndex((u) => u.user_id === userId);
+          const userIdx = remoteData.findIndex(
+            (u) =>
+              u.user_id === userId ||
+              (user?.username && u.username?.toLowerCase() === user.username.toLowerCase())
+          );
           if (userIdx >= 0) {
             remoteData[userIdx] = {
               ...remoteData[userIdx],
@@ -783,7 +843,11 @@ export const useAppStore = create(
 
         return combined.map((item, index) => {
           const xpValue = item.weeklyXp !== undefined ? item.weeklyXp : (item.weekly_xp || 0);
-          const isUser = Boolean(item.isCurrentUser || item.user_id === userId);
+          const isUser = Boolean(
+            item.isCurrentUser ||
+            item.user_id === userId ||
+            (user?.username && item.username?.toLowerCase() === user.username.toLowerCase())
+          );
           const avatarUrl = isUser ? (user?.avatarUrl || null) : (item.avatar_url || item.avatarUrl || null);
           return {
             id: item.id || item.user_id,

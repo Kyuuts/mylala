@@ -8,6 +8,17 @@ import { useAppStore } from '../store/useAppStore';
 
 export default function RootLayout() {
   const setOnline = useAppStore((state) => state.setOnline);
+  const user = useAppStore((state) => state.user);
+  const fetchUserStatsFromSupabase = useAppStore((state) => state.fetchUserStatsFromSupabase);
+  const fetchUserProgressFromSupabase = useAppStore((state) => state.fetchUserProgressFromSupabase);
+
+  // Sync cloud stats and progress from Supabase on mount
+  useEffect(() => {
+    if (user) {
+      if (fetchUserStatsFromSupabase) fetchUserStatsFromSupabase(user.id, user.username);
+      if (fetchUserProgressFromSupabase) fetchUserProgressFromSupabase(user.id);
+    }
+  }, [user?.id, user?.username]);
 
   useEffect(() => {
     const handleOnline = () => setOnline(true);
