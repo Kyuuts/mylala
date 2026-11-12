@@ -2,6 +2,22 @@ import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
+// Clean and prettify any unrendered LaTeX math notation (e.g. $$\mathbf{Subject} + \mathbf{Verb}$$)
+const formatFormulas = (text) => {
+  if (!text) return '';
+  return text
+    .replace(/\$\$\\mathbf{([^}]+)}\s*\+\s*\\mathbf{([^}]+)}\$\$/g, '> 📐 **Rumus Wajib:** **$1 + $2**')
+    .replace(/\$\$(.+?)\$\$/gs, (_, formula) => {
+      const clean = formula
+        .replace(/\\mathbf{([^}]*)}/g, '$1')
+        .replace(/\\text{([^}]*)}/g, '$1')
+        .replace(/\\ /g, ' ')
+        .replace(/\\/g, '')
+        .trim();
+      return `\n\n> 📐 **Rumus:** **${clean}**\n\n`;
+    });
+};
+
 export default function MarkdownViewer({ content }) {
   if (!content) {
     return (
@@ -10,6 +26,8 @@ export default function MarkdownViewer({ content }) {
       </div>
     );
   }
+
+  const processedContent = formatFormulas(content);
 
   return (
     <div className="prose prose-slate max-w-none space-y-4 text-slate-800 text-sm sm:text-base leading-relaxed">
@@ -66,7 +84,7 @@ export default function MarkdownViewer({ content }) {
           strong: ({ children }) => <strong className="font-bold text-slate-900">{children}</strong>,
         }}
       >
-        {content}
+        {processedContent}
       </ReactMarkdown>
     </div>
   );

@@ -15,7 +15,9 @@ export const MOCK_MODULES = [
 
 ## 1. Aturan Emas Kalimat Bahasa Inggris
 Setiap kalimat bahasa Inggris yang utuh **WAJIB** memiliki minimal:
-$$\\mathbf{Subject} + \\mathbf{Verb}$$
+
+> 📐 **Rumus Wajib:**  
+> **Subject** + **Verb**
 
 Jika salah satu hilang, kalimat tersebut salah (*incomplete sentence*). Di tes TOEFL maupun komunikasi sehari-hari, kesalahan terbesar pemula adalah tertipu oleh kata-kata panjang yang menyamar seolah-olah subjek.
 
@@ -84,7 +86,9 @@ Dalam 90% percakapan nyata dan tes TOEFL, Anda hanya perlu menguasai perbedaan e
 Kebanyakan orang cuma bisa mengucapkan: *"My name is... I am 21 years old... I live in..."* lalu suasana menjadi canggung (*awkward silence*).
 
 Untuk terlihat natural dan percaya diri, gunakan formula **Hook 3 Langkah**:
-$$\\mathbf{Nama} + \\mathbf{Aktivitas/Ketertarikan\\ Terkini} + \\mathbf{Pertanyaan\\ Balik}$$
+
+> 💡 **Formula Hook 3 Langkah:**  
+> **[Nama Lengkap]** + **[Aktivitas / Minat Terkini]** + **[Pertanyaan Balik]**
 
 ---
 
@@ -208,7 +212,8 @@ Dalam bahasa Inggris formal, klausa yang diawali kata kerja berunsur **perintah,
 
 ## 3. Rumus & Contoh Kalimat
 
-$$\\text{Subject} + \\text{Verb Mandatif} + \\text{that} + \\text{Subject} + \\mathbf{V1\\text{ (Bare Infinitive)}}$$
+> 📐 **Rumus Mandative Subjunctive:**  
+> **Subject** + **Verb Mandatif** + **that** + **Subject** + **V1 (Bare Infinitive / Bentuk Asli)**
 
 * *Contoh 1 (Bukan "is/was"):*  
   "The professor insisted that the student **be** on time for the exam."
