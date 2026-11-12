@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { X, Camera, Upload, Check, User, AtSign, Sparkles, AlertCircle, RefreshCw } from 'lucide-react';
+import { X, Camera, Check, User, AtSign, AlertCircle, RefreshCw, Upload, RotateCcw } from 'lucide-react';
 import { useAppStore } from '../../store/useAppStore';
 import { PRESET_AVATARS, compressImageFile } from '../../utils/avatars';
 
@@ -59,7 +59,6 @@ export default function EditProfileModal({ isOpen, onClose }) {
       setError(err.message || 'Gagal memproses gambar. Gunakan file JPG, PNG, atau WebP.');
     } finally {
       setIsUploading(false);
-      // Reset input value so user can re-upload same file if desired
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
       }
@@ -76,11 +75,11 @@ export default function EditProfileModal({ isOpen, onClose }) {
     const cleanUser = (username || '').trim().toLowerCase().replace(/[^a-z0-9_]/g, '');
 
     if (!cleanName || cleanName.length < 2) {
-      setError('Silakan masukkan nama minimal 2 karakter.');
+      setError('Nama minimal 2 karakter.');
       return;
     }
     if (!cleanUser || cleanUser.length < 3) {
-      setError('Username minimal 3 karakter (hanya huruf, angka, dan garis bawah tanpa spasi).');
+      setError('Username minimal 3 karakter (huruf, angka, tanpa spasi).');
       return;
     }
 
@@ -98,11 +97,11 @@ export default function EditProfileModal({ isOpen, onClose }) {
         return;
       }
 
-      setSuccessMsg('Profil dan foto berhasil diperbarui!');
+      setSuccessMsg('Profil berhasil diperbarui!');
       setTimeout(() => {
         setIsSaving(false);
         onClose();
-      }, 700);
+      }, 500);
     } catch (err) {
       console.error('Update profile error:', err);
       setError('Terjadi kendala saat menyimpan. Coba lagi.');
@@ -111,71 +110,78 @@ export default function EditProfileModal({ isOpen, onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm overflow-y-auto animate-in fade-in duration-200">
-      <div className="bg-white rounded-3xl max-w-lg w-full shadow-2xl border border-slate-200 overflow-hidden my-8">
-        {/* Header */}
-        <div className="p-5 sm:p-6 bg-gradient-to-r from-indigo-900 via-indigo-800 to-slate-900 text-white relative">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-150">
+      <div className="bg-white rounded-t-3xl sm:rounded-3xl max-w-md w-full shadow-2xl border border-slate-200/90 overflow-hidden flex flex-col max-h-[92vh] sm:max-h-[88vh] animate-in slide-in-from-bottom-4 sm:zoom-in-95 duration-200">
+        
+        {/* Minimalist Top Bar */}
+        <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between shrink-0 bg-white">
+          <div>
+            <h2 className="text-base sm:text-lg font-extrabold text-slate-900">Edit Profil</h2>
+            <p className="text-xs text-slate-500">Ubah username dan foto profil Anda</p>
+          </div>
           <button
+            type="button"
             onClick={onClose}
             disabled={isSaving}
-            className="absolute top-4 right-4 p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition cursor-pointer"
+            className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center transition cursor-pointer"
             aria-label="Tutup"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
           </button>
-          <div className="flex items-center gap-2 text-indigo-300 text-xs font-bold uppercase tracking-wider mb-1">
-            <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-            <span>Kustomisasi Akun</span>
-          </div>
-          <h2 className="text-xl sm:text-2xl font-extrabold tracking-tight">Edit Profil & Avatar</h2>
-          <p className="text-xs text-indigo-100/80 mt-1">
-            Sesuaikan username dan foto profil Anda untuk ditampilkan di Klasemen Liga MyLala.
-          </p>
         </div>
 
-        {/* Body Form */}
-        <form onSubmit={handleSave} className="p-5 sm:p-6 space-y-6">
+        {/* Scrollable Form Body */}
+        <form onSubmit={handleSave} className="flex-1 overflow-y-auto px-5 py-4 space-y-5">
           {error && (
-            <div className="p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2.5 animate-in fade-in">
+            <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2">
               <AlertCircle className="w-4 h-4 shrink-0 text-rose-500" />
               <span>{error}</span>
             </div>
           )}
 
           {successMsg && (
-            <div className="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold flex items-center gap-2.5 animate-in fade-in">
+            <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold flex items-center gap-2">
               <Check className="w-4 h-4 shrink-0 text-emerald-600" />
               <span>{successMsg}</span>
             </div>
           )}
 
-          {/* 1. HERO AVATAR PREVIEW & UPLOAD TRIGGER */}
-          <div className="flex flex-col items-center justify-center pt-2">
-            <div className="relative group">
-              <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full overflow-hidden border-4 border-indigo-600 shadow-lg bg-slate-100 flex items-center justify-center transition group-hover:scale-105">
+          {/* 1. COMPACT AVATAR PREVIEW + CAMERA BUTTON */}
+          <div className="flex flex-col items-center justify-center pt-1">
+            <div className="relative">
+              <div 
+                onClick={() => fileInputRef.current?.click()}
+                className="w-20 h-20 rounded-full overflow-hidden border-2 border-indigo-600 shadow-sm bg-slate-100 flex items-center justify-center cursor-pointer hover:opacity-90 transition group"
+                title="Klik untuk upload foto"
+              >
                 {selectedAvatarUrl ? (
                   <img
                     src={selectedAvatarUrl}
-                    alt="Preview Avatar"
+                    alt="Preview"
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <User className="w-12 h-12 text-slate-400" />
+                  <User className="w-10 h-10 text-slate-400" />
                 )}
+
+                {/* Hover overlay hint */}
+                <div className="absolute inset-0 bg-black/30 rounded-full opacity-0 group-hover:opacity-100 flex items-center justify-center transition">
+                  <Camera className="w-5 h-5 text-white" />
+                </div>
               </div>
 
-              {/* Camera Upload Badge */}
+              {/* Badge Button */}
               <button
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
                 disabled={isUploading}
                 title="Pilih foto dari perangkat"
-                className="absolute bottom-0 right-0 p-2.5 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white shadow-md border-2 border-white transition active:scale-95 cursor-pointer"
+                className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm border-2 border-white flex items-center justify-center transition cursor-pointer"
               >
                 {isUploading ? (
-                  <RefreshCw className="w-4 h-4 animate-spin" />
+                  <RefreshCw className="w-3.5 h-3.5 animate-spin" />
                 ) : (
-                  <Camera className="w-4 h-4" />
+                  <Camera className="w-3.5 h-3.5" />
                 )}
               </button>
             </div>
@@ -188,52 +194,41 @@ export default function EditProfileModal({ isOpen, onClose }) {
               onChange={handleFileChange}
             />
 
-            <div className="text-center mt-3">
-              <p className="text-sm font-bold text-slate-800">{name || 'Nama Kamu'}</p>
-              <p className="text-xs text-indigo-600 font-semibold">@{username || 'username'}</p>
-            </div>
-          </div>
+            {/* Upload / Reset Quick Actions */}
+            <div className="flex items-center gap-3 mt-2 text-xs">
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={isUploading}
+                className="inline-flex items-center gap-1 font-bold text-indigo-600 hover:text-indigo-800 transition cursor-pointer"
+              >
+                <Upload className="w-3.5 h-3.5" />
+                <span>{isUploading ? 'Mengompres...' : 'Upload Foto'}</span>
+              </button>
 
-          {/* 2. OPTION: UPLOAD USER PHOTO BUTTON */}
-          <div className="bg-slate-50 border border-slate-200 rounded-2xl p-3.5 flex items-center justify-between gap-3">
-            <div className="flex items-center gap-2.5 min-w-0">
-              <div className="w-9 h-9 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center shrink-0">
-                <Upload className="w-4 h-4" />
-              </div>
-              <div className="min-w-0">
-                <p className="text-xs font-bold text-slate-800 truncate">Upload Foto Sendiri</p>
-                <p className="text-[11px] text-slate-500">Gunakan foto profil dari galeri HP/laptop</p>
-              </div>
-            </div>
-
-            <button
-              type="button"
-              onClick={() => fileInputRef.current?.click()}
-              disabled={isUploading}
-              className="px-3 py-1.5 rounded-xl bg-white hover:bg-slate-100 border border-slate-200 text-indigo-600 font-bold text-xs shadow-2xs transition active:scale-95 shrink-0 cursor-pointer"
-            >
-              {isUploading ? 'Mengompres...' : 'Pilih File'}
-            </button>
-          </div>
-
-          {/* 3. OPTION: 5 PRESET CHARACTER AVATARS */}
-          <div className="space-y-2.5">
-            <div className="flex items-center justify-between">
-              <label className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
-                <span>Atau Pilih 5 Karakter Avatar:</span>
-              </label>
               {selectedAvatarUrl && (
-                <button
-                  type="button"
-                  onClick={() => setSelectedAvatarUrl('')}
-                  className="text-[11px] text-slate-400 hover:text-rose-600 font-medium transition"
-                >
-                  Reset Default
-                </button>
+                <>
+                  <span className="text-slate-300">•</span>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedAvatarUrl('')}
+                    className="inline-flex items-center gap-1 text-slate-500 hover:text-rose-600 transition cursor-pointer"
+                  >
+                    <RotateCcw className="w-3 h-3" />
+                    <span>Reset</span>
+                  </button>
+                </>
               )}
             </div>
+          </div>
 
-            <div className="grid grid-cols-5 gap-2 sm:gap-3">
+          {/* 2. FIVE PRESET AVATARS (MINIMALIST CIRCLE ROW) */}
+          <div className="space-y-2">
+            <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider text-center">
+              Pilihan Avatar Karakter
+            </label>
+
+            <div className="flex items-center justify-center gap-3">
               {PRESET_AVATARS.map((avatar) => {
                 const isSelected = selectedAvatarUrl === avatar.svgDataUri;
                 return (
@@ -241,27 +236,21 @@ export default function EditProfileModal({ isOpen, onClose }) {
                     key={avatar.id}
                     type="button"
                     onClick={() => setSelectedAvatarUrl(avatar.svgDataUri)}
-                    className={`relative flex flex-col items-center p-2 rounded-2xl border-2 transition active:scale-95 cursor-pointer ${
+                    title={avatar.name}
+                    className={`relative w-12 h-12 rounded-full overflow-hidden transition active:scale-95 cursor-pointer shrink-0 border-2 ${
                       isSelected
-                        ? 'border-indigo-600 bg-indigo-50/80 shadow-xs ring-2 ring-indigo-200'
-                        : 'border-slate-200 bg-white hover:bg-slate-50 hover:border-slate-300'
+                        ? 'border-indigo-600 ring-2 ring-indigo-500 ring-offset-2 scale-105'
+                        : 'border-slate-200 hover:border-slate-400 bg-slate-50'
                     }`}
                   >
-                    <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full overflow-hidden border border-slate-200/80 mb-1">
-                      <img
-                        src={avatar.svgDataUri}
-                        alt={avatar.name}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    <span className="text-[10px] font-bold text-slate-700 truncate w-full text-center leading-tight">
-                      {avatar.name.split(' ')[0]}
-                    </span>
-                    <span className="text-[9px] text-slate-400">{avatar.emoji}</span>
-
+                    <img
+                      src={avatar.svgDataUri}
+                      alt={avatar.name}
+                      className="w-full h-full object-cover"
+                    />
                     {isSelected && (
-                      <div className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-indigo-600 text-white flex items-center justify-center shadow-xs">
-                        <Check className="w-2.5 h-2.5 stroke-[3]" />
+                      <div className="absolute inset-0 bg-indigo-900/20 flex items-center justify-center">
+                        <Check className="w-4 h-4 text-white stroke-[3]" />
                       </div>
                     )}
                   </button>
@@ -270,14 +259,14 @@ export default function EditProfileModal({ isOpen, onClose }) {
             </div>
           </div>
 
-          {/* 4. NAME & USERNAME FIELDS */}
-          <div className="space-y-4 pt-1">
+          {/* 3. NAME & USERNAME FIELDS */}
+          <div className="space-y-3.5 pt-1">
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                Nama Lengkap / Panggilan
+              <label className="block text-xs font-bold text-slate-700 mb-1">
+                Nama Lengkap
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
                   <User className="w-4 h-4" />
                 </div>
                 <input
@@ -285,18 +274,18 @@ export default function EditProfileModal({ isOpen, onClose }) {
                   required
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder="Contoh: Imam Syafei"
-                  className="w-full pl-10 pr-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-slate-50/50"
+                  placeholder="Nama tampilan kamu"
+                  className="w-full pl-9 pr-3 py-2 text-sm rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-slate-50/60 text-slate-900"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                Username Akun (Unik di Klasemen)
+              <label className="block text-xs font-bold text-slate-700 mb-1">
+                Username
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
                   <AtSign className="w-4 h-4" />
                 </div>
                 <input
@@ -304,45 +293,47 @@ export default function EditProfileModal({ isOpen, onClose }) {
                   required
                   value={username}
                   onChange={(e) => setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ''))}
-                  placeholder="imam_syafei"
-                  className="w-full pl-10 pr-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-slate-50/50"
+                  placeholder="username_kamu"
+                  className="w-full pl-9 pr-3 py-2 text-sm rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-slate-50/60 text-slate-900"
                 />
               </div>
               <p className="text-[11px] text-slate-400 mt-1">
-                Gunakan huruf kecil, angka, atau underscore. Ditampilkan di kartu dan klasemen rank.
+                Gunakan huruf kecil, angka, atau underscore (_)
               </p>
             </div>
           </div>
-
-          {/* Actions */}
-          <div className="pt-2 flex items-center justify-end gap-3 border-t border-slate-100">
-            <button
-              type="button"
-              onClick={onClose}
-              disabled={isSaving}
-              className="px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold text-slate-600 hover:bg-slate-100 transition cursor-pointer"
-            >
-              Batal
-            </button>
-            <button
-              type="submit"
-              disabled={isSaving || isUploading}
-              className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-bold text-xs sm:text-sm transition shadow-md flex items-center gap-2 cursor-pointer disabled:opacity-50"
-            >
-              {isSaving ? (
-                <>
-                  <RefreshCw className="w-4 h-4 animate-spin" />
-                  <span>Menyimpan...</span>
-                </>
-              ) : (
-                <>
-                  <Check className="w-4 h-4 stroke-[2.5]" />
-                  <span>Simpan Perubahan</span>
-                </>
-              )}
-            </button>
-          </div>
         </form>
+
+        {/* Minimalist Bottom Actions (Sticky) */}
+        <div className="px-5 py-3.5 bg-slate-50 border-t border-slate-100 flex items-center justify-end gap-2.5 shrink-0">
+          <button
+            type="button"
+            onClick={onClose}
+            disabled={isSaving}
+            className="px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold text-slate-600 hover:bg-slate-200 transition cursor-pointer"
+          >
+            Batal
+          </button>
+          <button
+            type="button"
+            onClick={handleSave}
+            disabled={isSaving || isUploading}
+            className="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-bold text-xs sm:text-sm transition shadow-sm flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+          >
+            {isSaving ? (
+              <>
+                <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                <span>Menyimpan...</span>
+              </>
+            ) : (
+              <>
+                <Check className="w-3.5 h-3.5 stroke-[2.5]" />
+                <span>Simpan</span>
+              </>
+            )}
+          </button>
+        </div>
+
       </div>
     </div>
   );
