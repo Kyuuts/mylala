@@ -40,7 +40,17 @@ export const useAppStore = create(
       user: null, // { id, username, email, name, role }
       userId: generateUUID(),
       hasAcceptedTerms: false,
-      setHasAcceptedTerms: (value = true) => set({ hasAcceptedTerms: Boolean(value) }),
+      acceptedTermsByUser: {}, // { [username]: true }
+      setHasAcceptedTerms: (value = true) => {
+        const { user } = get();
+        const uname = user?.username?.toLowerCase();
+        set((state) => ({
+          hasAcceptedTerms: Boolean(value),
+          acceptedTermsByUser: uname
+            ? { ...state.acceptedTermsByUser, [uname]: Boolean(value) }
+            : state.acceptedTermsByUser,
+        }));
+      },
 
       // Gamification & Ranked State
       streak: 1,
@@ -170,6 +180,7 @@ export const useAppStore = create(
             [cleanUser]: newAccount,
           },
           isAuthenticated: true,
+          hasAcceptedTerms: false,
           user: {
             id: assignedUserId,
             username: cleanUser,
@@ -248,9 +259,11 @@ export const useAppStore = create(
               }
 
               const userSavedProg = updatedProgressByUserId[supUserId] || {};
+              const acceptedForUser = Boolean(state.acceptedTermsByUser?.[userUsername.toLowerCase()]);
 
               set({
                 isAuthenticated: true,
+                hasAcceptedTerms: acceptedForUser,
                 user: {
                   id: supUserId,
                   username: userUsername,
@@ -303,9 +316,11 @@ export const useAppStore = create(
             }
 
             const userSavedProg = updatedProgressByUserId[existing.id] || {};
+            const acceptedForUser = Boolean(state.acceptedTermsByUser?.[existing.username?.toLowerCase()]);
 
             set({
               isAuthenticated: true,
+              hasAcceptedTerms: acceptedForUser,
               user: {
                 id: existing.id,
                 username: existing.username,
@@ -1090,6 +1105,7 @@ export const useAppStore = create(
       partialize: (state) => ({
         isAuthenticated: state.isAuthenticated,
         hasAcceptedTerms: state.hasAcceptedTerms,
+        acceptedTermsByUser: state.acceptedTermsByUser,
         user: state.user,
         userId: state.userId,
         // Secure accounts storing ONLY salt + passwordHash - NEVER plaintext passwords
