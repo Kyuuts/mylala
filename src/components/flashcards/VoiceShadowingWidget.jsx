@@ -308,3 +308,4 @@ export default function VoiceShadowingWidget({ targetSentence, cardId, isFlipped
     </div>
   );
 }
+

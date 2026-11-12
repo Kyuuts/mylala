@@ -21,6 +21,75 @@ export const getSpeechRecognitionInstance = () => {
 };
 
 /**
+ * Detects if a text string contains Indonesian explanatory keywords
+ * rather than pure English to be spoken or shadowed.
+ */
+export const isIndonesianText = (text = '') => {
+  if (!text) return false;
+  const indoPattern = /\b(kunci|tips|arti|adalah|bukan|tidak|ungkapan|perbaikan|kalimat|kata|frasa|subjek|keterangan|sangat|dipakai|untuk|yang|dan|dalam|menandakan|pengganti|kewalahan|menghadapi|memperkuat|menggambarkan|memadukan|menyatakan|menyudahi|contoh|penjelasan|perhatikan)\b/i;
+  return indoPattern.test(text);
+};
+
+/**
+ * Extracts pure, natural English target sentence for Speech Recognition & Voice Shadowing.
+ * Filters out Indonesian explanations ('Kunci:', 'Tips:', 'Arti:', etc.).
+ */
+export const getTargetSpeechSentence = (card) => {
+  if (!card) return '';
+
+  const { front_text = '', back_text = '', example_sentence = '' } = card;
+
+  // 1. Fill-in-the-blank cards (front_text contains underscores '____')
+  // The learner should speak the COMPLETE natural English sentence with the blank filled!
+  if (front_text.includes('_')) {
+    const cleanAnswer = (back_text || '')
+      .replace(/\(atau.*?\)/gi, '')
+      .replace(/\(.*?\)/g, '')
+      .trim();
+
+    return front_text
+      .replace(/_+/g, cleanAnswer)
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
+  // 2. If back_text is English (e.g. Speaking Templates, Signposting phrases where front is Indonesian prompt)
+  if (back_text && !isIndonesianText(back_text) && back_text.trim().split(/\s+/).length >= 2) {
+    return back_text
+      .replace(/\[Name\]/gi, 'Sarah')
+      .replace(/\[Field\]/gi, 'Design')
+      .replace(/\[Interest\]/gi, 'traveling')
+      .replace(/\[Hobi\/Minat\]/gi, 'photography')
+      .replace(/\[Kampus\]/gi, 'UMY')
+      .replace(/\[Jurusan\]/gi, 'Engineering')
+      .replace(/\[.*?\]/g, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
+  // 3. If example_sentence is pure English and NOT an Indonesian explanation ('Kunci:', 'Tips:', etc.)
+  if (example_sentence && !isIndonesianText(example_sentence)) {
+    return example_sentence.replace(/[*_`#]/g, '').trim();
+  }
+
+  // 4. Check for English quote inside example_sentence (e.g. 'Perbaikan benar: "Walking down the street..."')
+  if (example_sentence && example_sentence.includes('"')) {
+    const quoteMatch = example_sentence.match(/"([^"]+)"/);
+    if (quoteMatch && quoteMatch[1] && !isIndonesianText(quoteMatch[1])) {
+      return quoteMatch[1].trim();
+    }
+  }
+
+  // 5. If front_text is pure English (e.g. vocabulary word or idiom like "Hit the nail on the head")
+  if (front_text && !isIndonesianText(front_text)) {
+    return front_text.replace(/[*_`#]/g, '').trim();
+  }
+
+  // Fallback: clean back_text
+  return (back_text || front_text).replace(/[*_`#]/g, '').trim();
+};
+
+/**
  * Normalizes text for linguistic comparison (strips punctuation, extra spaces, and casing)
  */
 export const normalizeSentence = (text = '') => {

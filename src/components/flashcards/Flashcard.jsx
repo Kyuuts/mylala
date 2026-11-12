@@ -1,40 +1,27 @@
 import React from 'react';
 import { RotateCw, Volume2, Mic } from 'lucide-react';
+import { getTargetSpeechSentence } from '../../utils/speechRecognition';
 
 /**
  * Prepares clean speech text for Web Speech Synthesis.
- * - Replaces fill-in-the-blank underscores (____) with a natural silent breathing pause.
- * - On the flipped back side, plays the completed sentence with the answer filled in.
+ * - Replaces fill-in-the-blank underscores (____) with a natural silent breathing pause on the front.
+ * - On the flipped back side, plays the completed pure English sentence (never Indonesian explanation).
  */
 export const getCleanSpeechText = (card, isFlipped) => {
   if (!card) return '';
 
-  const cleanString = (str) => {
-    if (!str) return '';
-    return str
-      .replace(/_+/g, ' ... ') // Replace underscores with ellipsis/pause
-      .replace(/\(Pilihan:.*?\)/gi, '') // Remove options hints
-      .replace(/[*_`#]/g, '') // Remove markdown characters
-      .replace(/\[.*?\]/g, '') // Remove square brackets
-      .replace(/\s+/g, ' ')
-      .trim();
-  };
-
   if (isFlipped) {
-    // If the front card has blanks and back has the answer, read the whole sentence fluently!
-    if (card.front_text && card.front_text.includes('_') && card.back_text) {
-      const completed = card.front_text.replace(/_+/g, card.back_text);
-      return cleanString(completed);
-    }
-    // If back text has an example sentence, prioritize reading it
-    if (card.example_sentence) {
-      return cleanString(card.example_sentence);
-    }
-    return cleanString(card.back_text);
+    return getTargetSpeechSentence(card);
   }
 
   // Front card: pause on blanks
-  return cleanString(card.front_text);
+  return (card.front_text || '')
+    .replace(/_+/g, ' ... ')
+    .replace(/\(Pilihan:.*?\)/gi, '')
+    .replace(/[*_`#]/g, '')
+    .replace(/\[.*?\]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
 };
 
 export default function Flashcard({ card, isFlipped, onFlip, onToggleShadowing, isShadowingActive }) {

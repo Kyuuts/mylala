@@ -6,6 +6,7 @@ import Flashcard from '../components/flashcards/Flashcard';
 import Controls from '../components/flashcards/Controls';
 import SessionSummary from '../components/flashcards/SessionSummary';
 import VoiceShadowingWidget from '../components/flashcards/VoiceShadowingWidget';
+import { getTargetSpeechSentence } from '../utils/speechRecognition';
 
 export default function FlashcardPage() {
   const { module_id } = useParams();
@@ -202,12 +203,7 @@ export default function FlashcardPage() {
       {/* Voice Shadowing Assessment Engine */}
       {showVoiceShadowing && (
         <VoiceShadowingWidget
-          targetSentence={
-            currentCard.example_sentence ||
-            (currentCard.front_text.includes('_') && isFlipped
-              ? currentCard.front_text.replace(/_+/g, currentCard.back_text)
-              : currentCard.front_text)
-          }
+          targetSentence={getTargetSpeechSentence(currentCard)}
           cardId={currentCard.id}
           isFlipped={isFlipped}
         />
