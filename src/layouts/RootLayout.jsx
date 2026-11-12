@@ -4,7 +4,6 @@ import Navbar from '../components/common/Navbar';
 import BottomNav from '../components/common/BottomNav';
 import SyncToast from '../components/common/SyncToast';
 import InstallPrompt from '../components/common/InstallPrompt';
-import ReviewerAgreementModal from '../components/common/ReviewerAgreementModal';
 import { useAppStore } from '../store/useAppStore';
 
 export default function RootLayout() {
@@ -58,7 +57,6 @@ export default function RootLayout() {
       <BottomNav />
       <SyncToast />
       <InstallPrompt />
-      <ReviewerAgreementModal />
     </div>
   );
 }
