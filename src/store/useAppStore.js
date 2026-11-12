@@ -15,22 +15,8 @@ const generateUUID = () => {
   });
 };
 
-// Cryptographically hashed credentials for admin (no plaintext password in source code or storage)
-const ADMIN_SALT = 'mylala_admin_salt_2026';
-const ADMIN_HASH = 'd03e6af7680f447830431fc0eff5a9be99d23c9d7c330e8941e748786f6f1369';
-
-const INITIAL_ACCOUNTS = {
-  imam: {
-    id: 'admin-imam-001',
-    username: 'imam',
-    email: 'imam@mylala.app',
-    name: 'Imam',
-    role: 'admin',
-    salt: ADMIN_SALT,
-    passwordHash: ADMIN_HASH,
-    createdAt: '2026-11-01T00:00:00.000Z',
-  },
-};
+// Clean Initial Accounts Registry (Production Standard: All accounts managed via Supabase GoTrue Auth)
+const INITIAL_ACCOUNTS = {};
 
 export const useAppStore = create(
   persist(
@@ -266,91 +252,7 @@ export const useAppStore = create(
         const accounts = state.accounts || INITIAL_ACCOUNTS;
         const { isOnline, isSupabaseReady } = state;
 
-        // 1. Cloud-first account lookup in Supabase user_accounts (supports cross-device login by username or email)
-        let cloudAccount = null;
-        if (isOnline && isSupabaseReady) {
-          try {
-            const { data, error } = await supabase
-              .from('user_accounts')
-              .select('*')
-              .or(`username.eq.${cleanId},email.eq.${cleanId}`)
-              .maybeSingle();
-
-            if (!error && data) {
-              cloudAccount = data;
-            }
-          } catch (err) {
-            console.warn('Supabase user_accounts query notice:', err.message);
-          }
-        }
-
-        if (cloudAccount) {
-          const isValid = await verifyPassword(cleanPass, cloudAccount.salt, cloudAccount.password_hash);
-          if (isValid) {
-            const prevUserId = state.userId;
-            const updatedProgressByUserId = { ...(state.userProgressByUserId || {}) };
-            if (prevUserId) {
-              updatedProgressByUserId[prevUserId] = state.userProgress || {};
-            }
-
-            const userSavedProg = updatedProgressByUserId[cloudAccount.id] || {};
-
-            // Cache into local accounts dictionary so offline access works seamlessly on this device
-            const updatedAccounts = {
-              ...(accounts || {}),
-              [cloudAccount.username]: {
-                id: cloudAccount.id,
-                username: cloudAccount.username,
-                email: cloudAccount.email,
-                name: cloudAccount.name,
-                avatarUrl: cloudAccount.avatar_url || null,
-                role: cloudAccount.role || 'member',
-                salt: cloudAccount.salt,
-                passwordHash: cloudAccount.password_hash,
-                createdAt: cloudAccount.created_at,
-              },
-            };
-
-            set({
-              isAuthenticated: true,
-              accounts: updatedAccounts,
-              user: {
-                id: cloudAccount.id,
-                username: cloudAccount.username,
-                email: cloudAccount.email,
-                name: cloudAccount.name,
-                avatarUrl: cloudAccount.avatar_url || null,
-                role: cloudAccount.role || 'member',
-              },
-              userId: cloudAccount.id,
-              userProgress: userSavedProg,
-              userProgressByUserId: updatedProgressByUserId,
-              syncNotification: `Selamat datang kembali, ${cloudAccount.name}!`,
-            });
-
-            // Attempt Supabase Auth login if email is available
-            if (cloudAccount.email) {
-              try {
-                await supabase.auth.signInWithPassword({
-                  email: cloudAccount.email,
-                  password: cleanPass,
-                });
-              } catch (_) {}
-            }
-
-            await get().fetchUserProgressFromSupabase(cloudAccount.id);
-            await get().fetchUserStatsFromSupabase(cloudAccount.id, cloudAccount.username);
-            get().syncWeeklyStatsToSupabase();
-
-            return { success: true };
-          }
-          return {
-            success: false,
-            error: 'Password yang Anda masukkan salah!',
-          };
-        }
-
-        // 2. Try Supabase Auth if online (supports email directly, or username via secure RPC get_email_for_username)
+        // 1. Primary Authority: Official Supabase Auth (Server-side Bcrypt verification - VULN-05 Remediation)
         let targetEmail = cleanId.includes('@') ? cleanId : null;
         if (!targetEmail && isOnline && isSupabaseReady) {
           try {
@@ -382,6 +284,7 @@ export const useAppStore = create(
               let userName = supUser.user_metadata?.name || cleanId;
               let userUsername = supUser.user_metadata?.username || cleanId.split('@')[0];
               let userAvatar = supUser.user_metadata?.avatar_url || null;
+              let userRole = supUser.user_metadata?.role || 'member';
 
               // Pull public profile from profiles table
               try {
@@ -395,6 +298,7 @@ export const useAppStore = create(
                   if (prof.name) userName = prof.name;
                   if (prof.username) userUsername = prof.username;
                   if (prof.avatar_url) userAvatar = prof.avatar_url;
+                  if (prof.role) userRole = prof.role;
                 }
               } catch (_) {}
 
@@ -415,7 +319,7 @@ export const useAppStore = create(
                   email: supUser.email,
                   name: userName,
                   avatarUrl: userAvatar,
-                  role: 'member',
+                  role: userRole,
                 },
                 userId: supUserId,
                 userProgress: userSavedProg,
@@ -429,10 +333,69 @@ export const useAppStore = create(
               get().syncWeeklyStatsToSupabase();
 
               return { success: true };
+            } else if (error) {
+              if (error.message && error.message.toLowerCase().includes('invalid login credentials')) {
+                return { success: false, error: 'Password atau email/username yang Anda masukkan salah!' };
+              }
             }
           } catch (err) {
             console.warn('Supabase signInWithPassword note:', err.message);
           }
+        }
+
+        // 2. Offline / Local Fallback Verification
+        let cloudAccount = null;
+        if (isOnline && isSupabaseReady) {
+          try {
+            const { data } = await supabase
+              .from('user_accounts')
+              .select('*')
+              .or(`username.eq.${cleanId},email.eq.${cleanId}`)
+              .maybeSingle();
+
+            if (data) {
+              cloudAccount = data;
+            }
+          } catch (_) {}
+        }
+
+        if (cloudAccount) {
+          const isValid = await verifyPassword(cleanPass, cloudAccount.salt, cloudAccount.password_hash);
+          if (isValid) {
+            const prevUserId = state.userId;
+            const updatedProgressByUserId = { ...(state.userProgressByUserId || {}) };
+            if (prevUserId) {
+              updatedProgressByUserId[prevUserId] = state.userProgress || {};
+            }
+
+            const userSavedProg = updatedProgressByUserId[cloudAccount.id] || {};
+
+            set({
+              isAuthenticated: true,
+              user: {
+                id: cloudAccount.id,
+                username: cloudAccount.username,
+                email: cloudAccount.email,
+                name: cloudAccount.name,
+                avatarUrl: cloudAccount.avatar_url || null,
+                role: cloudAccount.role || 'member',
+              },
+              userId: cloudAccount.id,
+              userProgress: userSavedProg,
+              userProgressByUserId: updatedProgressByUserId,
+              syncNotification: `Selamat datang kembali, ${cloudAccount.name}!`,
+            });
+
+            await get().fetchUserProgressFromSupabase(cloudAccount.id);
+            await get().fetchUserStatsFromSupabase(cloudAccount.id, cloudAccount.username);
+            get().syncWeeklyStatsToSupabase();
+
+            return { success: true };
+          }
+          return {
+            success: false,
+            error: 'Password yang Anda masukkan salah!',
+          };
         }
 
         // 3. Offline / Local Cryptographic Hash Verification
