@@ -4,6 +4,7 @@ import { supabase, isSupabaseConfigured } from '../services/supabase';
 import { MOCK_MODULES, MOCK_FLASHCARDS } from '../services/mockData';
 import { calculateSRS } from '../utils/srsAlgorithm';
 import { getCurrentWeekId, getTierFromXP, PEER_CONTESTANTS } from '../utils/rankSystem';
+import { generateSalt, hashPassword, verifyPassword } from '../utils/cryptoAuth';
 
 // Helper to generate UUID v4
 const generateUUID = () => {
@@ -14,12 +15,29 @@ const generateUUID = () => {
   });
 };
 
+// Cryptographically hashed credentials for admin (no plaintext password in source code or storage)
+const ADMIN_SALT = 'mylala_admin_salt_2026';
+const ADMIN_HASH = 'd03e6af7680f447830431fc0eff5a9be99d23c9d7c330e8941e748786f6f1369';
+
+const INITIAL_ACCOUNTS = {
+  imam: {
+    id: 'admin-imam-001',
+    username: 'imam',
+    email: 'imam@mylala.app',
+    name: 'Imam',
+    role: 'admin',
+    salt: ADMIN_SALT,
+    passwordHash: ADMIN_HASH,
+    createdAt: '2026-11-01T00:00:00.000Z',
+  },
+};
+
 export const useAppStore = create(
   persist(
     (set, get) => ({
       // Authentication State
       isAuthenticated: false,
-      user: null, // { username: 'imam', name: 'Imam' }
+      user: null, // { id, username, email, name, role }
       userId: generateUUID(),
 
       // Gamification & Ranked State
@@ -39,45 +57,110 @@ export const useAppStore = create(
       // Core Data
       modules: MOCK_MODULES,
       flashcards: MOCK_FLASHCARDS,
-      userProgress: {}, // { [flashcardId]: { repetitions, easeFactor, interval, status, next_review_date, last_reviewed_at } }
+      userProgress: {}, // active user's progress map: { [cardId]: { status, repetitions, ... } }
+      userProgressByUserId: {}, // partitioned progress map per userId
       offlineQueue: [], // [ { user_id, flashcard_id, status, next_review_date, updated_at } ]
 
-      // Accounts Registry (Username -> Account Profile)
-      accounts: {
-        imam: { username: 'imam', name: 'Imam', password: 'imam123@', role: 'admin' },
-      },
+      // Accounts Registry (Username -> Account Profile with Salt & Hash only)
+      accounts: INITIAL_ACCOUNTS,
 
-      // Action: Register new user with custom Username & Password
-      register: (username, name, password) => {
+      // Action: Register new user with Supabase Auth & Secure Salted Hashing
+      register: async (arg1, arg2, arg3, arg4) => {
+        let email, username, name, password;
+        if (typeof arg1 === 'object' && arg1 !== null) {
+          email = arg1.email;
+          username = arg1.username;
+          name = arg1.name;
+          password = arg1.password;
+        } else {
+          username = arg1;
+          name = arg2;
+          password = arg3;
+          email = arg4;
+        }
+
         const cleanUser = (username || '').trim().toLowerCase();
         const cleanName = (name || '').trim();
         const cleanPass = (password || '').trim();
+        const cleanEmail = (email || '').trim().toLowerCase();
 
         if (!cleanName || cleanName.length < 2) {
           return { success: false, error: 'Silakan masukkan nama lengkap atau panggilan Anda!' };
         }
-        if (!cleanUser || cleanUser.length < 3) {
-          return { success: false, error: 'Username minimal 3 karakter (huruf/angka tanpa spasi)!' };
+        if (!cleanUser || cleanUser.length < 3 || !/^[a-z0-9_]+$/.test(cleanUser)) {
+          return { success: false, error: 'Username minimal 3 karakter (huruf, angka, tanpa spasi)!' };
         }
-        if (!cleanPass || cleanPass.length < 4) {
-          return { success: false, error: 'Password minimal 4 karakter!' };
+        if (!cleanEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) {
+          return { success: false, error: 'Silakan masukkan alamat email yang valid (contoh: nama@gmail.com)!' };
+        }
+        if (!cleanPass || cleanPass.length < 6) {
+          return { success: false, error: 'Password minimal 6 karakter demi keamanan akun Anda!' };
         }
 
         const state = get();
-        const accounts = state.accounts || {};
+        const accounts = state.accounts || INITIAL_ACCOUNTS;
+
         if (accounts[cleanUser]) {
           return { success: false, error: 'Username sudah terdaftar! Silakan login di tab Masuk.' };
         }
+        const emailExists = Object.values(accounts).some((acc) => acc.email === cleanEmail);
+        if (emailExists) {
+          return { success: false, error: 'Email sudah terdaftar! Silakan gunakan email lain atau masuk.' };
+        }
+
+        let supabaseUserId = null;
+        const { isOnline, isSupabaseReady } = state;
+
+        // 1. Register to Supabase Auth when online
+        if (isOnline && isSupabaseReady) {
+          try {
+            const { data, error } = await supabase.auth.signUp({
+              email: cleanEmail,
+              password: cleanPass,
+              options: {
+                data: {
+                  username: cleanUser,
+                  name: cleanName,
+                },
+              },
+            });
+
+            if (error) {
+              if (error.message && error.message.toLowerCase().includes('already registered')) {
+                return { success: false, error: 'Email ini sudah terdaftar di server. Silakan masuk!' };
+              }
+              console.warn('Supabase Auth signUp note:', error.message);
+            } else if (data?.user?.id) {
+              supabaseUserId = data.user.id;
+            }
+          } catch (err) {
+            console.warn('Supabase signUp network note:', err.message);
+          }
+        }
+
+        // 2. Generate secure one-way hash with cryptographically random salt
+        const assignedUserId = supabaseUserId || generateUUID();
+        const salt = generateSalt();
+        const passwordHash = await hashPassword(cleanPass, salt);
 
         const newAccount = {
+          id: assignedUserId,
           username: cleanUser,
+          email: cleanEmail,
           name: cleanName,
-          password: cleanPass,
           role: 'member',
+          salt,
+          passwordHash,
           createdAt: new Date().toISOString(),
         };
 
-        const newUserId = generateUUID();
+        // 3. Guarantee Clean Slate Isolation for new user (Fix Step 2 Bug: 0 Due Cards!)
+        const prevUserId = state.userId;
+        const updatedProgressByUserId = { ...(state.userProgressByUserId || {}) };
+        if (prevUserId) {
+          updatedProgressByUserId[prevUserId] = state.userProgress || {};
+        }
+        updatedProgressByUserId[assignedUserId] = {}; // Brand new clean slate!
 
         set({
           accounts: {
@@ -85,62 +168,158 @@ export const useAppStore = create(
             [cleanUser]: newAccount,
           },
           isAuthenticated: true,
-          user: { username: cleanUser, name: cleanName, role: 'member' },
-          userId: newUserId,
-          userProgress: {}, // fresh progress
+          user: {
+            id: assignedUserId,
+            username: cleanUser,
+            email: cleanEmail,
+            name: cleanName,
+            role: 'member',
+          },
+          userId: assignedUserId,
+          userProgress: {}, // 0 cards reviewed, 100% clean
+          userProgressByUserId: updatedProgressByUserId,
           xp: 0,
           weeklyXp: 0,
           streak: 1,
+          completedModules: [],
           syncNotification: `Akun "${cleanUser}" berhasil dibuat! Selamat belajar, ${cleanName}.`,
         });
 
-        // Sync initial zero stats to Supabase for the new user
+        // 4. Sync initial zero weekly stats to Supabase for the new member
         get().syncWeeklyStatsToSupabase();
 
         return { success: true };
       },
 
-      // Action: Authentication Login (Supports Admin Imam & Custom Users)
-      login: (username, password) => {
-        const cleanUser = (username || '').trim().toLowerCase();
+      // Action: Authentication Login with Supabase Auth & Secure Salted Hash Verification
+      login: async (arg1, arg2) => {
+        let identifier, password;
+        if (typeof arg1 === 'object' && arg1 !== null) {
+          identifier = arg1.identifier || arg1.username;
+          password = arg1.password;
+        } else {
+          identifier = arg1;
+          password = arg2;
+        }
+
+        const cleanId = (identifier || '').trim().toLowerCase();
         const cleanPass = (password || '').trim();
 
-        if (!cleanUser) {
-          return { success: false, error: 'Silakan masukkan username Anda!' };
+        if (!cleanId) {
+          return { success: false, error: 'Silakan masukkan username atau email Anda!' };
         }
         if (!cleanPass) {
           return { success: false, error: 'Silakan masukkan password Anda!' };
         }
 
-        const accounts = get().accounts || {
-          imam: { username: 'imam', name: 'Imam', password: 'imam123@', role: 'admin' },
-        };
+        const state = get();
+        const accounts = state.accounts || INITIAL_ACCOUNTS;
+        const { isOnline, isSupabaseReady } = state;
 
-        // 1. Akun Khusus Pemilik (Imam)
-        if (cleanUser === 'imam') {
-          if (cleanPass === 'imam123@') {
-            set({
-              isAuthenticated: true,
-              user: { username: 'imam', name: 'Imam', role: 'admin' },
-              syncNotification: 'Selamat datang kembali, Imam!',
-            });
-            return { success: true };
+        // 1. Try Supabase Auth if online and identifier is an email (or linked to email)
+        let targetEmail = cleanId.includes('@') ? cleanId : null;
+        if (!targetEmail) {
+          const matchedAccount = accounts[cleanId] || Object.values(accounts).find((a) => a.username === cleanId);
+          if (matchedAccount?.email) {
+            targetEmail = matchedAccount.email;
           }
-          return {
-            success: false,
-            error: 'Password untuk akun imam salah! (Gunakan: imam123@)',
-          };
         }
 
-        // 2. Akun Terdaftar
-        const existing = accounts[cleanUser];
+        if (targetEmail && isOnline && isSupabaseReady) {
+          try {
+            const { data, error } = await supabase.auth.signInWithPassword({
+              email: targetEmail,
+              password: cleanPass,
+            });
+
+            if (!error && data?.user) {
+              const supUser = data.user;
+              const supUserId = supUser.id;
+              const userName = supUser.user_metadata?.name || cleanId;
+              const userUsername = supUser.user_metadata?.username || cleanId.split('@')[0];
+
+              // Isolate user progress: store previous user's progress
+              const prevUserId = state.userId;
+              const updatedProgressByUserId = { ...(state.userProgressByUserId || {}) };
+              if (prevUserId) {
+                updatedProgressByUserId[prevUserId] = state.userProgress || {};
+              }
+
+              const userSavedProg = updatedProgressByUserId[supUserId] || {};
+
+              set({
+                isAuthenticated: true,
+                user: {
+                  id: supUserId,
+                  username: userUsername,
+                  email: supUser.email,
+                  name: userName,
+                  role: 'member',
+                },
+                userId: supUserId,
+                userProgress: userSavedProg,
+                userProgressByUserId: updatedProgressByUserId,
+                syncNotification: `Selamat datang kembali, ${userName}!`,
+              });
+
+              // Pull user's latest cloud progress & stats
+              get().fetchUserProgressFromSupabase(supUserId);
+              get().syncWeeklyStatsToSupabase();
+
+              return { success: true };
+            }
+          } catch (err) {
+            console.warn('Supabase signInWithPassword note:', err.message);
+          }
+        }
+
+        // 2. Offline / Local Cryptographic Hash Verification
+        const existing =
+          accounts[cleanId] ||
+          Object.values(accounts).find(
+            (a) => a.username?.toLowerCase() === cleanId || a.email?.toLowerCase() === cleanId
+          );
+
         if (existing) {
-          if (existing.password === cleanPass) {
+          // If legacy plain-text password exists from an older version, migrate it on the fly
+          if (existing.password && !existing.passwordHash) {
+            const salt = generateSalt();
+            const passwordHash = await hashPassword(existing.password, salt);
+            existing.salt = salt;
+            existing.passwordHash = passwordHash;
+            delete existing.password;
+          }
+
+          const isValid = await verifyPassword(cleanPass, existing.salt, existing.passwordHash);
+          if (isValid) {
+            // Isolate user progress
+            const prevUserId = state.userId;
+            const updatedProgressByUserId = { ...(state.userProgressByUserId || {}) };
+            if (prevUserId) {
+              updatedProgressByUserId[prevUserId] = state.userProgress || {};
+            }
+
+            const userSavedProg = updatedProgressByUserId[existing.id] || {};
+
             set({
               isAuthenticated: true,
-              user: { username: existing.username, name: existing.name, role: existing.role || 'member' },
+              user: {
+                id: existing.id,
+                username: existing.username,
+                email: existing.email,
+                name: existing.name,
+                role: existing.role || 'member',
+              },
+              userId: existing.id,
+              userProgress: userSavedProg,
+              userProgressByUserId: updatedProgressByUserId,
               syncNotification: `Selamat datang kembali, ${existing.name}!`,
             });
+
+            if (isOnline && isSupabaseReady) {
+              get().fetchUserProgressFromSupabase(existing.id);
+            }
+
             return { success: true };
           }
           return {
@@ -151,15 +330,31 @@ export const useAppStore = create(
 
         return {
           success: false,
-          error: 'Username belum terdaftar! Silakan buat akun baru di tab "Daftar".',
+          error: 'Akun belum terdaftar! Silakan buat akun baru di tab "Daftar Akun Baru".',
         };
       },
 
       // Action: Logout
-      logout: () => {
+      logout: async () => {
+        const { isOnline, isSupabaseReady, userId, userProgress, userProgressByUserId } = get();
+        if (isOnline && isSupabaseReady) {
+          try {
+            await supabase.auth.signOut();
+          } catch (e) {
+            console.warn('Supabase signOut notice:', e);
+          }
+        }
+
+        const updatedByUserId = { ...(userProgressByUserId || {}) };
+        if (userId) {
+          updatedByUserId[userId] = userProgress || {};
+        }
+
         set({
           isAuthenticated: false,
           user: null,
+          userProgress: {},
+          userProgressByUserId: updatedByUserId,
           syncNotification: null,
         });
       },
@@ -246,6 +441,47 @@ export const useAppStore = create(
         return { data: found || null, error: found ? null : new Error('Modul tidak ditemukan') };
       },
 
+      // Action: Fetch user progress from Supabase
+      fetchUserProgressFromSupabase: async (targetUserId) => {
+        const { isOnline, isSupabaseReady } = get();
+        if (!isOnline || !isSupabaseReady || !targetUserId) return;
+
+        try {
+          const { data, error } = await supabase
+            .from('user_progress')
+            .select('*')
+            .eq('user_id', targetUserId);
+
+          if (!error && data && data.length > 0) {
+            const progMap = {};
+            data.forEach((p) => {
+              progMap[p.flashcard_id] = {
+                flashcard_id: p.flashcard_id,
+                status: p.status,
+                repetitions: p.repetitions || 1,
+                easeFactor: p.ease_factor || 2.5,
+                interval: p.interval || 1,
+                next_review_date: p.next_review_date,
+                last_reviewed_at: p.updated_at,
+              };
+            });
+
+            set((state) => ({
+              userProgress: { ...state.userProgress, ...progMap },
+              userProgressByUserId: {
+                ...state.userProgressByUserId,
+                [targetUserId]: {
+                  ...(state.userProgressByUserId?.[targetUserId] || {}),
+                  ...progMap,
+                },
+              },
+            }));
+          }
+        } catch (err) {
+          console.warn('Failed to load user progress from Supabase:', err.message);
+        }
+      },
+
       // Action: Fetch flashcards and enrich with user progress
       fetchFlashcards: async (moduleId = 'all') => {
         const { isOnline, isSupabaseReady, userId } = get();
@@ -281,25 +517,8 @@ export const useAppStore = create(
             }
 
             // Fetch remote progress for active user
-            const { data: remoteProgress } = await supabase
-              .from('user_progress')
-              .select('*')
-              .eq('user_id', userId);
-
-            if (remoteProgress && remoteProgress.length > 0) {
-              set((state) => {
-                const merged = { ...state.userProgress };
-                remoteProgress.forEach((p) => {
-                  merged[p.flashcard_id] = {
-                    ...merged[p.flashcard_id],
-                    status: p.status,
-                    next_review_date: p.next_review_date,
-                    updated_at: p.updated_at,
-                    last_reviewed_at: p.updated_at,
-                  };
-                });
-                return { userProgress: merged };
-              });
+            if (userId) {
+              get().fetchUserProgressFromSupabase(userId);
             }
           } catch (err) {
             console.warn('Supabase fetchFlashcards failed, fallback to store:', err.message);
@@ -313,7 +532,7 @@ export const useAppStore = create(
         }
 
         // Enrich cards with active user progress metadata
-        const activeProgress = get().userProgress;
+        const activeProgress = get().userProgress || {};
         const enriched = cards.map((c) => {
           const prog = activeProgress[c.id];
           const hasStudied = Boolean(prog && prog.last_reviewed_at);
@@ -355,7 +574,7 @@ export const useAppStore = create(
       // Action: Sync user's weekly XP & progress to Supabase user_weekly_stats
       syncWeeklyStatsToSupabase: async () => {
         const { isOnline, isSupabaseReady, userId, user, weeklyXp, streak, userProgress } = get();
-        if (!isOnline || !isSupabaseReady) return;
+        if (!isOnline || !isSupabaseReady || !userId) return;
 
         const currentWeek = getCurrentWeekId();
         const cardsReviewed = Object.values(userProgress || {}).filter(
@@ -365,7 +584,7 @@ export const useAppStore = create(
         const payload = {
           user_id: userId,
           username: (user?.username || 'user').toLowerCase(),
-          name: user?.name || 'Imam',
+          name: user?.name || 'Pembelajar MyLala',
           year_week: currentWeek,
           weekly_xp: weeklyXp || 0,
           cards_reviewed: cardsReviewed,
@@ -447,7 +666,7 @@ export const useAppStore = create(
             combined = [...remoteData, currentUserEntry];
           }
         } else {
-          // If no one in DB yet, show current user alongside starter active peer benchmarks
+          // If no one in DB yet, show current user alongside peer contestants
           combined = [...PEER_CONTESTANTS, currentUserEntry];
         }
 
@@ -477,7 +696,7 @@ export const useAppStore = create(
 
       // Action: Submit Flashcard Rating with SM-2 Spaced Repetition calculation
       submitProgress: async (flashcardId, rating) => {
-        const { userId, userProgress, isOnline, isSupabaseReady, streak, lastStudyDate } = get();
+        const { userId, userProgress, isOnline, isSupabaseReady, streak, lastStudyDate, userProgressByUserId } = get();
         const currentProgress = userProgress[flashcardId] || {};
 
         // 1. Calculate new spaced repetition values
@@ -504,13 +723,21 @@ export const useAppStore = create(
           });
         }
 
-        // 4. Optimistic update to local store
-        set((state) => ({
-          userProgress: {
-            ...state.userProgress,
-            [flashcardId]: updatedProgressRecord,
-          },
-        }));
+        // 4. Optimistic update to isolated local user store
+        const updatedProgMap = {
+          ...userProgress,
+          [flashcardId]: updatedProgressRecord,
+        };
+
+        const updatedByUserId = {
+          ...(userProgressByUserId || {}),
+          [userId]: updatedProgMap,
+        };
+
+        set({
+          userProgress: updatedProgMap,
+          userProgressByUserId: updatedByUserId,
+        });
 
         const payloadForSupabase = {
           user_id: userId,
@@ -520,7 +747,7 @@ export const useAppStore = create(
           updated_at: updatedProgressRecord.updated_at,
         };
 
-        // 3. Sync to Supabase or enqueue for offline sync
+        // 5. Sync to Supabase or enqueue for offline sync
         if (isOnline && isSupabaseReady) {
           try {
             const { error } = await supabase
@@ -581,7 +808,7 @@ export const useAppStore = create(
         }
       },
 
-      // Action: Compute live metrics with genuine fresh-user logic
+      // Action: Compute live metrics with genuine fresh-user logic (Fix Step 2 Bug)
       getMetrics: () => {
         const { flashcards, userProgress } = get();
         const now = new Date();
@@ -593,7 +820,7 @@ export const useAppStore = create(
         let dueCount = 0;
 
         flashcards.forEach((card) => {
-          const prog = userProgress[card.id];
+          const prog = userProgress ? userProgress[card.id] : null;
 
           // Check if card has ever been reviewed
           if (!prog || !prog.last_reviewed_at) {
@@ -668,7 +895,18 @@ export const useAppStore = create(
 
       // Reset progress to clean slate (pure zero)
       resetUserProgress: () => {
-        set({ userProgress: {}, offlineQueue: [], xp: 0, weeklyXp: 0 });
+        const { userId, userProgressByUserId } = get();
+        const updatedByUserId = { ...(userProgressByUserId || {}) };
+        if (userId) {
+          updatedByUserId[userId] = {};
+        }
+        set({
+          userProgress: {},
+          userProgressByUserId: updatedByUserId,
+          offlineQueue: [],
+          xp: 0,
+          weeklyXp: 0,
+        });
       },
     }),
     {
@@ -678,7 +916,10 @@ export const useAppStore = create(
         isAuthenticated: state.isAuthenticated,
         user: state.user,
         userId: state.userId,
+        // Secure accounts storing ONLY salt + passwordHash - NEVER plaintext passwords
         accounts: state.accounts,
+        userProgressByUserId: state.userProgressByUserId,
+        userProgress: state.userProgress,
         streak: state.streak,
         lastStudyDate: state.lastStudyDate,
         xp: state.xp,
@@ -687,9 +928,23 @@ export const useAppStore = create(
         completedModules: state.completedModules,
         modules: state.modules,
         flashcards: state.flashcards,
-        userProgress: state.userProgress,
         offlineQueue: state.offlineQueue,
       }),
+      onRehydrateStorage: () => (state) => {
+        if (state && state.accounts) {
+          // Migration safeguard: remove any legacy plaintext password in localStorage
+          Object.keys(state.accounts).forEach(async (key) => {
+            const acc = state.accounts[key];
+            if (acc && acc.password) {
+              const salt = generateSalt();
+              const hash = await hashPassword(acc.password, salt);
+              acc.salt = salt;
+              acc.passwordHash = hash;
+              delete acc.password;
+            }
+          });
+        }
+      },
     }
   )
 );

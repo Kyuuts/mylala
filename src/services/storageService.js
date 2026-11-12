@@ -1,11 +1,12 @@
 /**
  * Local Storage Service for Offline PWA Mode & Local Progress
+ * Enforces per-user progress partitioning to prevent cross-account card leakage.
  */
 
 const STORAGE_KEYS = {
   MODULES: 'pl_modules_cache',
   FLASHCARDS: 'pl_flashcards_cache',
-  PROGRESS: 'pl_user_progress',
+  PROGRESS_PREFIX: 'pl_user_progress_',
   QUEUE: 'pl_offline_sync_queue',
   USER_ID: 'pl_device_user_id',
 };
@@ -60,23 +61,31 @@ export const storageService = {
     }
   },
 
-  getProgress() {
+  /**
+   * Get progress isolated by userId
+   */
+  getProgress(userId = null) {
+    const activeId = userId || getOrCreateUserId();
     try {
-      const data = localStorage.getItem(STORAGE_KEYS.PROGRESS);
+      const data = localStorage.getItem(`${STORAGE_KEYS.PROGRESS_PREFIX}${activeId}`);
       return data ? JSON.parse(data) : {};
     } catch {
       return {};
     }
   },
 
-  saveProgress(flashcardId, progressData) {
+  /**
+   * Save progress isolated by userId
+   */
+  saveProgress(flashcardId, progressData, userId = null) {
+    const activeId = userId || progressData.user_id || getOrCreateUserId();
     try {
-      const allProgress = this.getProgress();
+      const allProgress = this.getProgress(activeId);
       allProgress[flashcardId] = {
         ...progressData,
         updated_at: new Date().toISOString(),
       };
-      localStorage.setItem(STORAGE_KEYS.PROGRESS, JSON.stringify(allProgress));
+      localStorage.setItem(`${STORAGE_KEYS.PROGRESS_PREFIX}${activeId}`, JSON.stringify(allProgress));
     } catch (e) {
       console.warn('Failed to save progress to localStorage', e);
     }
@@ -106,4 +115,3 @@ export const storageService = {
     localStorage.removeItem(STORAGE_KEYS.QUEUE);
   },
 };
-

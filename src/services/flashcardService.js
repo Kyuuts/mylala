@@ -7,7 +7,7 @@ export const flashcardService = {
   /**
    * Fetch flashcards for a specific module or all modules
    */
-  async getFlashcards(moduleId = null) {
+  async getFlashcards(moduleId = null, userId = null) {
     let cards = [];
 
     if (isSupabaseConfigured() && navigator.onLine) {
@@ -42,8 +42,8 @@ export const flashcardService = {
       }
     }
 
-    // Attach user progress (status, next_review_date) from local cache / Supabase
-    const progressMap = await this.getUserProgressMap();
+    // Attach user progress (status, next_review_date) from isolated user cache / Supabase
+    const progressMap = await this.getUserProgressMap(userId);
     const enrichedCards = cards.map((card) => {
       const progress = progressMap[card.id] || {
         status: 'Learning',
@@ -64,7 +64,7 @@ export const flashcardService = {
    */
   async getUserProgressMap(userId = null) {
     const activeUserId = userId || getOrCreateUserId();
-    const localProgress = storageService.getProgress();
+    const localProgress = storageService.getProgress(activeUserId);
 
     if (isSupabaseConfigured() && navigator.onLine) {
       try {
@@ -80,8 +80,8 @@ export const flashcardService = {
               status: p.status,
               next_review_date: p.next_review_date,
             };
-            // Sync to local cache
-            storageService.saveProgress(p.flashcard_id, p);
+            // Sync to local user cache
+            storageService.saveProgress(p.flashcard_id, p, activeUserId);
           });
           return { ...localProgress, ...supabaseMap };
         }
@@ -114,7 +114,7 @@ export const flashcardService = {
     };
 
     // 1. Immediately persist in local storage (instant optimistic UI & offline safety)
-    storageService.saveProgress(flashcardId, progressRecord);
+    storageService.saveProgress(flashcardId, progressRecord, activeUserId);
 
     // 2. Sync to Supabase if available and online
     if (isSupabaseConfigured() && navigator.onLine) {
@@ -177,7 +177,7 @@ export const flashcardService = {
    * Calculate summary statistics for Dashboard
    */
   async getDashboardMetrics(userId = null) {
-    const { data: cards } = await this.getFlashcards('all');
+    const { data: cards } = await this.getFlashcards('all', userId);
     const now = new Date();
 
     let learningCount = 0;
@@ -194,6 +194,7 @@ export const flashcardService = {
         learningCount++;
       }
 
+      // Only count due if card has actually been scheduled and reached due time
       if (card.next_review_date && new Date(card.next_review_date) <= now) {
         dueCount++;
       }
@@ -204,7 +205,7 @@ export const flashcardService = {
       learningCount,
       reviewCount,
       masteredCount,
-      dueCount: dueCount || (cards.length > 0 ? Math.min(cards.length, 5) : 0),
+      dueCount,
     };
   },
 };

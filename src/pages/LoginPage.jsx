@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Lock, User, ArrowRight, AlertCircle, Eye, EyeOff, Sparkles, UserPlus, LogIn } from 'lucide-react';
+import { Lock, User, Mail, ArrowRight, AlertCircle, Eye, EyeOff, Sparkles, UserPlus, LogIn, ShieldCheck } from 'lucide-react';
 import { useAppStore } from '../store/useAppStore';
 import Logo from '../components/common/Logo';
 
@@ -10,33 +10,37 @@ export default function LoginPage() {
 
   const [mode, setMode] = useState('login'); // 'login' | 'register'
   const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setLoading(true);
 
-    setTimeout(() => {
+    try {
       let result;
       if (mode === 'register') {
-        result = register(username, name, password);
+        result = await register({ email, username, name, password });
       } else {
-        result = login(username, password);
+        // In login mode, username field holds either email or username
+        result = await login({ identifier: username, password });
       }
 
-      setLoading(false);
-
-      if (result.success) {
+      if (result && result.success) {
         navigate('/dashboard');
       } else {
-        setError(result.error);
+        setError(result?.error || 'Gagal melakukan autentikasi. Silakan periksa kembali data Anda.');
       }
-    }, 250);
+    } catch (err) {
+      setError('Terjadi kendala pada sistem. Silakan coba kembali.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -103,29 +107,55 @@ export default function LoginPage() {
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
           {mode === 'register' && (
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold text-slate-700">Nama Lengkap / Panggilan</label>
-              <div className="relative">
-                <User className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
-                <input
-                  type="text"
-                  placeholder="e.g. Sarah Kirana, Budi"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-sm text-slate-800 focus:outline-hidden focus:ring-2 focus:ring-indigo-500 focus:bg-white transition"
-                  required={mode === 'register'}
-                />
+            <>
+              {/* Full Name */}
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-slate-700">Nama Lengkap / Panggilan</label>
+                <div className="relative">
+                  <User className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
+                  <input
+                    type="text"
+                    placeholder="e.g. Sarah Kirana, Budi Santoso"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-sm text-slate-800 focus:outline-hidden focus:ring-2 focus:ring-indigo-500 focus:bg-white transition"
+                    required={mode === 'register'}
+                  />
+                </div>
               </div>
-            </div>
+
+              {/* Email Address for Supabase Auth */}
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-slate-700">Alamat Email Aktif</label>
+                <div className="relative">
+                  <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
+                  <input
+                    type="email"
+                    placeholder="e.g. sarah@gmail.com, budi@mail.umy.ac.id"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-sm text-slate-800 focus:outline-hidden focus:ring-2 focus:ring-indigo-500 focus:bg-white transition"
+                    required={mode === 'register'}
+                  />
+                </div>
+              </div>
+            </>
           )}
 
+          {/* Username or Email */}
           <div className="space-y-1.5">
-            <label className="text-xs font-bold text-slate-700">Username</label>
+            <label className="text-xs font-bold text-slate-700">
+              {mode === 'register' ? 'Username' : 'Username atau Email'}
+            </label>
             <div className="relative">
               <User className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
               <input
                 type="text"
-                placeholder={mode === 'register' ? 'e.g. sarah123, budi_k' : 'Masukkan username Anda'}
+                placeholder={
+                  mode === 'register'
+                    ? 'e.g. sarah123, budi_k'
+                    : 'Masukkan username atau email Anda'
+                }
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-sm text-slate-800 focus:outline-hidden focus:ring-2 focus:ring-indigo-500 focus:bg-white transition"
@@ -134,13 +164,19 @@ export default function LoginPage() {
             </div>
           </div>
 
+          {/* Password with Eye Toggle */}
           <div className="space-y-1.5">
-            <label className="text-xs font-bold text-slate-700">Password</label>
+            <div className="flex justify-between items-center">
+              <label className="text-xs font-bold text-slate-700">Password</label>
+              {mode === 'register' && (
+                <span className="text-[11px] text-slate-400">Min. 6 karakter</span>
+              )}
+            </div>
             <div className="relative">
               <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
               <input
                 type={showPassword ? 'text' : 'password'}
-                placeholder={mode === 'register' ? 'Minimal 4 karakter' : 'Masukkan password Anda'}
+                placeholder={mode === 'register' ? 'Minimal 6 karakter' : 'Masukkan password Anda'}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full pl-10 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-sm text-slate-800 focus:outline-hidden focus:ring-2 focus:ring-indigo-500 focus:bg-white transition"
@@ -157,10 +193,11 @@ export default function LoginPage() {
             </div>
           </div>
 
+          {/* Submit Button */}
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 px-4 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm shadow-md transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2"
+            className="w-full py-3 px-4 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm shadow-md transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer mt-2"
           >
             {loading ? (
               <span className="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -177,6 +214,12 @@ export default function LoginPage() {
             )}
           </button>
         </form>
+
+        {/* Security Badge */}
+        <div className="pt-2 border-t border-slate-100 flex items-center justify-center gap-1.5 text-slate-400 text-[11px]">
+          <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
+          <span>Keamanan terenkripsi &bull; Cloud sync Supabase &bull; 100% Offline PWA</span>
+        </div>
       </div>
     </div>
   );
