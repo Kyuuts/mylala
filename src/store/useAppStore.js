@@ -381,6 +381,85 @@ export const useAppStore = create(
         get().addXP(50, `Menyelesaikan Language Scanner (${levelCode})`);
       },
 
+      // Action: Update User Profile (Username, Name, and Avatar / Photo)
+      updateProfile: async ({ name, username, avatarUrl }) => {
+        const state = get();
+        const { user, accounts, isOnline, isSupabaseReady } = state;
+        if (!user) return { success: false, error: 'User belum login.' };
+
+        const cleanName = (name || user.name || '').trim();
+        const rawUsername = (username || user.username || '').trim().toLowerCase();
+        const cleanUsername = rawUsername.replace(/[^a-z0-9_]/g, '');
+
+        if (!cleanName || cleanName.length < 2) {
+          return { success: false, error: 'Nama minimal 2 karakter!' };
+        }
+        if (!cleanUsername || cleanUsername.length < 3) {
+          return { success: false, error: 'Username minimal 3 karakter (huruf, angka, tanpa spasi)!' };
+        }
+
+        // Check if username is taken by another account
+        const oldUsername = (user.username || '').toLowerCase();
+        if (cleanUsername !== oldUsername && accounts && accounts[cleanUsername]) {
+          return { success: false, error: `Username @${cleanUsername} sudah digunakan oleh akun lain!` };
+        }
+
+        const newAvatarUrl = avatarUrl !== undefined ? avatarUrl : (user.avatarUrl || null);
+
+        const updatedUser = {
+          ...user,
+          name: cleanName,
+          username: cleanUsername,
+          avatarUrl: newAvatarUrl,
+        };
+
+        // Update accounts dictionary
+        const updatedAccounts = { ...(accounts || {}) };
+        if (cleanUsername !== oldUsername && updatedAccounts[oldUsername]) {
+          const prevAccount = updatedAccounts[oldUsername];
+          delete updatedAccounts[oldUsername];
+          updatedAccounts[cleanUsername] = {
+            ...prevAccount,
+            name: cleanName,
+            username: cleanUsername,
+            avatarUrl: newAvatarUrl,
+          };
+        } else if (updatedAccounts[cleanUsername]) {
+          updatedAccounts[cleanUsername] = {
+            ...updatedAccounts[cleanUsername],
+            name: cleanName,
+            username: cleanUsername,
+            avatarUrl: newAvatarUrl,
+          };
+        }
+
+        set({
+          user: updatedUser,
+          accounts: updatedAccounts,
+          syncNotification: 'Profil dan foto berhasil diperbarui!',
+        });
+
+        // Sync metadata to Supabase Auth if online
+        if (isOnline && isSupabaseReady) {
+          try {
+            await supabase.auth.updateUser({
+              data: {
+                name: cleanName,
+                username: cleanUsername,
+                avatar_url: newAvatarUrl,
+              },
+            });
+          } catch (e) {
+            console.warn('Supabase updateUser metadata note:', e.message);
+          }
+        }
+
+        // Sync updated avatar and name to Leaderboard
+        await get().syncWeeklyStatsToSupabase();
+
+        return { success: true };
+      },
+
       // Helper alias for case flexibility
       addXp: (amount, reason = '') => {
         get().addXP(amount, reason);
@@ -600,6 +679,7 @@ export const useAppStore = create(
           user_id: userId,
           username: (user?.username || 'user').toLowerCase(),
           name: user?.name || 'Pembelajar MyLala',
+          avatar_url: user?.avatarUrl || null,
           year_week: currentWeek,
           weekly_xp: weeklyXp || 0,
           cards_reviewed: cardsReviewed,
@@ -608,9 +688,17 @@ export const useAppStore = create(
         };
 
         try {
-          await supabase
+          const { error } = await supabase
             .from('user_weekly_stats')
             .upsert(payload, { onConflict: 'user_id,year_week' });
+
+          // If remote table hasn't added avatar_url column yet, fallback gracefully
+          if (error && error.message && error.message.toLowerCase().includes('avatar_url')) {
+            const { avatar_url, ...fallbackPayload } = payload;
+            await supabase
+              .from('user_weekly_stats')
+              .upsert(fallbackPayload, { onConflict: 'user_id,year_week' });
+          }
         } catch (err) {
           console.warn('Realtime weekly stats sync notice:', err.message);
         }
@@ -659,7 +747,8 @@ export const useAppStore = create(
           id: userId,
           user_id: userId,
           name: user?.name ? `${user.name} (Kamu)` : 'Kamu',
-          avatar: '🌟',
+          avatar: user?.avatarUrl || '🌟',
+          avatarUrl: user?.avatarUrl || null,
           isCurrentUser: true,
           streak: streak || 1,
           weeklyXp: weeklyXp || 0,
@@ -695,10 +784,12 @@ export const useAppStore = create(
         return combined.map((item, index) => {
           const xpValue = item.weeklyXp !== undefined ? item.weeklyXp : (item.weekly_xp || 0);
           const isUser = Boolean(item.isCurrentUser || item.user_id === userId);
+          const avatarUrl = isUser ? (user?.avatarUrl || null) : (item.avatar_url || item.avatarUrl || null);
           return {
             id: item.id || item.user_id,
             name: isUser ? (user?.name ? `${user.name} (Kamu)` : 'Kamu') : (item.name || item.username),
-            avatar: isUser ? '🌟' : (item.avatar || '👤'),
+            avatar: isUser ? (user?.avatarUrl || '🌟') : (item.avatar || '👤'),
+            avatarUrl: avatarUrl,
             streak: item.streak || 1,
             cardsReviewed: item.cardsReviewed || item.cards_reviewed || 0,
             weeklyXp: xpValue,

@@ -31,8 +31,7 @@ export default function ShareCardModal({ isOpen, onClose, customStats = null }) 
   useEffect(() => {
     if (!isOpen) return;
 
-    // Small delay to ensure modal and canvas element are mounted in DOM
-    const timer = setTimeout(() => {
+    const renderCard = (avatarImg = null) => {
       if (canvasRef.current) {
         drawShareCard(canvasRef.current, {
           format,
@@ -43,12 +42,24 @@ export default function ShareCardModal({ isOpen, onClose, customStats = null }) 
           weeklyXp: effectiveWeeklyXp,
           streak: effectiveStreak,
           masteredCards: masteredCount,
+          avatarImage: avatarImg,
         });
       }
-    }, 50);
+    };
 
-    return () => clearTimeout(timer);
-  }, [isOpen, format, effectiveName, effectiveUsername, currentTier.name, effectiveRank, effectiveWeeklyXp, effectiveStreak, masteredCount]);
+    // If user has an avatar URL, preload it before rendering
+    if (user?.avatarUrl) {
+      const img = new Image();
+      img.onload = () => renderCard(img);
+      img.onerror = () => renderCard(null);
+      img.src = user.avatarUrl;
+    } else {
+      const timer = setTimeout(() => {
+        renderCard(null);
+      }, 50);
+      return () => clearTimeout(timer);
+    }
+  }, [isOpen, format, effectiveName, effectiveUsername, currentTier.name, effectiveRank, effectiveWeeklyXp, effectiveStreak, masteredCount, user?.avatarUrl]);
 
   // Handle ESC key to close
   useEffect(() => {

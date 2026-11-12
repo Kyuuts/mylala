@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS user_weekly_stats (
     user_id VARCHAR(100) NOT NULL,
     username VARCHAR(100) NOT NULL,
     name VARCHAR(100) NOT NULL,
+    avatar_url TEXT,
     year_week VARCHAR(20) NOT NULL, -- e.g., '2026-W46'
     weekly_xp INT NOT NULL DEFAULT 0,
     cards_reviewed INT NOT NULL DEFAULT 0,
@@ -16,6 +17,9 @@ CREATE TABLE IF NOT EXISTS user_weekly_stats (
     updated_at TIMESTAMPTZ DEFAULT timezone('utc'::text, now()) NOT NULL,
     CONSTRAINT unique_user_week UNIQUE (user_id, year_week)
 );
+
+-- Ensure avatar_url exists if table was created previously
+ALTER TABLE user_weekly_stats ADD COLUMN IF NOT EXISTS avatar_url TEXT;
 
 -- 2. Index for instant leaderboard sorting
 CREATE INDEX IF NOT EXISTS idx_weekly_stats_rank ON user_weekly_stats(year_week, weekly_xp DESC);

@@ -90,6 +90,7 @@ export function drawShareCard(canvas, data) {
     weeklyXp = 0,
     streak = 1,
     masteredCards = 0,
+    avatarImage = null,
   } = data;
 
   const isStory = format === 'story';
@@ -171,11 +172,20 @@ export function drawShareCard(canvas, data) {
   ctx.stroke();
   ctx.restore();
 
-  // Avatar Icon inside circle
-  ctx.font = '72px system-ui, sans-serif';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.fillText(theme.badge || '🌟', width / 2, heroY + 4);
+  // Avatar inside circle (User Photo/Avatar if provided, else Tier Badge)
+  if (avatarImage && avatarImage.complete && avatarImage.naturalWidth > 0) {
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(width / 2, heroY, 74, 0, Math.PI * 2);
+    ctx.clip();
+    ctx.drawImage(avatarImage, width / 2 - 74, heroY - 74, 148, 148);
+    ctx.restore();
+  } else {
+    ctx.font = '72px system-ui, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(theme.badge || '🌟', width / 2, heroY + 4);
+  }
 
   // User Name
   ctx.fillStyle = '#FFFFFF';

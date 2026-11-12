@@ -1,12 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { NavLink, Link, useNavigate } from 'react-router-dom';
-import { BookOpen, Zap, Newspaper, PlusCircle, WifiOff, Cloud, RefreshCw, LogOut, User, Trophy } from 'lucide-react';
+import { BookOpen, Zap, Newspaper, PlusCircle, WifiOff, Cloud, RefreshCw, LogOut, User, Trophy, Settings } from 'lucide-react';
 import { useAppStore } from '../../store/useAppStore';
 import Logo from './Logo';
+import EditProfileModal from '../profile/EditProfileModal';
 
 export default function Navbar() {
   const navigate = useNavigate();
   const { isOnline, isSupabaseReady, syncStatus, offlineQueue, user, logout, weeklyXp } = useAppStore();
+  const [editProfileOpen, setEditProfileOpen] = useState(false);
 
   const handleLogout = () => {
     logout();
@@ -123,15 +125,30 @@ export default function Navbar() {
 
           {/* User Profile & Logout */}
           <div className="flex items-center gap-1.5 sm:gap-2 pl-2 border-l border-slate-200">
-            <span className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-700 bg-slate-100 px-2.5 py-1 rounded-full">
-              <User className="w-3 h-3 text-indigo-600" />
+            <button
+              type="button"
+              onClick={() => setEditProfileOpen(true)}
+              title="Edit Profil & Avatar"
+              className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 active:scale-95 px-2.5 py-1 rounded-full transition cursor-pointer"
+            >
+              <div className="w-4 h-4 rounded-full overflow-hidden shrink-0 flex items-center justify-center bg-indigo-100">
+                {user?.avatarUrl ? (
+                  <img
+                    src={user.avatarUrl}
+                    alt={user.name || 'User'}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <User className="w-2.5 h-2.5 text-indigo-600" />
+                )}
+              </div>
               <span className="max-w-[80px] sm:max-w-none truncate">{user?.name || 'Imam'}</span>
               {user?.cefrLevel && (
                 <span className="px-1.5 py-0.2 rounded-full bg-indigo-600 text-white text-[9px] font-extrabold">
                   {user.cefrLevel}
                 </span>
               )}
-            </span>
+            </button>
 
             <button
               onClick={handleLogout}
@@ -143,6 +160,12 @@ export default function Navbar() {
           </div>
         </div>
       </div>
+
+      {/* Edit Profile & Avatar Modal */}
+      <EditProfileModal
+        isOpen={editProfileOpen}
+        onClose={() => setEditProfileOpen(false)}
+      />
     </header>
   );
 }
