@@ -208,8 +208,19 @@ export const useAppStore = create(
         // 4. Sync initial zero weekly stats to Supabase for the new member
         get().syncWeeklyStatsToSupabase();
 
-        // 5. Sync account to Supabase user_accounts for seamless cross-device login
+        // 5. Sync account to Supabase profiles & user_accounts for seamless cross-device login
         if (isOnline && isSupabaseReady) {
+          try {
+            await supabase.from('profiles').upsert({
+              id: assignedUserId,
+              username: cleanUser,
+              name: cleanName,
+              avatar_url: null,
+              role: 'member',
+              updated_at: new Date().toISOString(),
+            });
+          } catch (_) {}
+
           try {
             await supabase.from('user_accounts').upsert({
               id: assignedUserId,
@@ -339,8 +350,18 @@ export const useAppStore = create(
           };
         }
 
-        // 2. Try Supabase Auth if online and identifier is an email (or linked to email in local cache)
+        // 2. Try Supabase Auth if online (supports email directly, or username via secure RPC get_email_for_username)
         let targetEmail = cleanId.includes('@') ? cleanId : null;
+        if (!targetEmail && isOnline && isSupabaseReady) {
+          try {
+            const { data: rpcEmail } = await supabase.rpc('get_email_for_username', {
+              target_username: cleanId,
+            });
+            if (rpcEmail) {
+              targetEmail = rpcEmail;
+            }
+          } catch (_) {}
+        }
         if (!targetEmail) {
           const matchedAccount = accounts[cleanId] || Object.values(accounts).find((a) => a.username === cleanId);
           if (matchedAccount?.email) {
@@ -358,9 +379,24 @@ export const useAppStore = create(
             if (!error && data?.user) {
               const supUser = data.user;
               const supUserId = supUser.id;
-              const userName = supUser.user_metadata?.name || cleanId;
-              const userUsername = supUser.user_metadata?.username || cleanId.split('@')[0];
-              const userAvatar = supUser.user_metadata?.avatar_url || null;
+              let userName = supUser.user_metadata?.name || cleanId;
+              let userUsername = supUser.user_metadata?.username || cleanId.split('@')[0];
+              let userAvatar = supUser.user_metadata?.avatar_url || null;
+
+              // Pull public profile from profiles table
+              try {
+                const { data: prof } = await supabase
+                  .from('profiles')
+                  .select('username, name, avatar_url, role')
+                  .eq('id', supUserId)
+                  .maybeSingle();
+
+                if (prof) {
+                  if (prof.name) userName = prof.name;
+                  if (prof.username) userUsername = prof.username;
+                  if (prof.avatar_url) userAvatar = prof.avatar_url;
+                }
+              } catch (_) {}
 
               // Isolate user progress: store previous user's progress
               const prevUserId = state.userId;
@@ -606,8 +642,18 @@ export const useAppStore = create(
           syncNotification: 'Profil dan foto berhasil diperbarui!',
         });
 
-        // 1. Sync updated profile & avatar to Supabase user_accounts table
+        // 1. Sync updated profile & avatar to Supabase profiles & user_accounts table
         if (isOnline && isSupabaseReady) {
+          try {
+            await supabase.from('profiles').upsert({
+              id: user.id,
+              username: cleanUsername,
+              name: cleanName,
+              avatar_url: newAvatarUrl,
+              updated_at: new Date().toISOString(),
+            });
+          } catch (_) {}
+
           try {
             await supabase.from('user_accounts').upsert({
               id: user.id,
@@ -791,7 +837,7 @@ export const useAppStore = create(
             data = byUser;
           }
 
-          // 3. Cloud profile & avatar lookup from user_accounts
+          // 3. Cloud profile & avatar lookup from profiles (and fallback to user_accounts)
           let cloudAvatar = data?.avatar_url || null;
           let cloudName = data?.name || null;
 
@@ -801,15 +847,26 @@ export const useAppStore = create(
             if (targetUsername) lookupConditions.push(`username.eq.${targetUsername.toLowerCase()}`);
 
             if (lookupConditions.length > 0) {
-              const { data: accData } = await supabase
-                .from('user_accounts')
+              const { data: profData } = await supabase
+                .from('profiles')
                 .select('avatar_url, name')
                 .or(lookupConditions.join(','))
                 .maybeSingle();
 
-              if (accData) {
-                if (accData.avatar_url) cloudAvatar = accData.avatar_url;
-                if (accData.name && !cloudName) cloudName = accData.name;
+              if (profData) {
+                if (profData.avatar_url) cloudAvatar = profData.avatar_url;
+                if (profData.name && !cloudName) cloudName = profData.name;
+              } else {
+                const { data: accData } = await supabase
+                  .from('user_accounts')
+                  .select('avatar_url, name')
+                  .or(lookupConditions.join(','))
+                  .maybeSingle();
+
+                if (accData) {
+                  if (accData.avatar_url) cloudAvatar = accData.avatar_url;
+                  if (accData.name && !cloudName) cloudName = accData.name;
+                }
               }
             }
           } catch (_) {}
@@ -998,18 +1055,18 @@ export const useAppStore = create(
             if (!error && data && data.length > 0) {
               remoteData = data;
 
-              // Enrich contestants whose avatar_url is missing with avatars from user_accounts
+              // Enrich contestants whose avatar_url is missing with avatars from profiles
               try {
-                const { data: accRows } = await supabase
-                  .from('user_accounts')
+                const { data: profRows } = await supabase
+                  .from('profiles')
                   .select('id, username, avatar_url');
 
-                if (accRows && accRows.length > 0) {
+                if (profRows && profRows.length > 0) {
                   const avatarMap = new Map();
-                  accRows.forEach((acc) => {
-                    if (acc.avatar_url) {
-                      if (acc.id) avatarMap.set(acc.id, acc.avatar_url);
-                      if (acc.username) avatarMap.set(acc.username.toLowerCase(), acc.avatar_url);
+                  profRows.forEach((p) => {
+                    if (p.avatar_url) {
+                      if (p.id) avatarMap.set(p.id, p.avatar_url);
+                      if (p.username) avatarMap.set(p.username.toLowerCase(), p.avatar_url);
                     }
                   });
 
