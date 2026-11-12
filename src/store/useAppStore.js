@@ -99,6 +99,7 @@ export const useAppStore = create(
 
         const state = get();
         const accounts = state.accounts || INITIAL_ACCOUNTS;
+        const { isOnline, isSupabaseReady } = state;
 
         if (accounts[cleanUser]) {
           return { success: false, error: 'Username sudah terdaftar! Silakan login di tab Masuk.' };
@@ -108,8 +109,27 @@ export const useAppStore = create(
           return { success: false, error: 'Email sudah terdaftar! Silakan gunakan email lain atau masuk.' };
         }
 
+        // Check if username or email already exists in Supabase user_accounts table
+        if (isOnline && isSupabaseReady) {
+          try {
+            const { data: cloudAcc } = await supabase
+              .from('user_accounts')
+              .select('username, email')
+              .or(`username.eq.${cleanUser},email.eq.${cleanEmail}`)
+              .maybeSingle();
+
+            if (cloudAcc) {
+              if (cloudAcc.username?.toLowerCase() === cleanUser) {
+                return { success: false, error: 'Username sudah terdaftar di cloud! Silakan masuk di tab Masuk.' };
+              }
+              if (cloudAcc.email?.toLowerCase() === cleanEmail) {
+                return { success: false, error: 'Email sudah terdaftar di cloud! Silakan masuk dengan email ini.' };
+              }
+            }
+          } catch (_) {}
+        }
+
         let supabaseUserId = null;
-        const { isOnline, isSupabaseReady } = state;
 
         // 1. Register to Supabase Auth when online
         if (isOnline && isSupabaseReady) {
@@ -188,10 +208,29 @@ export const useAppStore = create(
         // 4. Sync initial zero weekly stats to Supabase for the new member
         get().syncWeeklyStatsToSupabase();
 
+        // 5. Sync account to Supabase user_accounts for seamless cross-device login
+        if (isOnline && isSupabaseReady) {
+          try {
+            await supabase.from('user_accounts').upsert({
+              id: assignedUserId,
+              username: cleanUser,
+              email: cleanEmail,
+              name: cleanName,
+              avatar_url: null,
+              salt,
+              password_hash: passwordHash,
+              role: 'member',
+              created_at: new Date().toISOString(),
+            });
+          } catch (e) {
+            console.warn('user_accounts cloud registration notice:', e.message);
+          }
+        }
+
         return { success: true };
       },
 
-      // Action: Authentication Login with Supabase Auth & Secure Salted Hash Verification
+      // Action: Authentication Login with Cloud-first Cross-Device Sync, Supabase Auth & Salted Hash
       login: async (arg1, arg2) => {
         let identifier, password;
         if (typeof arg1 === 'object' && arg1 !== null) {
@@ -216,7 +255,91 @@ export const useAppStore = create(
         const accounts = state.accounts || INITIAL_ACCOUNTS;
         const { isOnline, isSupabaseReady } = state;
 
-        // 1. Try Supabase Auth if online and identifier is an email (or linked to email)
+        // 1. Cloud-first account lookup in Supabase user_accounts (supports cross-device login by username or email)
+        let cloudAccount = null;
+        if (isOnline && isSupabaseReady) {
+          try {
+            const { data, error } = await supabase
+              .from('user_accounts')
+              .select('*')
+              .or(`username.eq.${cleanId},email.eq.${cleanId}`)
+              .maybeSingle();
+
+            if (!error && data) {
+              cloudAccount = data;
+            }
+          } catch (err) {
+            console.warn('Supabase user_accounts query notice:', err.message);
+          }
+        }
+
+        if (cloudAccount) {
+          const isValid = await verifyPassword(cleanPass, cloudAccount.salt, cloudAccount.password_hash);
+          if (isValid) {
+            const prevUserId = state.userId;
+            const updatedProgressByUserId = { ...(state.userProgressByUserId || {}) };
+            if (prevUserId) {
+              updatedProgressByUserId[prevUserId] = state.userProgress || {};
+            }
+
+            const userSavedProg = updatedProgressByUserId[cloudAccount.id] || {};
+
+            // Cache into local accounts dictionary so offline access works seamlessly on this device
+            const updatedAccounts = {
+              ...(accounts || {}),
+              [cloudAccount.username]: {
+                id: cloudAccount.id,
+                username: cloudAccount.username,
+                email: cloudAccount.email,
+                name: cloudAccount.name,
+                avatarUrl: cloudAccount.avatar_url || null,
+                role: cloudAccount.role || 'member',
+                salt: cloudAccount.salt,
+                passwordHash: cloudAccount.password_hash,
+                createdAt: cloudAccount.created_at,
+              },
+            };
+
+            set({
+              isAuthenticated: true,
+              accounts: updatedAccounts,
+              user: {
+                id: cloudAccount.id,
+                username: cloudAccount.username,
+                email: cloudAccount.email,
+                name: cloudAccount.name,
+                avatarUrl: cloudAccount.avatar_url || null,
+                role: cloudAccount.role || 'member',
+              },
+              userId: cloudAccount.id,
+              userProgress: userSavedProg,
+              userProgressByUserId: updatedProgressByUserId,
+              syncNotification: `Selamat datang kembali, ${cloudAccount.name}!`,
+            });
+
+            // Attempt Supabase Auth login if email is available
+            if (cloudAccount.email) {
+              try {
+                await supabase.auth.signInWithPassword({
+                  email: cloudAccount.email,
+                  password: cleanPass,
+                });
+              } catch (_) {}
+            }
+
+            await get().fetchUserProgressFromSupabase(cloudAccount.id);
+            await get().fetchUserStatsFromSupabase(cloudAccount.id, cloudAccount.username);
+            get().syncWeeklyStatsToSupabase();
+
+            return { success: true };
+          }
+          return {
+            success: false,
+            error: 'Password yang Anda masukkan salah!',
+          };
+        }
+
+        // 2. Try Supabase Auth if online and identifier is an email (or linked to email in local cache)
         let targetEmail = cleanId.includes('@') ? cleanId : null;
         if (!targetEmail) {
           const matchedAccount = accounts[cleanId] || Object.values(accounts).find((a) => a.username === cleanId);
@@ -237,6 +360,7 @@ export const useAppStore = create(
               const supUserId = supUser.id;
               const userName = supUser.user_metadata?.name || cleanId;
               const userUsername = supUser.user_metadata?.username || cleanId.split('@')[0];
+              const userAvatar = supUser.user_metadata?.avatar_url || null;
 
               // Isolate user progress: store previous user's progress
               const prevUserId = state.userId;
@@ -254,6 +378,7 @@ export const useAppStore = create(
                   username: userUsername,
                   email: supUser.email,
                   name: userName,
+                  avatarUrl: userAvatar,
                   role: 'member',
                 },
                 userId: supUserId,
@@ -274,7 +399,7 @@ export const useAppStore = create(
           }
         }
 
-        // 2. Offline / Local Cryptographic Hash Verification
+        // 3. Offline / Local Cryptographic Hash Verification
         const existing =
           accounts[cleanId] ||
           Object.values(accounts).find(
@@ -309,6 +434,7 @@ export const useAppStore = create(
                 username: existing.username,
                 email: existing.email,
                 name: existing.name,
+                avatarUrl: existing.avatarUrl || null,
                 role: existing.role || 'member',
               },
               userId: existing.id,
@@ -320,6 +446,8 @@ export const useAppStore = create(
             if (isOnline && isSupabaseReady) {
               await get().fetchUserProgressFromSupabase(existing.id);
               await get().fetchUserStatsFromSupabase(existing.id, existing.username);
+              get().syncWeeklyStatsToSupabase();
+              get().syncLocalAccountsToCloud();
             }
 
             return { success: true };
@@ -332,7 +460,7 @@ export const useAppStore = create(
 
         return {
           success: false,
-          error: 'Akun belum terdaftar! Silakan buat akun baru di tab "Daftar Akun Baru".',
+          error: 'Akun belum terdaftar! Silakan periksa kembali username/email Anda atau buat akun baru di tab "Daftar Akun Baru".',
         };
       },
 
@@ -366,6 +494,33 @@ export const useAppStore = create(
         set({ isOnline });
         if (isOnline) {
           await get().syncOfflineQueue();
+          await get().syncLocalAccountsToCloud();
+        }
+      },
+
+      // Action: Auto-sync all local accounts to Supabase user_accounts for cross-device availability
+      syncLocalAccountsToCloud: async () => {
+        const { accounts, isOnline, isSupabaseReady } = get();
+        if (!isOnline || !isSupabaseReady || !accounts) return;
+
+        const list = Object.values(accounts);
+        for (const acc of list) {
+          if (!acc || !acc.username) continue;
+          try {
+            await supabase.from('user_accounts').upsert({
+              id: acc.id || generateUUID(),
+              username: acc.username.toLowerCase(),
+              email: acc.email || `${acc.username.toLowerCase()}@mylala.app`,
+              name: acc.name || acc.username,
+              avatar_url: acc.avatarUrl || null,
+              salt: acc.salt || 'mylala_salt',
+              password_hash: acc.passwordHash || '',
+              role: acc.role || 'member',
+              created_at: acc.createdAt || new Date().toISOString(),
+            }, { onConflict: 'username' });
+          } catch (_) {
+            // Silently ignore if table doesn't exist yet
+          }
         }
       },
 
@@ -417,23 +572,19 @@ export const useAppStore = create(
 
         // Update accounts dictionary
         const updatedAccounts = { ...(accounts || {}) };
+        const activeKey = accounts[cleanUsername] ? cleanUsername : (accounts[oldUsername] ? oldUsername : cleanUsername);
+        const existingAcc = updatedAccounts[activeKey] || {};
+
         if (cleanUsername !== oldUsername && updatedAccounts[oldUsername]) {
-          const prevAccount = updatedAccounts[oldUsername];
           delete updatedAccounts[oldUsername];
-          updatedAccounts[cleanUsername] = {
-            ...prevAccount,
-            name: cleanName,
-            username: cleanUsername,
-            avatarUrl: newAvatarUrl,
-          };
-        } else if (updatedAccounts[cleanUsername]) {
-          updatedAccounts[cleanUsername] = {
-            ...updatedAccounts[cleanUsername],
-            name: cleanName,
-            username: cleanUsername,
-            avatarUrl: newAvatarUrl,
-          };
         }
+        updatedAccounts[cleanUsername] = {
+          ...existingAcc,
+          id: user.id,
+          name: cleanName,
+          username: cleanUsername,
+          avatarUrl: newAvatarUrl,
+        };
 
         set({
           user: updatedUser,
@@ -441,8 +592,24 @@ export const useAppStore = create(
           syncNotification: 'Profil dan foto berhasil diperbarui!',
         });
 
-        // Sync metadata to Supabase Auth if online
+        // 1. Sync updated profile & avatar to Supabase user_accounts table
         if (isOnline && isSupabaseReady) {
+          try {
+            await supabase.from('user_accounts').upsert({
+              id: user.id,
+              username: cleanUsername,
+              email: user.email || `${cleanUsername}@mylala.app`,
+              name: cleanName,
+              avatar_url: newAvatarUrl,
+              salt: existingAcc.salt || 'mylala_salt',
+              password_hash: existingAcc.passwordHash || '',
+              role: user.role || 'member',
+            }, { onConflict: 'username' });
+          } catch (e) {
+            console.warn('user_accounts update notice:', e.message);
+          }
+
+          // 2. Sync metadata to Supabase Auth if online
           try {
             await supabase.auth.updateUser({
               data: {
@@ -456,7 +623,7 @@ export const useAppStore = create(
           }
         }
 
-        // Sync updated avatar and name to Leaderboard
+        // 3. Sync updated avatar and name to Leaderboard
         await get().syncWeeklyStatsToSupabase();
 
         return { success: true };
@@ -609,11 +776,33 @@ export const useAppStore = create(
             data = byUser;
           }
 
-          if (data) {
-            const remoteXp = data.weekly_xp || 0;
-            const remoteStreak = data.streak || 1;
-            const remoteAvatar = data.avatar_url || null;
-            const canonicalUserId = data.user_id || targetUserId;
+          // 3. Cloud profile & avatar lookup from user_accounts
+          let cloudAvatar = data?.avatar_url || null;
+          let cloudName = data?.name || null;
+
+          try {
+            const lookupConditions = [];
+            if (targetUserId) lookupConditions.push(`id.eq.${targetUserId}`);
+            if (targetUsername) lookupConditions.push(`username.eq.${targetUsername.toLowerCase()}`);
+
+            if (lookupConditions.length > 0) {
+              const { data: accData } = await supabase
+                .from('user_accounts')
+                .select('avatar_url, name')
+                .or(lookupConditions.join(','))
+                .maybeSingle();
+
+              if (accData) {
+                if (accData.avatar_url) cloudAvatar = accData.avatar_url;
+                if (accData.name && !cloudName) cloudName = accData.name;
+              }
+            }
+          } catch (_) {}
+
+          if (data || cloudAvatar) {
+            const remoteXp = data?.weekly_xp || 0;
+            const remoteStreak = data?.streak || 1;
+            const canonicalUserId = data?.user_id || targetUserId;
 
             set((state) => ({
               userId: canonicalUserId,
@@ -624,8 +813,8 @@ export const useAppStore = create(
                 ? {
                     ...state.user,
                     id: canonicalUserId,
-                    name: data.name || state.user.name,
-                    avatarUrl: remoteAvatar || state.user.avatarUrl || null,
+                    name: cloudName || data?.name || state.user.name,
+                    avatarUrl: cloudAvatar || state.user.avatarUrl || null,
                   }
                 : state.user,
             }));
@@ -792,6 +981,28 @@ export const useAppStore = create(
 
             if (!error && data && data.length > 0) {
               remoteData = data;
+
+              // Enrich contestants whose avatar_url is missing with avatars from user_accounts
+              try {
+                const { data: accRows } = await supabase
+                  .from('user_accounts')
+                  .select('id, username, avatar_url');
+
+                if (accRows && accRows.length > 0) {
+                  const avatarMap = new Map();
+                  accRows.forEach((acc) => {
+                    if (acc.avatar_url) {
+                      if (acc.id) avatarMap.set(acc.id, acc.avatar_url);
+                      if (acc.username) avatarMap.set(acc.username.toLowerCase(), acc.avatar_url);
+                    }
+                  });
+
+                  remoteData = remoteData.map((row) => ({
+                    ...row,
+                    avatar_url: row.avatar_url || avatarMap.get(row.user_id) || avatarMap.get(row.username?.toLowerCase()) || null,
+                  }));
+                }
+              } catch (_) {}
             }
           } catch (err) {
             console.warn('Could not fetch remote leaderboard, using local store:', err.message);
@@ -1116,6 +1327,13 @@ export const useAppStore = create(
               delete acc.password;
             }
           });
+
+          // Sync local accounts to cloud on startup if online
+          if (typeof state.syncLocalAccountsToCloud === 'function') {
+            setTimeout(() => {
+              state.syncLocalAccountsToCloud();
+            }, 1000);
+          }
         }
       },
     }
