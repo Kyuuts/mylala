@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink, Link, useNavigate } from 'react-router-dom';
-import { BookOpen, LayoutDashboard, PlusCircle, WifiOff, Cloud, RefreshCw, LogOut, User, Trophy } from 'lucide-react';
+import { BookOpen, Zap, Newspaper, PlusCircle, WifiOff, Cloud, RefreshCw, LogOut, User, Trophy } from 'lucide-react';
 import { useAppStore } from '../../store/useAppStore';
 import Logo from './Logo';
 
@@ -48,21 +48,6 @@ export default function Navbar() {
           {/* Desktop Navigation (hidden on mobile, handled by BottomNav) */}
           <nav className="hidden md:flex items-center gap-1 sm:gap-2">
             <NavLink
-              to="/"
-              end
-              className={({ isActive }) =>
-                `flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition ${
-                  isActive
-                    ? 'bg-indigo-50 text-indigo-700 font-bold'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-                }`
-              }
-            >
-              <BookOpen className="w-4 h-4" />
-              <span>Beranda</span>
-            </NavLink>
-
-            <NavLink
               to="/dashboard"
               className={({ isActive }) =>
                 `flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition ${
@@ -72,8 +57,36 @@ export default function Navbar() {
                 }`
               }
             >
-              <LayoutDashboard className="w-4 h-4" />
-              <span>Dashboard</span>
+              <BookOpen className="w-4 h-4" />
+              <span>Belajar</span>
+            </NavLink>
+
+            <NavLink
+              to="/practice"
+              className={({ isActive }) =>
+                `flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition ${
+                  isActive
+                    ? 'bg-orange-50 text-orange-700 font-bold'
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                }`
+              }
+            >
+              <Zap className="w-4 h-4 text-orange-500" />
+              <span>Latihan</span>
+            </NavLink>
+
+            <NavLink
+              to="/reading"
+              className={({ isActive }) =>
+                `flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition ${
+                  isActive
+                    ? 'bg-sky-50 text-sky-700 font-bold'
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                }`
+              }
+            >
+              <Newspaper className="w-4 h-4 text-sky-500" />
+              <span>Bacaan</span>
             </NavLink>
 
             <NavLink
@@ -87,7 +100,7 @@ export default function Navbar() {
               }
             >
               <Trophy className="w-4 h-4 text-amber-500" />
-              <span>Rank Liga</span>
+              <span>Liga Rank</span>
               <span className="px-1.5 py-0.2 rounded-full bg-amber-100 text-amber-800 text-[10px] font-bold">
                 {weeklyXp || 0} XP
               </span>
@@ -104,7 +117,7 @@ export default function Navbar() {
               }
             >
               <PlusCircle className="w-4 h-4" />
-              <span>Buat Modul</span>
+              <span>+ Modul</span>
             </NavLink>
           </nav>
 

@@ -81,6 +81,35 @@ Dua fix kritis yang disyaratkan dalam laporan sebelum rilis publik:
 
 ---
 
+## 🏛️ Arsitektur Baru Kurikulum 3 Pilar (Revisi Besar)
+
+Penyelarasan ekosistem kurikulum MyLala ke dalam 3 Pilar Utama:
+
+### ✅ TAHAP 1 — Restrukturisasi Navigasi & Data Schema (Pondasi) [SELESAI]
+- [x] Standarisasi CEFR A1 s/d C1 di `src/utils/moduleLevel.js` (A1 Explorer, A2 Voyager, B1 Citizen, B2 Diplomat, C1 Mastermind).
+- [x] Restrukturisasi modul belajar: Pemisahan Grammar, Kosakata, dan Konjungsi di `src/services/mockData.js`.
+- [x] Penambahan modul & kartu latihan khusus **Konjungsi (Connectors & Transitions)**.
+- [x] Pembuatan dataset Graded Readers (`src/services/readingArticlesData.js`) untuk pilar Bacaan.
+- [x] Pembuatan halaman pilar **Bacaan** (`src/pages/ReadingPage.jsx`) dengan filter CEFR dan fitur *Tap-to-Save* kosakata ke kartu flashcard.
+- [x] Pembuatan halaman arena **Latihan** (`src/pages/PracticePage.jsx`) dengan hub 6 mode: Flashcard, Grammar Detective, Bridge Builder, Dikte, Dialog, Menulis.
+- [x] Restrukturisasi Bottom Navigation (Mobile) & Navbar (Desktop): 4 tab konsisten (**Belajar**, **Latihan**, **Bacaan**, **Liga**).
+- [x] Banner kreatif *The Language Scanner (Tes Penempatan Level CEFR)* di dashboard belajar.
+
+### 🟡 TAHAP 2 — Tes Penempatan Level Adaptif & Graded Reader Enhancement [BERIKUTNYA]
+- [ ] Mesin kuis diagnostik adaptif 8 soal (The Language Scanner) untuk auto-deteksi level pengguna (A1 - C1).
+- [ ] Auto-rekomendasi kurikulum & bacaan awal berdasarkan skor scanner.
+- [ ] Pembacaan audio native lengkap per paragraf pada pilar Bacaan.
+
+### 🔵 TAHAP 3 — Implementasi Penuh 6 Mode Arena Latihan
+- [x] Mode 1: Kartu Hafalan (Active Recall SRS SM-2 + Voice Shadowing)
+- [x] Mode 2: Kesalahan Umum (Grammar Detective) - Mini-game aktif
+- [x] Mode 3: Konjungsi (Bridge Builder) - Mini-game aktif
+- [ ] Mode 4: Dikte (Ear Master) - Audio typing engine dengan fuzzy grading
+- [ ] Mode 5: Dialog (Roleplay Lounge) - Chatbot NPC percakapan situasional
+- [ ] Mode 6: Latihan Menulis (Sentence Builder) - Drag/tap scrambled word blocks
+
+---
+
 ## 🔍 Temuan Tambahan (Prioritas Sedang - Sprint Berikutnya)
 - [ ] **Unit Tests**: Tambahkan unit test untuk SM-2 edge cases (interval saat EF=1.3, weekly reset logic, kalkulasi XP).
 - [ ] **PWA UX Polish**: Tambahkan prompt "Tambah ke Layar Utama" khusus pengguna iOS Safari. Uji target skor Lighthouse PWA ≥ 90.

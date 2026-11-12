@@ -3,6 +3,8 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import RootLayout from './layouts/RootLayout';
 import HomePage from './pages/HomePage';
 import DashboardPage from './pages/DashboardPage';
+import PracticePage from './pages/PracticePage';
+import ReadingPage from './pages/ReadingPage';
 import ModuleDetailPage from './pages/ModuleDetailPage';
 import FlashcardPage from './pages/FlashcardPage';
 import CreateModulePage from './pages/CreateModulePage';
@@ -27,7 +29,12 @@ export default function App() {
         }
       >
         <Route index element={<HomePage />} />
+        <Route path="learn" element={<DashboardPage />} />
         <Route path="dashboard" element={<DashboardPage />} />
+        <Route path="practice" element={<PracticePage />} />
+        <Route path="latihan" element={<PracticePage />} />
+        <Route path="reading" element={<ReadingPage />} />
+        <Route path="bacaan" element={<ReadingPage />} />
         <Route path="leaderboard" element={<LeaderboardPage />} />
         <Route path="rank" element={<LeaderboardPage />} />
         <Route path="create" element={<CreateModulePage />} />

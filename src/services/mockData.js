@@ -10,6 +10,8 @@ export const MOCK_MODULES = [
   {
     id: 'mod-starter-svo',
     category: 'Grammar',
+    cefr_level: 'A1',
+    sub_pillar: 'Grammar',
     title: 'Starter Grammar: Rahasia Struktur Kalimat & Jebakan Preposisi',
     content_markdown: `# Starter Grammar: Fondasi Struktur Kalimat (S + V)
 
@@ -51,6 +53,8 @@ Kata kerja berakhiran **-ing** (seperti *playing, studying, watching*) **TIDAK B
   {
     id: 'mod-starter-tenses',
     category: 'Grammar',
+    cefr_level: 'A2',
+    sub_pillar: 'Grammar',
     title: 'Starter Grammar: 3 Tenses Wajib Tanpa Pusing (Present, Past, Perfect)',
     content_markdown: `# Starter Grammar: 3 Tenses Wajib Tanpa Pusing
 
@@ -78,7 +82,9 @@ Dalam 90% percakapan nyata dan tes TOEFL, Anda hanya perlu menguasai perbedaan e
   },
   {
     id: 'mod-starter-conversation',
-    category: 'Templates',
+    category: 'Kosakata',
+    cefr_level: 'A1',
+    sub_pillar: 'Kosakata',
     title: 'Starter Speaking: 5 Template Perkenalan & Small Talk Zero-Gagap',
     content_markdown: `# Starter Speaking: Template Perkenalan & Small Talk Zero-Gagap
 
@@ -119,6 +125,8 @@ Untuk terlihat natural dan percaya diri, gunakan formula **Hook 3 Langkah**:
   {
     id: 'mod-toefl-inversion',
     category: 'Grammar',
+    cefr_level: 'C1',
+    sub_pillar: 'Grammar',
     title: 'TOEFL Mastery: Negative Inversion & Conditionals',
     content_markdown: `# TOEFL Mastery: Inversion Rules
 
@@ -157,6 +165,8 @@ Pada ragam formal/akademis TOEFL, kata "if" dihilangkan dengan menginversi auxil
   {
     id: 'mod-toefl-reduced-clauses',
     category: 'Grammar',
+    cefr_level: 'C1',
+    sub_pillar: 'Grammar',
     title: 'TOEFL Mastery: Reduced Clauses & Participles',
     content_markdown: `# TOEFL Mastery: Reduced Relative & Adverbial Clauses
 
@@ -196,6 +206,8 @@ Jika subjek di anak kalimat **sama persis** dengan subjek induk kalimat:
   {
     id: 'mod-toefl-subjunctive',
     category: 'Grammar',
+    cefr_level: 'C1',
+    sub_pillar: 'Grammar',
     title: 'TOEFL Mastery: Subjunctive Mood & Mandative Verbs',
     content_markdown: `# TOEFL Mastery: Mandative Subjunctive Mood
 
@@ -227,6 +239,8 @@ Dalam bahasa Inggris formal, klausa yang diawali kata kerja berunsur **perintah,
   {
     id: 'mod-toefl-sv-agreement',
     category: 'Grammar',
+    cefr_level: 'B2',
+    sub_pillar: 'Grammar',
     title: 'TOEFL Mastery: Complex Subject-Verb Agreement',
     content_markdown: `# TOEFL Mastery: Complex Subject-Verb Agreement
 
@@ -261,7 +275,9 @@ Kata-kata berikut selalu berpasangan dengan kata kerja tunggal (**Singular Verb*
   // ==========================================
   {
     id: 'mod-toefl-awl',
-    category: 'Vocab',
+    category: 'Kosakata',
+    cefr_level: 'C1',
+    sub_pillar: 'Kosakata',
     title: 'Academic Word List (AWL): High-Yield Scientific Verbs',
     content_markdown: `# Academic Word List (AWL) - Tier 1
 
@@ -285,7 +301,9 @@ Bagian TOEFL Reading & Listening menuntut pemahaman istilah konseptual yang pada
   // ==========================================
   {
     id: 'mod-conv-idioms',
-    category: 'Vocab',
+    category: 'Kosakata',
+    cefr_level: 'B1',
+    sub_pillar: 'Kosakata',
     title: 'Everyday Native Idioms & Natural Collocations',
     content_markdown: `# Natural Everyday Idioms for Fluent Speaking
 
@@ -310,7 +328,9 @@ Penutur asli menggunakan idiom untuk menyampaikan emosi dan kondisi kompleks sec
   },
   {
     id: 'mod-conv-opinions',
-    category: 'Templates',
+    category: 'Kosakata',
+    cefr_level: 'B1',
+    sub_pillar: 'Kosakata',
     title: 'Natural Conversation: Stating Opinions & Polite Disagreement',
     content_markdown: `# Formulas for Stating Opinions & Diplomatic Disagreements
 
@@ -346,7 +366,9 @@ Jangan gunakan *"You are wrong"*! Gunakan teknik *Agree-then-Pivot*:
   },
   {
     id: 'mod-conv-meetings',
-    category: 'Templates',
+    category: 'Kosakata',
+    cefr_level: 'B2',
+    sub_pillar: 'Kosakata',
     title: 'Professional Signposting for Meetings & Discussions',
     content_markdown: `# Professional Signposting in English Meetings
 
@@ -374,6 +396,45 @@ Jangan gunakan *"You are wrong"*! Gunakan teknik *Agree-then-Pivot*:
 * *"Who will take ownership of this action item before our next sync?"*
 `,
     created_at: new Date('2026-01-08T00:00:00Z').toISOString(),
+  },
+  {
+    id: 'mod-conjunctions',
+    category: 'Konjungsi',
+    cefr_level: 'B1',
+    sub_pillar: 'Konjungsi',
+    title: 'Mastering Conjunctions: Jembatan Logika & Transisi Antar Kalimat',
+    content_markdown: `# Conjunctions & Connectors: Jembatan Logika Antar Kalimat
+
+## 1. Mengapa Konjungsi Penentu Kefasihan?
+Kalimat pemula cenderung terputus-putus (*choppy*). Konjungsi adalah perekat yang menghubungkan dua ide menjadi alur yang mengalir mulus (*cohesive flow*).
+
+---
+
+## 2. 3 Kelompok Utama Konjungsi
+
+### A. Kontras & Pertentangan (Contrast)
+* **However / Nevertheless**: Digunakan di awal kalimat baru, diikuti tanda koma.
+  > *"The weather was terrible. However, the flight departed on schedule."*
+* **Although / Even though**: Menempel di anak kalimat klausa bertentangan.
+  > *"Although he lacked formal training, he delivered an exceptional presentation."*
+* **Despite / In spite of**: Diikuti kata benda (Noun) atau Gerund (-ing), bukan subjek + kata kerja.
+  > *"Despite the heavy rain, they continued the survey."*
+
+---
+
+### B. Sebab - Akibat (Cause & Effect)
+* **Therefore / Consequently**: Akibat logis di kalimat berikutnya.
+  > *"Sales dropped sharply. Therefore, the team revised their marketing strategy."*
+* **Since / Because / As**: Menyatakan alasan atau latar belakang.
+  > *"Since we have reached our quarterly target, all team members will receive a bonus."*
+
+---
+
+### C. Penambahan Ide (Addition)
+* **Furthermore / Moreover / In addition**: Menambahkan argumen pendukung yang memperkuat.
+  > *"The hotel is affordable. Furthermore, it is conveniently located near the metro."*
+`,
+    created_at: new Date('2026-01-09T00:00:00Z').toISOString(),
   },
 ];
 
@@ -699,5 +760,37 @@ export const MOCK_FLASHCARDS = [
     front_text: 'Ungkapan menunda topik sementara: "Mari kita simpan dulu poin itu untuk nanti."',
     back_text: "Let's park that topic for our next session.",
     example_sentence: 'Istilah bisnis populer "to park an idea" berarti menunda pembahasan ke lain waktu.',
+  },
+
+  // ==========================================
+  // CARDS: CONJUNCTIONS & TRANSITIONS
+  // ==========================================
+  {
+    id: 'card-conj-1',
+    module_id: 'mod-conjunctions',
+    front_text: 'Hubungkan kontras: "The team worked tirelessly. ____, they missed the final deadline."',
+    back_text: 'However',
+    example_sentence: 'Kunci: "However" mengawali kalimat kontras baru dan selalu diikuti koma.',
+  },
+  {
+    id: 'card-conj-2',
+    module_id: 'mod-conjunctions',
+    front_text: 'Hubungkan klausa sebab-akibat: "____ we have reached the quarterly target, bonuses will be released."',
+    back_text: 'Since',
+    example_sentence: 'Kunci: "Since" di awal kalimat dapat berarti "karena / berhubung" (sinonim formal dari Because).',
+  },
+  {
+    id: 'card-conj-3',
+    module_id: 'mod-conjunctions',
+    front_text: 'Hubungkan kontras dengan kata benda: "____ the severe thunderstorm, the flight landed safely."',
+    back_text: 'Despite',
+    example_sentence: 'Kunci: "Despite" (atau "In spite of") langsung diikuti noun phrase tanpa "of".',
+  },
+  {
+    id: 'card-conj-4',
+    module_id: 'mod-conjunctions',
+    front_text: 'Hubungkan penambahan ide: "The course is practical. ____, the mentorship support is exceptional."',
+    back_text: 'Furthermore',
+    example_sentence: 'Kunci: "Furthermore" menambahkan poin penguat pada argumen sebelumnya.',
   },
 ];

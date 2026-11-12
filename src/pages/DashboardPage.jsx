@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { PlayCircle, Sparkles, RefreshCw, AlertCircle, PlusCircle, Filter, Trophy, Flame, Share2 } from 'lucide-react';
+import { PlayCircle, Sparkles, RefreshCw, AlertCircle, PlusCircle, Filter, Trophy, Flame, Share2, Compass, X, CheckCircle2 } from 'lucide-react';
 import { useAppStore } from '../store/useAppStore';
 import MetricsOverview from '../components/dashboard/MetricsOverview';
 import LanguageSelector from '../components/dashboard/LanguageSelector';
@@ -25,8 +25,9 @@ export default function DashboardPage() {
 
   // Filter States
   const [selectedLanguage, setSelectedLanguage] = useState('en');
-  const [selectedLevel, setSelectedLevel] = useState('All'); // 'All' | 'Starter' | 'Intermediate' | 'Advanced'
-  const [selectedCategory, setSelectedCategory] = useState('All'); // 'All' | 'Grammar' | 'Vocab' | 'Templates'
+  const [selectedLevel, setSelectedLevel] = useState('All'); // 'All' | 'A1' | 'A2' | 'B1' | 'B2' | 'C1'
+  const [selectedCategory, setSelectedCategory] = useState('All'); // 'All' | 'Grammar' | 'Kosakata' | 'Konjungsi'
+  const [scannerOpen, setScannerOpen] = useState(false);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -51,11 +52,11 @@ export default function DashboardPage() {
     loadData();
   }, []);
 
-  // Compute counts per difficulty level for badge numbers
+  // Compute counts per difficulty level for badge numbers (CEFR A1-C1)
   const levelCounts = useMemo(() => {
-    const counts = { All: modules.length, Starter: 0, Intermediate: 0, Advanced: 0 };
+    const counts = { All: modules.length, A1: 0, A2: 0, B1: 0, B2: 0, C1: 0 };
     modules.forEach((m) => {
-      const lvl = getModuleLevel(m).id;
+      const lvl = getModuleLevel(m).code;
       if (counts[lvl] !== undefined) counts[lvl]++;
     });
     return counts;
@@ -65,8 +66,21 @@ export default function DashboardPage() {
   const filteredModules = useMemo(() => {
     return modules.filter((m) => {
       const levelInfo = getModuleLevel(m);
-      const matchesLevel = selectedLevel === 'All' || levelInfo.id === selectedLevel;
-      const matchesCategory = selectedCategory === 'All' || m.category === selectedCategory;
+      const matchesLevel =
+        selectedLevel === 'All' ||
+        levelInfo.code === selectedLevel ||
+        levelInfo.id === selectedLevel;
+
+      const normalizedCat =
+        m.category === 'Vocab' || m.category === 'Templates'
+          ? 'Kosakata'
+          : m.category;
+
+      const matchesCategory =
+        selectedCategory === 'All' ||
+        normalizedCat === selectedCategory ||
+        m.category === selectedCategory;
+
       return matchesLevel && matchesCategory;
     });
   }, [modules, selectedLevel, selectedCategory]);
@@ -177,6 +191,31 @@ export default function DashboardPage() {
         />
       </section>
 
+      {/* 4. Creative Banner: Placement Test (The Language Scanner) */}
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-teal-600 via-indigo-600 to-purple-600 text-white p-6 sm:p-7 shadow-md">
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-5">
+          <div className="space-y-2 max-w-xl">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold bg-white/20 backdrop-blur-md">
+              <Compass className="w-3.5 h-3.5 text-yellow-300" />
+              <span>Tes Penempatan Level • The Language Scanner</span>
+            </span>
+            <h3 className="text-xl sm:text-2xl font-extrabold text-white">
+              Bingung Mulai dari Level Mana? Scan Posisi CEFR-mu!
+            </h3>
+            <p className="text-xs sm:text-sm text-teal-100 leading-relaxed">
+              Jawab pertanyaan diagnostik cepat untuk mendeteksi apakah kemampuanmu di tingkat <strong>A1 Explorer, A2 Voyager, B1 Citizen, B2 Diplomat</strong>, atau <strong>C1 Mastermind</strong>.
+            </p>
+          </div>
+
+          <button
+            onClick={() => setScannerOpen(true)}
+            className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-white text-indigo-700 hover:bg-indigo-50 font-extrabold text-xs sm:text-sm shadow-md transition active:scale-95 shrink-0 cursor-pointer"
+          >
+            <span>Scan Level Saya (3 Menit) 🚀</span>
+          </button>
+        </div>
+      </div>
+
       {/* REVISI 1 & 2: Katalog Modul dengan Filter Level & Kategori */}
       <div className="space-y-5">
         <div className="space-y-4">
@@ -275,6 +314,75 @@ export default function DashboardPage() {
         isOpen={shareModalOpen}
         onClose={() => setShareModalOpen(false)}
       />
+
+      {/* Language Scanner Diagnostic Modal (Tahap 1 Preview / Foundation) */}
+      {scannerOpen && (
+        <div role="dialog" className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/75 backdrop-blur-md animate-fade-in">
+          <div className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl overflow-hidden p-6 sm:p-7 space-y-5">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div className="flex items-center gap-2.5">
+                <div className="p-2 rounded-xl bg-teal-50 text-teal-600">
+                  <Compass className="w-5 h-5" />
+                </div>
+                <div>
+                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-teal-600">
+                    The Language Scanner • CEFR Diagnostic
+                  </span>
+                  <h3 className="text-base font-extrabold text-slate-900">
+                    Tes Penempatan Level Bahasa
+                  </h3>
+                </div>
+              </div>
+              <button
+                onClick={() => setScannerOpen(false)}
+                className="p-1 rounded-full text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="space-y-3">
+              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                Fitur tes penempatan adaptif 8 soal ini merupakan fokus utama <strong>Tahap 2</strong>.
+                Sistem akan menilai responsmu dari level <strong>A1 (Explorer)</strong> sampai <strong>C1 (Mastermind)</strong> dan otomatis merekomendasikan kurikulum modul serta bacaan yang paling pas untukmu.
+              </p>
+
+              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/90 space-y-2 text-xs">
+                <span className="font-bold text-slate-700">Contoh Level CEFR yang Didukung:</span>
+                <div className="grid grid-cols-2 gap-2 pt-1">
+                  <div className="p-2 rounded-xl bg-white border border-slate-200">
+                    <p className="font-extrabold text-emerald-700">🌱 A1 - Explorer</p>
+                    <p className="text-[11px] text-slate-500">Survival & perkenalan diri</p>
+                  </div>
+                  <div className="p-2 rounded-xl bg-white border border-slate-200">
+                    <p className="font-extrabold text-teal-700">🧭 A2 - Voyager</p>
+                    <p className="text-[11px] text-slate-500">Percakapan rutin harian</p>
+                  </div>
+                  <div className="p-2 rounded-xl bg-white border border-slate-200">
+                    <p className="font-extrabold text-sky-700">🌍 B1 - Global Citizen</p>
+                    <p className="text-[11px] text-slate-500">Opini & percakapan kerja</p>
+                  </div>
+                  <div className="p-2 rounded-xl bg-white border border-slate-200">
+                    <p className="font-extrabold text-indigo-700">💼 B2 - Diplomat</p>
+                    <p className="text-[11px] text-slate-500">Profesional & interview</p>
+                  </div>
+                  <div className="p-2 rounded-xl bg-white border border-slate-200 col-span-2">
+                    <p className="font-extrabold text-purple-700">👑 C1 - Mastermind</p>
+                    <p className="text-[11px] text-slate-500">Advanced, Inversi & TOEFL 600+</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <button
+              onClick={() => setScannerOpen(false)}
+              className="w-full py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs sm:text-sm shadow-xs transition active:scale-95"
+            >
+              Mulai Eksplorasi Modul Sekarang
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

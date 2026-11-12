@@ -1,21 +1,21 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { BookOpen, LayoutDashboard, Trophy, PlusCircle } from 'lucide-react';
+import { BookOpen, Zap, Newspaper, Trophy } from 'lucide-react';
 import { useAppStore } from '../../store/useAppStore';
 
 export default function BottomNav() {
   const { weeklyXp } = useAppStore();
 
   const navItems = [
-    { to: '/', label: 'Beranda', icon: BookOpen, end: true },
-    { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+    { to: '/dashboard', label: 'Belajar', icon: BookOpen },
+    { to: '/practice', label: 'Latihan', icon: Zap },
+    { to: '/reading', label: 'Bacaan', icon: Newspaper },
     {
       to: '/leaderboard',
-      label: 'Rank',
+      label: 'Liga',
       icon: Trophy,
       badge: `${weeklyXp || 0} XP`,
     },
-    { to: '/create', label: 'Buat', icon: PlusCircle },
   ];
 
   return (
@@ -26,9 +26,8 @@ export default function BottomNav() {
           <NavLink
             key={item.to}
             to={item.to}
-            end={item.end}
             className={({ isActive }) =>
-              `flex flex-col items-center justify-center py-1 px-3 rounded-xl min-w-[64px] transition-all relative ${
+              `flex flex-col items-center justify-center py-1 px-3 rounded-xl min-w-[64px] transition-all relative cursor-pointer ${
                 isActive
                   ? 'text-indigo-600 font-extrabold'
                   : 'text-slate-500 hover:text-slate-800 font-medium'
@@ -40,7 +39,7 @@ export default function BottomNav() {
                 <div className="relative">
                   <Icon className={`w-5 h-5 ${isActive ? 'stroke-[2.5]' : 'stroke-[1.8]'}`} />
                   {item.badge && (
-                    <span className="absolute -top-1.5 -right-3 px-1 py-0.2 rounded-full bg-amber-500 text-white text-[8px] font-extrabold shadow-2xs">
+                    <span className="absolute -top-1.5 -right-3.5 px-1.5 py-0.2 rounded-full bg-amber-500 text-white text-[8px] font-extrabold shadow-2xs">
                       {item.badge}
                     </span>
                   )}
@@ -54,4 +53,3 @@ export default function BottomNav() {
     </nav>
   );
 }
-
