@@ -640,8 +640,9 @@ export const useAppStore = create(
 
         // Ensure newly added master curriculum modules are merged into state
         set((state) => {
-          const moduleMap = new Map(MOCK_MODULES.map((m) => [m.id, m]));
-          state.modules.forEach((m) => moduleMap.set(m.id, m));
+          const moduleMap = new Map();
+          (state.modules || []).forEach((m) => moduleMap.set(m.id, m));
+          MOCK_MODULES.forEach((m) => moduleMap.set(m.id, m));
           return { modules: Array.from(moduleMap.values()) };
         });
 
@@ -830,8 +831,9 @@ export const useAppStore = create(
 
         // Ensure newly added master curriculum flashcards are merged into state
         set((state) => {
-          const cardMap = new Map(MOCK_FLASHCARDS.map((c) => [c.id, c]));
-          state.flashcards.forEach((c) => cardMap.set(c.id, c));
+          const cardMap = new Map();
+          (state.flashcards || []).forEach((c) => cardMap.set(c.id, c));
+          MOCK_FLASHCARDS.forEach((c) => cardMap.set(c.id, c));
           return { flashcards: Array.from(cardMap.values()) };
         });
 
