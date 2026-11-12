@@ -39,6 +39,8 @@ export const useAppStore = create(
       isAuthenticated: false,
       user: null, // { id, username, email, name, role }
       userId: generateUUID(),
+      hasAcceptedTerms: false,
+      setHasAcceptedTerms: (value = true) => set({ hasAcceptedTerms: Boolean(value) }),
 
       // Gamification & Ranked State
       streak: 1,
@@ -1087,6 +1089,7 @@ export const useAppStore = create(
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({
         isAuthenticated: state.isAuthenticated,
+        hasAcceptedTerms: state.hasAcceptedTerms,
         user: state.user,
         userId: state.userId,
         // Secure accounts storing ONLY salt + passwordHash - NEVER plaintext passwords

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { NavLink, Link, useNavigate } from 'react-router-dom';
-import { BookOpen, Zap, Newspaper, PlusCircle, WifiOff, Cloud, RefreshCw, LogOut, User, Trophy, Settings } from 'lucide-react';
+import { BookOpen, Zap, Newspaper, PlusCircle, WifiOff, Cloud, RefreshCw, LogOut, User, Trophy, Settings, FileText } from 'lucide-react';
 import { useAppStore } from '../../store/useAppStore';
 import Logo from './Logo';
 import EditProfileModal from '../profile/EditProfileModal';
@@ -121,10 +121,30 @@ export default function Navbar() {
               <PlusCircle className="w-4 h-4" />
               <span>+ Modul</span>
             </NavLink>
+
+            <a
+              href="/Panduan_Penggunaan_MyLala.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+              title="Buka Buku Panduan Penggunaan Aplikasi (PDF)"
+              className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs sm:text-sm font-semibold text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 transition"
+            >
+              <FileText className="w-4 h-4 text-indigo-600" />
+              <span>Panduan PDF</span>
+            </a>
           </nav>
 
           {/* User Profile & Logout */}
           <div className="flex items-center gap-1.5 sm:gap-2 pl-2 border-l border-slate-200">
+            <a
+              href="/Panduan_Penggunaan_MyLala.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+              title="Buka Panduan PDF"
+              className="md:hidden p-1.5 rounded-full text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 transition"
+            >
+              <FileText className="w-4 h-4 text-indigo-600" />
+            </a>
             <button
               type="button"
               onClick={() => setEditProfileOpen(true)}

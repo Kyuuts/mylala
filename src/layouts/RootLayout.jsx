@@ -4,6 +4,7 @@ import Navbar from '../components/common/Navbar';
 import BottomNav from '../components/common/BottomNav';
 import SyncToast from '../components/common/SyncToast';
 import InstallPrompt from '../components/common/InstallPrompt';
+import ReviewerAgreementModal from '../components/common/ReviewerAgreementModal';
 import { useAppStore } from '../store/useAppStore';
 
 export default function RootLayout() {
@@ -39,12 +40,25 @@ export default function RootLayout() {
       <main className="flex-1 max-w-5xl w-full mx-auto px-4 py-6 pb-24 md:pb-8">
         <Outlet />
       </main>
-      <footer className="py-6 border-t border-slate-200 text-center text-xs text-slate-500 mb-16 md:mb-0">
-        MyLala &bull; Multi-Language Micro-Learning PWA &bull; Active Recall &amp; Spaced Repetition
+      <footer className="py-6 border-t border-slate-200 text-center text-xs text-slate-500 mb-16 md:mb-0 space-y-1.5">
+        <div>
+          MyLala &bull; Multi-Language Micro-Learning PWA &bull; Active Recall &amp; Spaced Repetition
+        </div>
+        <div>
+          <a
+            href="/Panduan_Penggunaan_MyLala.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-indigo-600 hover:text-indigo-800 hover:underline font-semibold inline-flex items-center gap-1 transition"
+          >
+            <span>📄 Buka Buku Panduan Akses &amp; Cara Penggunaan (PDF Resmi)</span>
+          </a>
+        </div>
       </footer>
       <BottomNav />
       <SyncToast />
       <InstallPrompt />
+      <ReviewerAgreementModal />
     </div>
   );
 }
