@@ -18,11 +18,11 @@ export default function HomePage() {
         </div>
 
         <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-slate-900 leading-tight">
-          Kuasai Bahasa Inggris Lebih Cepat dengan <span className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">MyLala</span>
+          Kuasai Bahasa Asing Lebih Cepat dengan <span className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">MyLala</span>
         </h1>
 
         <p className="text-base sm:text-lg text-slate-600 leading-relaxed">
-          PWA modular untuk mempelajari Grammar, Vocabulary, dan Templates secara terstruktur. Dilengkapi flashcard spaced repetition dan siap dipakai kapan saja secara offline.
+          PWA modular untuk mempelajari Grammar, Vocabulary, dan Templates berbagai bahasa secara terstruktur. Dilengkapi flashcard spaced repetition dan siap dipakai kapan saja secara offline.
         </p>
 
         <div className="flex flex-wrap justify-center gap-3 pt-2">

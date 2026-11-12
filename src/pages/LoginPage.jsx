@@ -56,7 +56,7 @@ export default function LoginPage() {
               MyLala <span className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">PWA</span>
             </h1>
             <p className="text-xs sm:text-sm text-slate-500 mt-1">
-              Active Recall Flashcards &amp; TOEFL 600+ Mastery
+              Active Recall Flashcards &amp; Multi-Language Mastery
             </p>
           </div>
         </div>
@@ -131,7 +131,7 @@ export default function LoginPage() {
                   <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
                   <input
                     type="email"
-                    placeholder="e.g. sarah@gmail.com, budi@mail.umy.ac.id"
+                    placeholder="e.g. sarah@gmail.com, budi@gmail.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-sm text-slate-800 focus:outline-hidden focus:ring-2 focus:ring-indigo-500 focus:bg-white transition"

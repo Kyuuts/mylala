@@ -1,5 +1,5 @@
 # 🗺️ Roadmap Eksekusi MyLala PWA
-> Dokumen pelacakan resmi roadmap pengembangan berdasarkan **Laporan Analisis Produk Digital MyLala PWA** (Universitas Muhammadiyah Yogyakarta).
+> Dokumen pelacakan resmi roadmap pengembangan berdasarkan **Laporan Analisis Produk Digital MyLala PWA**.
 
 ---
 
@@ -38,9 +38,9 @@ Dua fix kritis yang disyaratkan dalam laporan sebelum rilis publik:
   - Tombol 1-klik unduh gambar PNG resolusi tinggi, Web Share API langsung ke media sosial, dan salin teks status.
   - Terintegrasi di Dashboard, Leaderboard, dan dialog akhir sesi Flashcard (`SessionSummary`).
 
-- [ ] **6. Campus Launch (Grassroots UMY)**
-  - Peluncuran beta ke grup WhatsApp mahasiswa Universitas Muhammadiyah Yogyakarta (UMY).
-  - Target awal: 50 *early adopters* mahasiswa pejuang TOEFL syarat kelulusan / CPNS / BUMN.
+- [ ] **6. Grassroots Community Launch**
+  - Peluncuran beta ke komunitas pembelajar bahasa & mahasiswa aktif.
+  - Target awal: 50 *early adopters* pembelajar bahasa asing aktif.
 
 ---
 
@@ -77,7 +77,7 @@ Dua fix kritis yang disyaratkan dalam laporan sebelum rilis publik:
 - [ ] Katalog modul kontribusi komunitas (Creator marketplace)
 - [ ] Integrasi QRIS / Midtrans / Duitku untuk pembelian modul spesialis (Rp19k - Rp39k)
 - [ ] Dashboard kelas untuk dosen / lembaga bahasa kampus memantau progres mahasiswa kolektif
-- [ ] Riset kemitraan resmi dengan lembaga bahasa kampus (B2B UMY Language Center)
+- [ ] Riset kemitraan resmi dengan lembaga pelatihan bahasa (B2B Language Centers)
 
 ---
 

@@ -29,7 +29,7 @@ export default function RootLayout() {
         <Outlet />
       </main>
       <footer className="py-6 border-t border-slate-200 text-center text-xs text-slate-500 mb-16 md:mb-0">
-        MyLala &bull; English Micro-Learning PWA &bull; Active Recall &amp; Spaced Repetition
+        MyLala &bull; Multi-Language Micro-Learning PWA &bull; Active Recall &amp; Spaced Repetition
       </footer>
       <BottomNav />
       <SyncToast />

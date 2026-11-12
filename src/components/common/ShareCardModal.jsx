@@ -87,7 +87,7 @@ export default function ShareCardModal({ isOpen, onClose, customStats = null }) 
     setSharing(true);
 
     const shareTitle = `Pencapaian MyLala - ${effectiveName}`;
-    const shareText = `🚀 Aku lagi ngejar skor TOEFL 600+ di MyLala PWA! Peringkat #${effectiveRank} ${currentTier.name} dengan ${effectiveWeeklyXp} XP & ${effectiveStreak} hari streak!\n\nYuk saingan belajar bareng di sini (gratis & offline-ready):`;
+    const shareText = `🚀 Aku lagi rajin belajar bahasa di MyLala PWA! Peringkat #${effectiveRank} ${currentTier.name} dengan ${effectiveWeeklyXp} XP & ${effectiveStreak} hari streak!\n\nYuk saingan belajar Active Recall bareng aku (gratis & offline-ready):`;
     const shareUrl = 'https://mylala.vercel.app';
 
     try {
@@ -137,7 +137,7 @@ export default function ShareCardModal({ isOpen, onClose, customStats = null }) 
 
   // 3. Copy viral caption to clipboard
   const handleCopyText = async () => {
-    const text = `🚀 Aku lagi ngejar target TOEFL 600+ di MyLala PWA!\n🏆 Posisi saat ini: ${currentTier.badge} ${currentTier.name} (Peringkat #${effectiveRank}) dengan ${effectiveWeeklyXp} XP & ${effectiveStreak} hari streak!\n\nYuk saingan belajar Active Recall bareng aku (gratis & jalan offline):\n👉 https://mylala.vercel.app`;
+    const text = `🚀 Aku lagi rajin belajar bahasa di MyLala PWA!\n🏆 Posisi saat ini: ${currentTier.badge} ${currentTier.name} (Peringkat #${effectiveRank}) dengan ${effectiveWeeklyXp} XP & ${effectiveStreak} hari streak!\n\nYuk saingan belajar Active Recall bareng aku (gratis & jalan offline):\n👉 https://mylala.vercel.app`;
 
     try {
       await navigator.clipboard.writeText(text);
@@ -163,7 +163,7 @@ export default function ShareCardModal({ isOpen, onClose, customStats = null }) 
             </div>
             <div>
               <h3 className="text-base font-bold text-white">Bagikan Pencapaian</h3>
-              <p className="text-xs text-slate-400">Pamerkan progres TOEFL &amp; liga kamu</p>
+              <p className="text-xs text-slate-400">Pamerkan progres liga &amp; kartu belajar kamu</p>
             </div>
           </div>
           <button

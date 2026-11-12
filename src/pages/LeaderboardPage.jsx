@@ -92,7 +92,7 @@ export default function LeaderboardPage() {
                   {currentTier.name}
                 </h1>
                 <p className="text-xs sm:text-sm text-white/80">
-                  Liga Pembelajar Bahasa Inggris Mingguan • Musim 2026
+                  Liga Pembelajar Bahasa Mingguan • Musim 2026
                 </p>
               </div>
             </div>
@@ -153,7 +153,7 @@ export default function LeaderboardPage() {
             <div className="flex items-center gap-2">
               <h2 className="text-lg font-extrabold text-slate-900 flex items-center gap-2">
                 <Trophy className="w-5 h-5 text-amber-500" />
-                <span>Klasemen Liga Bahasa Inggris</span>
+                <span>Klasemen Liga Pembelajar</span>
               </h2>
               {isSupabaseReady && (
                 <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">

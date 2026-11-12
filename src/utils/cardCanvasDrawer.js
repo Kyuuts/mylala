@@ -151,7 +151,7 @@ export function drawShareCard(canvas, data) {
   ctx.font = 'bold 30px system-ui, -apple-system, sans-serif';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillText('🦙 MyLala PWA • Active Recall', width / 2, brandPillY + 36);
+  ctx.fillText('MyLala • Active Recall', width / 2, brandPillY + 36);
 
   // ==========================================
   // 3. USER HERO PROFILE & BADGE
@@ -188,7 +188,7 @@ export function drawShareCard(canvas, data) {
   // User Tagline / Campus identity
   ctx.fillStyle = 'rgba(255, 255, 255, 0.75)';
   ctx.font = '500 28px system-ui, -apple-system, sans-serif';
-  ctx.fillText(`@${username} • Pejuang TOEFL 600+`, width / 2, nameY + 44);
+  ctx.fillText(`@${username} • Active Language Learner`, width / 2, nameY + 44);
 
   // ==========================================
   // 4. MAIN ACHIEVEMENT HIGHLIGHT CARD
@@ -318,7 +318,7 @@ export function drawShareCard(canvas, data) {
     ctx.textAlign = 'center';
     ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
     ctx.font = 'italic 30px system-ui, -apple-system, sans-serif';
-    ctx.fillText('“15 menit belajar aktif sehari, kuasai TOEFL tanpa pusing.”', width / 2, quoteY);
+    ctx.fillText('“15 menit belajar aktif sehari, kuasai bahasa baru tanpa pusing.”', width / 2, quoteY);
 
     // Call To Action Box (Bottom)
     const ctaY = height - 240;
@@ -342,7 +342,7 @@ export function drawShareCard(canvas, data) {
     // Footer copyright / signature
     ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
     ctx.font = '500 22px system-ui, sans-serif';
-    ctx.fillText('Universitas Muhammadiyah Yogyakarta • MyLala PWA 2026', width / 2, height - 55);
+    ctx.fillText('MyLala PWA • Active Recall & Spaced Repetition', width / 2, height - 55);
   } else {
     // Square bottom bar
     const ctaY = height - 140;
@@ -355,7 +355,7 @@ export function drawShareCard(canvas, data) {
     ctx.textAlign = 'center';
     ctx.fillStyle = '#0F172A';
     ctx.font = 'extrabold 28px system-ui, -apple-system, sans-serif';
-    ctx.fillText('Kuasai TOEFL & Active Recall di 👉 mylala.vercel.app', width / 2, ctaY + 48);
+    ctx.fillText('Kuasai Bahasa Asing di 👉 mylala.vercel.app', width / 2, ctaY + 48);
   }
 }
 

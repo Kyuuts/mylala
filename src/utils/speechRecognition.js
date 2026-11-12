@@ -60,7 +60,7 @@ export const getTargetSpeechSentence = (card) => {
       .replace(/\[Field\]/gi, 'Design')
       .replace(/\[Interest\]/gi, 'traveling')
       .replace(/\[Hobi\/Minat\]/gi, 'photography')
-      .replace(/\[Kampus\]/gi, 'UMY')
+      .replace(/\[Kampus\]/gi, 'University')
       .replace(/\[Jurusan\]/gi, 'Engineering')
       .replace(/\[.*?\]/g, '')
       .replace(/\s+/g, ' ')

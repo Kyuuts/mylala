@@ -186,7 +186,7 @@ export default function DashboardPage() {
                 Katalog Modul Pembelajaran
               </h2>
               <p className="text-xs text-slate-500 mt-0.5">
-                Pilih tingkatan belajar (Pemula $\rightarrow$ Menengah $\rightarrow$ TOEFL 600+) dan jenis materi.
+                Pilih tingkatan belajar (Pemula → Menengah → Lanjutan) dan jenis materi.
               </p>
             </div>
 
