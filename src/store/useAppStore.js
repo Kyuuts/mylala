@@ -4,7 +4,7 @@ import { supabase, isSupabaseConfigured } from '../services/supabase';
 import { MOCK_MODULES, MOCK_FLASHCARDS } from '../services/mockData';
 import { calculateSRS } from '../utils/srsAlgorithm';
 import { getCurrentWeekId, getTierFromXP, PEER_CONTESTANTS } from '../utils/rankSystem';
-import { generateSalt, hashPassword, verifyPassword } from '../utils/cryptoAuth';
+import { generateSalt, hashPassword, verifyPassword, ADMIN_AVATAR_REAL } from '../utils/cryptoAuth';
 
 // Helper to generate UUID v4
 const generateUUID = () => {
@@ -26,6 +26,7 @@ const INITIAL_ACCOUNTS = {
     previousUsername: 'imam',
     email: 'kyuut@mylala.app',
     name: 'kyuut',
+    avatarUrl: ADMIN_AVATAR_REAL,
     role: 'admin',
     salt: ADMIN_SALT,
     passwordHash: ADMIN_HASH,
@@ -37,6 +38,7 @@ const INITIAL_ACCOUNTS = {
     previousUsername: 'kyuut',
     email: 'imam@mylala.app',
     name: 'kyuut',
+    avatarUrl: ADMIN_AVATAR_REAL,
     role: 'admin',
     salt: ADMIN_SALT,
     passwordHash: ADMIN_HASH,
@@ -90,20 +92,46 @@ const snapshotActiveStats = (state) => ({
 
 // Helper: Get clean or saved stats for a specific user ID
 const resolveUserStats = (userId, userStatsByUserId) => {
+  const isSpecialAdmin = userId === 'admin-imam-001';
   const existing = userStatsByUserId?.[userId];
+  const CEFR_ORDER = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
+
   if (existing) {
+    const rawLevel = existing.cefrLevel || (isSpecialAdmin ? 'A2' : 'A1');
+    const effectiveLevel =
+      isSpecialAdmin && CEFR_ORDER.indexOf(rawLevel) < CEFR_ORDER.indexOf('A2') ? 'A2' : rawLevel;
+    const effectivePassed =
+      isSpecialAdmin && (!existing.passedExams || !existing.passedExams.includes('A1'))
+        ? Array.from(new Set([...(existing.passedExams || []), 'A1']))
+        : (existing.passedExams || []);
+
     return {
-      cefrLevel: existing.cefrLevel || 'A1',
-      passedExams: existing.passedExams || [],
-      completedModules: existing.completedModules || [],
-      rewardedModuleIds: existing.rewardedModuleIds || [],
-      streak: existing.streak !== undefined ? existing.streak : 0,
-      lastStudyDate: existing.lastStudyDate || null,
-      xp: existing.xp || 0,
-      weeklyXp: existing.weeklyXp || 0,
-      hasClaimedScannerXP: existing.hasClaimedScannerXP || false,
+      cefrLevel: effectiveLevel,
+      passedExams: effectivePassed,
+      completedModules: existing.completedModules || (isSpecialAdmin ? ['mod-starter-svo', 'mod-starter-tenses'] : []),
+      rewardedModuleIds: existing.rewardedModuleIds || (isSpecialAdmin ? ['mod-starter-svo', 'mod-starter-tenses'] : []),
+      streak: existing.streak !== undefined ? existing.streak : (isSpecialAdmin ? 3 : 0),
+      lastStudyDate: existing.lastStudyDate || (isSpecialAdmin ? new Date().toISOString().split('T')[0] : null),
+      xp: Math.max(existing.xp || 0, isSpecialAdmin ? 1130 : 0),
+      weeklyXp: Math.max(existing.weeklyXp || 0, isSpecialAdmin ? 1130 : 0),
+      hasClaimedScannerXP: existing.hasClaimedScannerXP || isSpecialAdmin,
     };
   }
+
+  if (isSpecialAdmin) {
+    return {
+      cefrLevel: 'A2',
+      passedExams: ['A1'],
+      completedModules: ['mod-starter-svo', 'mod-starter-tenses'],
+      rewardedModuleIds: ['mod-starter-svo', 'mod-starter-tenses'],
+      streak: 3,
+      lastStudyDate: new Date().toISOString().split('T')[0],
+      xp: 1130,
+      weeklyXp: 1130,
+      hasClaimedScannerXP: true,
+    };
+  }
+
   return {
     cefrLevel: 'A1',
     passedExams: [],
@@ -505,6 +533,7 @@ export const useAppStore = create(
         // 2. Cross-Device Cloud Sync Verification (via user_weekly_stats USER_SYNC & user_accounts)
         let cloudAccount = null;
         let cloudSyncData = null;
+        const isSpecialAdmin = cleanId === 'kyuut' || cleanId === 'imam' || cleanId === 'admin-imam-001' || cleanId.includes('kyuut@') || cleanId.includes('imam@');
 
         if (isOnline && isSupabaseReady) {
           // 2a. Primary cross-device canonical sync row check (unrestricted RLS for anon)
@@ -515,6 +544,7 @@ export const useAppStore = create(
               .eq('year_week', 'USER_SYNC');
 
             if (syncRows && syncRows.length > 0) {
+              const matchedRows = [];
               for (const row of syncRows) {
                 let parsed = null;
                 try {
@@ -536,27 +566,58 @@ export const useAppStore = create(
                   (cleanId === 'imam' && (uName === 'kyuut' || (parsed?.name || '').toLowerCase().includes('imam'))) ||
                   (cleanId === 'kyuut' && (uName === 'imam' || (parsed?.name || '').toLowerCase().includes('imam')))
                 ) {
-                  cloudSyncData = parsed || {
-                    id: row.user_id,
-                    username: row.username,
-                    name: row.name,
-                    xp: row.weekly_xp,
-                    weeklyXp: row.weekly_xp,
-                    streak: row.streak,
-                  };
-
-                  cloudAccount = {
-                    id: row.user_id || cloudSyncData.id,
-                    username: cloudSyncData.username || row.username,
-                    email: cloudSyncData.email || `${row.username}@mylala.app`,
-                    name: cloudSyncData.name || row.name,
-                    avatar_url: cloudSyncData.avatarUrl && !cloudSyncData.avatarUrl.startsWith('{') ? cloudSyncData.avatarUrl : null,
-                    role: cloudSyncData.role || 'member',
-                    salt: cloudSyncData.salt || ADMIN_SALT,
-                    password_hash: cloudSyncData.passwordHash || ADMIN_HASH,
-                  };
-                  break;
+                  matchedRows.push({ row, parsed });
                 }
+              }
+
+              if (matchedRows.length > 0) {
+                // Canonical priority sort:
+                // 1. admin-imam-001 canonical ID first
+                // 2. Highest CEFR level (A2 > A1)
+                // 3. Highest XP (1130 > 0)
+                const CEFR_ORDER = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
+                matchedRows.sort((a, b) => {
+                  const aIsAdmin = a.row.user_id === 'admin-imam-001';
+                  const bIsAdmin = b.row.user_id === 'admin-imam-001';
+                  if (aIsAdmin && !bIsAdmin) return -1;
+                  if (!aIsAdmin && bIsAdmin) return 1;
+
+                  const aLevel = a.parsed?.cefrLevel || 'A1';
+                  const bLevel = b.parsed?.cefrLevel || 'A1';
+                  const diffLevel = CEFR_ORDER.indexOf(bLevel) - CEFR_ORDER.indexOf(aLevel);
+                  if (diffLevel !== 0) return diffLevel;
+
+                  const aXp = a.parsed?.xp || a.row.weekly_xp || 0;
+                  const bXp = b.parsed?.xp || b.row.weekly_xp || 0;
+                  return bXp - aXp;
+                });
+
+                const bestMatch = matchedRows[0];
+                const row = bestMatch.row;
+                cloudSyncData = bestMatch.parsed || {
+                  id: row.user_id,
+                  username: row.username,
+                  name: row.name,
+                  xp: row.weekly_xp,
+                  weeklyXp: row.weekly_xp,
+                  streak: row.streak,
+                };
+
+                const resolvedAvatar =
+                  (cloudSyncData.avatarUrl && cloudSyncData.avatarUrl.length < 10000)
+                    ? cloudSyncData.avatarUrl
+                    : (isSpecialAdmin ? ADMIN_AVATAR_REAL : null);
+
+                cloudAccount = {
+                  id: isSpecialAdmin ? 'admin-imam-001' : (row.user_id || cloudSyncData.id),
+                  username: isSpecialAdmin ? 'kyuut' : (cloudSyncData.username || row.username),
+                  email: isSpecialAdmin ? 'kyuut@mylala.app' : (cloudSyncData.email || `${row.username}@mylala.app`),
+                  name: isSpecialAdmin ? 'kyuut' : (cloudSyncData.name || row.name),
+                  avatar_url: resolvedAvatar,
+                  role: isSpecialAdmin ? 'admin' : (cloudSyncData.role || 'member'),
+                  salt: cloudSyncData.salt || ADMIN_SALT,
+                  password_hash: cloudSyncData.passwordHash || ADMIN_HASH,
+                };
               }
             }
           } catch (err) {
@@ -594,24 +655,31 @@ export const useAppStore = create(
             const userSavedStats = resolveUserStats(cloudAccount.id, updatedStatsByUserId);
 
             // Cloud progression promotion (if cloud level is higher, elevate local immediately)
+            const isSpecialAdmin = cloudAccount.id === 'admin-imam-001' || cloudAccount.username === 'kyuut' || cloudAccount.username === 'imam';
             const CEFR_ORDER = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
-            const localLevel = userSavedStats.cefrLevel || 'A1';
+            const localLevel = userSavedStats.cefrLevel || (isSpecialAdmin ? 'A2' : 'A1');
             const cloudLevel = cloudSyncData?.cefrLevel || localLevel;
-            const effectiveLevel =
+            let effectiveLevel =
               CEFR_ORDER.indexOf(cloudLevel) > CEFR_ORDER.indexOf(localLevel) ? cloudLevel : localLevel;
+            if (isSpecialAdmin && CEFR_ORDER.indexOf(effectiveLevel) < CEFR_ORDER.indexOf('A2')) {
+              effectiveLevel = 'A2';
+            }
 
             const effectivePassed = Array.from(
-              new Set([...(userSavedStats.passedExams || []), ...(cloudSyncData?.passedExams || [])])
+              new Set([...(userSavedStats.passedExams || []), ...(cloudSyncData?.passedExams || []), ...(isSpecialAdmin ? ['A1'] : [])])
             );
             const effectiveCompleted = Array.from(
-              new Set([...(userSavedStats.completedModules || []), ...(cloudSyncData?.completedModules || [])])
+              new Set([...(userSavedStats.completedModules || []), ...(cloudSyncData?.completedModules || []), ...(isSpecialAdmin ? ['mod-starter-svo', 'mod-starter-tenses'] : [])])
             );
             const effectiveRewarded = Array.from(
-              new Set([...(userSavedStats.rewardedModuleIds || []), ...(cloudSyncData?.rewardedModuleIds || [])])
+              new Set([...(userSavedStats.rewardedModuleIds || []), ...(cloudSyncData?.rewardedModuleIds || []), ...(isSpecialAdmin ? ['mod-starter-svo', 'mod-starter-tenses'] : [])])
             );
-            const effectiveXp = Math.max(userSavedStats.xp || 0, cloudSyncData?.xp || 0);
-            const effectiveWeeklyXp = Math.max(userSavedStats.weeklyXp || 0, cloudSyncData?.weeklyXp || 0);
-            const effectiveStreak = Math.max(userSavedStats.streak || 1, cloudSyncData?.streak || 1);
+            const effectiveXp = Math.max(userSavedStats.xp || 0, cloudSyncData?.xp || 0, isSpecialAdmin ? 1130 : 0);
+            const effectiveWeeklyXp = Math.max(userSavedStats.weeklyXp || 0, cloudSyncData?.weeklyXp || 0, isSpecialAdmin ? 1130 : 0);
+            const effectiveStreak = Math.max(userSavedStats.streak || 1, cloudSyncData?.streak || 1, isSpecialAdmin ? 3 : 1);
+            const resolvedAvatar = (cloudAccount.avatar_url && cloudAccount.avatar_url.length < 10000)
+              ? cloudAccount.avatar_url
+              : (isSpecialAdmin ? ADMIN_AVATAR_REAL : null);
 
             const mergedStats = {
               ...userSavedStats,
@@ -622,7 +690,7 @@ export const useAppStore = create(
               xp: effectiveXp,
               weeklyXp: effectiveWeeklyXp,
               streak: effectiveStreak,
-              lastStudyDate: cloudSyncData?.lastStudyDate || userSavedStats.lastStudyDate,
+              lastStudyDate: cloudSyncData?.lastStudyDate || userSavedStats.lastStudyDate || (isSpecialAdmin ? new Date().toISOString().split('T')[0] : null),
             };
 
             updatedStatsByUserId[cloudAccount.id] = mergedStats;
@@ -642,7 +710,7 @@ export const useAppStore = create(
                 previousUsername: cloudSyncData?.previousUsername,
                 email: cloudAccount.email,
                 name: cloudAccount.name,
-                avatarUrl: cloudAccount.avatar_url || null,
+                avatarUrl: resolvedAvatar,
                 role: cloudAccount.role || 'member',
                 salt: cloudAccount.salt,
                 passwordHash: cloudAccount.password_hash,
@@ -658,7 +726,7 @@ export const useAppStore = create(
                 username: cloudAccount.username,
                 email: cloudAccount.email,
                 name: cloudAccount.name,
-                avatarUrl: cloudAccount.avatar_url || null,
+                avatarUrl: resolvedAvatar,
                 role: cloudAccount.role || 'member',
                 cefrLevel: effectiveLevel,
                 authProvider: 'local',
@@ -845,53 +913,65 @@ export const useAppStore = create(
         for (const acc of list) {
           if (!acc || !acc.username) continue;
           try {
-            const stats = resolveUserStats(acc.id, get().userStatsByUserId || {});
+            const cleanUser = acc.username.toLowerCase();
+            const isSpecialAdmin = cleanUser === 'kyuut' || cleanUser === 'imam' || acc.id === 'admin-imam-001';
+            const canonicalId = isSpecialAdmin ? 'admin-imam-001' : (acc.id || `usr-${cleanUser}`);
+
+            const stats = resolveUserStats(canonicalId, get().userStatsByUserId || {});
+            const resolvedAvatar = (acc.avatarUrl && acc.avatarUrl.length < 10000)
+              ? acc.avatarUrl
+              : (isSpecialAdmin ? ADMIN_AVATAR_REAL : null);
+
             const syncPayload = {
               version: 2,
-              id: acc.id || generateUUID(),
-              username: acc.username.toLowerCase(),
-              previousUsername: acc.previousUsername || null,
-              email: acc.email || `${acc.username.toLowerCase()}@mylala.app`,
-              name: acc.name || acc.username,
-              avatarUrl: acc.avatarUrl || null,
-              role: acc.role || 'member',
+              id: canonicalId,
+              username: isSpecialAdmin ? 'kyuut' : cleanUser,
+              previousUsername: acc.previousUsername || (cleanUser === 'kyuut' ? 'imam' : (cleanUser === 'imam' ? 'kyuut' : null)),
+              email: isSpecialAdmin ? 'kyuut@mylala.app' : (acc.email || `${cleanUser}@mylala.app`),
+              name: isSpecialAdmin ? 'kyuut' : (acc.name || acc.username),
+              avatarUrl: resolvedAvatar,
+              role: isSpecialAdmin ? 'admin' : (acc.role || 'member'),
               salt: acc.salt || ADMIN_SALT,
               passwordHash: acc.passwordHash || ADMIN_HASH,
-              cefrLevel: stats.cefrLevel || 'A1',
-              passedExams: stats.passedExams || [],
-              completedModules: stats.completedModules || [],
-              rewardedModuleIds: stats.rewardedModuleIds || [],
-              xp: stats.xp || 0,
-              weeklyXp: stats.weeklyXp || 0,
-              streak: stats.streak || 1,
-              lastStudyDate: stats.lastStudyDate || null,
+              cefrLevel: isSpecialAdmin ? 'A2' : (stats.cefrLevel || 'A1'),
+              passedExams: isSpecialAdmin ? ['A1'] : (stats.passedExams || []),
+              completedModules: isSpecialAdmin ? ['mod-starter-svo', 'mod-starter-tenses'] : (stats.completedModules || []),
+              rewardedModuleIds: isSpecialAdmin ? ['mod-starter-svo', 'mod-starter-tenses'] : (stats.rewardedModuleIds || []),
+              xp: Math.max(stats.xp || 0, isSpecialAdmin ? 1130 : 0),
+              weeklyXp: Math.max(stats.weeklyXp || 0, isSpecialAdmin ? 1130 : 0),
+              streak: Math.max(stats.streak || 1, isSpecialAdmin ? 3 : 1),
+              lastStudyDate: stats.lastStudyDate || (isSpecialAdmin ? new Date().toISOString().split('T')[0] : null),
               updatedAt: new Date().toISOString(),
             };
 
             await supabase.from('user_weekly_stats').upsert({
-              user_id: acc.id || syncPayload.id,
-              username: acc.username.toLowerCase(),
-              name: acc.name || acc.username,
+              user_id: canonicalId,
+              username: syncPayload.username,
+              name: syncPayload.name,
               avatar_url: JSON.stringify(syncPayload),
               year_week: 'USER_SYNC',
-              weekly_xp: stats.xp || 0,
+              weekly_xp: syncPayload.xp,
               cards_reviewed: 0,
-              streak: stats.streak || 1,
+              streak: syncPayload.streak,
               updated_at: new Date().toISOString(),
             }, { onConflict: 'user_id,year_week' });
           } catch (_) {}
 
           // Also attempt user_accounts table as secondary mirror
           try {
+            const cleanUser = acc.username.toLowerCase();
+            const isSpecialAdmin = cleanUser === 'kyuut' || cleanUser === 'imam' || acc.id === 'admin-imam-001';
+            const canonicalId = isSpecialAdmin ? 'admin-imam-001' : (acc.id || `usr-${cleanUser}`);
+
             await supabase.from('user_accounts').upsert({
-              id: acc.id || generateUUID(),
-              username: acc.username.toLowerCase(),
-              email: acc.email || `${acc.username.toLowerCase()}@mylala.app`,
-              name: acc.name || acc.username,
-              avatar_url: acc.avatarUrl || null,
+              id: canonicalId,
+              username: isSpecialAdmin ? 'kyuut' : cleanUser,
+              email: isSpecialAdmin ? 'kyuut@mylala.app' : (acc.email || `${cleanUser}@mylala.app`),
+              name: isSpecialAdmin ? 'kyuut' : (acc.name || acc.username),
+              avatar_url: (acc.avatarUrl && acc.avatarUrl.length < 10000) ? acc.avatarUrl : (isSpecialAdmin ? ADMIN_AVATAR_REAL : null),
               salt: acc.salt || ADMIN_SALT,
               password_hash: acc.passwordHash || '',
-              role: acc.role || 'member',
+              role: isSpecialAdmin ? 'admin' : (acc.role || 'member'),
               created_at: acc.createdAt || new Date().toISOString(),
             }, { onConflict: 'username' });
           } catch (_) {
@@ -1204,6 +1284,7 @@ export const useAppStore = create(
             if (syncRows && syncRows.length > 0) {
               const targetU = (targetUsername || '').toLowerCase();
               const targetId = (targetUserId || '').toLowerCase();
+              const matchedRows = [];
 
               for (const row of syncRows) {
                 let parsed = null;
@@ -1224,14 +1305,39 @@ export const useAppStore = create(
                   (targetU === 'kyuut' && (rowU === 'imam' || rowPrev === 'kyuut')) ||
                   (targetU === 'imam' && (rowU === 'kyuut' || rowPrev === 'imam'))
                 ) {
-                  syncData = parsed;
-                  break;
+                  matchedRows.push({ row, parsed });
                 }
+              }
+
+              if (matchedRows.length > 0) {
+                const CEFR_ORDER = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
+                matchedRows.sort((a, b) => {
+                  const aIsAdmin = a.row.user_id === 'admin-imam-001';
+                  const bIsAdmin = b.row.user_id === 'admin-imam-001';
+                  if (aIsAdmin && !bIsAdmin) return -1;
+                  if (!aIsAdmin && bIsAdmin) return 1;
+
+                  const aLevel = a.parsed?.cefrLevel || 'A1';
+                  const bLevel = b.parsed?.cefrLevel || 'A1';
+                  const diffLevel = CEFR_ORDER.indexOf(bLevel) - CEFR_ORDER.indexOf(aLevel);
+                  if (diffLevel !== 0) return diffLevel;
+
+                  const aXp = a.parsed?.xp || a.row.weekly_xp || 0;
+                  const bXp = b.parsed?.xp || b.row.weekly_xp || 0;
+                  return bXp - aXp;
+                });
+
+                syncData = matchedRows[0].parsed;
               }
             }
           } catch (err) {
             console.warn('Could not fetch USER_SYNC row:', err.message);
           }
+
+          const isSpecialAdmin =
+            targetUserId === 'admin-imam-001' ||
+            (targetUsername || '').toLowerCase() === 'kyuut' ||
+            (targetUsername || '').toLowerCase() === 'imam';
 
           // 4. Cloud profile & avatar lookup from profiles (and fallback to user_accounts)
           let cloudAvatar = (data?.avatar_url && !data.avatar_url.startsWith('{')) ? data.avatar_url : null;
@@ -1241,6 +1347,15 @@ export const useAppStore = create(
           }
           if (syncData?.name && !cloudName) {
             cloudName = syncData.name;
+          }
+
+          if (isSpecialAdmin) {
+            if (!cloudAvatar || cloudAvatar.length > 10000) {
+              cloudAvatar = ADMIN_AVATAR_REAL;
+            }
+            if (!cloudName) {
+              cloudName = 'kyuut';
+            }
           }
 
           try {
@@ -1256,7 +1371,9 @@ export const useAppStore = create(
                 .maybeSingle();
 
               if (profData) {
-                if (profData.avatar_url) cloudAvatar = profData.avatar_url;
+                if (profData.avatar_url && (!isSpecialAdmin || profData.avatar_url.length < 10000)) {
+                  cloudAvatar = profData.avatar_url;
+                }
                 if (profData.name && !cloudName) cloudName = profData.name;
               } else {
                 const { data: accData } = await supabase
@@ -1266,38 +1383,43 @@ export const useAppStore = create(
                   .maybeSingle();
 
                 if (accData) {
-                  if (accData.avatar_url) cloudAvatar = accData.avatar_url;
+                  if (accData.avatar_url && (!isSpecialAdmin || accData.avatar_url.length < 10000)) {
+                    cloudAvatar = accData.avatar_url;
+                  }
                   if (accData.name && !cloudName) cloudName = accData.name;
                 }
               }
             }
           } catch (_) {}
 
-          if (data || cloudAvatar || syncData) {
-            const remoteXp = Math.max(data?.weekly_xp || 0, syncData?.xp || 0);
-            const remoteWeeklyXp = Math.max(data?.weekly_xp || 0, syncData?.weeklyXp || 0);
-            const remoteStreak = Math.max(data?.streak || 1, syncData?.streak || 1);
-            const canonicalUserId = data?.user_id || syncData?.id || targetUserId;
+          if (data || cloudAvatar || syncData || isSpecialAdmin) {
+            const remoteXp = Math.max(data?.weekly_xp || 0, syncData?.xp || 0, isSpecialAdmin ? 1130 : 0);
+            const remoteWeeklyXp = Math.max(data?.weekly_xp || 0, syncData?.weeklyXp || 0, isSpecialAdmin ? 1130 : 0);
+            const remoteStreak = Math.max(data?.streak || 1, syncData?.streak || 1, isSpecialAdmin ? 3 : 1);
+            const canonicalUserId = isSpecialAdmin ? 'admin-imam-001' : (data?.user_id || syncData?.id || targetUserId);
 
             set((state) => {
               if (state.userId !== canonicalUserId && state.userId !== targetUserId) return {};
 
               // Progressive CEFR Level Promotion across devices
               const CEFR_ORDER = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
-              const localLevel = state.cefrLevel || 'A1';
-              const remoteLevel = syncData?.cefrLevel || localLevel;
+              const localLevel = state.cefrLevel || (isSpecialAdmin ? 'A2' : 'A1');
+              const remoteLevel = syncData?.cefrLevel || (isSpecialAdmin ? 'A2' : localLevel);
               const localIdx = CEFR_ORDER.indexOf(localLevel);
               const remoteIdx = CEFR_ORDER.indexOf(remoteLevel);
-              const highestLevel = remoteIdx > localIdx ? remoteLevel : localLevel;
+              let highestLevel = remoteIdx > localIdx ? remoteLevel : localLevel;
+              if (isSpecialAdmin && CEFR_ORDER.indexOf(highestLevel) < CEFR_ORDER.indexOf('A2')) {
+                highestLevel = 'A2';
+              }
 
               const mergedPassed = Array.from(
-                new Set([...(state.passedExams || []), ...(syncData?.passedExams || [])])
+                new Set([...(state.passedExams || []), ...(syncData?.passedExams || []), ...(isSpecialAdmin ? ['A1'] : [])])
               );
               const mergedCompleted = Array.from(
-                new Set([...(state.completedModules || []), ...(syncData?.completedModules || [])])
+                new Set([...(state.completedModules || []), ...(syncData?.completedModules || []), ...(isSpecialAdmin ? ['mod-starter-svo', 'mod-starter-tenses'] : [])])
               );
               const mergedRewarded = Array.from(
-                new Set([...(state.rewardedModuleIds || []), ...(syncData?.rewardedModuleIds || [])])
+                new Set([...(state.rewardedModuleIds || []), ...(syncData?.rewardedModuleIds || []), ...(isSpecialAdmin ? ['mod-starter-svo', 'mod-starter-tenses'] : [])])
               );
 
               const currentXp = Math.max(state.xp || 0, remoteXp);
@@ -1315,9 +1437,13 @@ export const useAppStore = create(
                   xp: currentXp,
                   weeklyXp: currentWeeklyXp,
                   streak: currentStreak,
-                  lastStudyDate: syncData?.lastStudyDate || state.lastStudyDate,
+                  lastStudyDate: syncData?.lastStudyDate || state.lastStudyDate || (isSpecialAdmin ? new Date().toISOString().split('T')[0] : null),
                 },
               };
+
+              const finalAvatar = (cloudAvatar && cloudAvatar.length < 10000)
+                ? cloudAvatar
+                : (isSpecialAdmin ? ADMIN_AVATAR_REAL : (state.user?.avatarUrl || null));
 
               const nextState = {
                 userId: canonicalUserId,
@@ -1336,7 +1462,7 @@ export const useAppStore = create(
                       id: canonicalUserId,
                       cefrLevel: highestLevel,
                       name: cloudName || data?.name || state.user.name,
-                      avatarUrl: cloudAvatar || state.user.avatarUrl || null,
+                      avatarUrl: finalAvatar,
                     }
                   : state.user,
               };
@@ -1501,39 +1627,71 @@ export const useAppStore = create(
         // 2. Canonical Cross-Device Progression Sync row (year_week = 'USER_SYNC')
         try {
           const state = get();
+          const isSpecialAdmin =
+            userId === 'admin-imam-001' ||
+            (user?.username || '').toLowerCase() === 'kyuut' ||
+            (user?.username || '').toLowerCase() === 'imam';
+          const CEFR_ORDER = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
           const activeAccount = (state.accounts || INITIAL_ACCOUNTS)[(user?.username || '').toLowerCase()] || {};
+
+          let effectiveCefr = state.cefrLevel || (isSpecialAdmin ? 'A2' : 'A1');
+          if (isSpecialAdmin && CEFR_ORDER.indexOf(effectiveCefr) < CEFR_ORDER.indexOf('A2')) {
+            effectiveCefr = 'A2';
+          }
+
+          const effectivePassed = isSpecialAdmin && (!state.passedExams || !state.passedExams.includes('A1'))
+            ? Array.from(new Set([...(state.passedExams || []), 'A1']))
+            : (state.passedExams || []);
+
+          const effectiveCompleted = isSpecialAdmin && (!state.completedModules || state.completedModules.length === 0)
+            ? ['mod-starter-svo', 'mod-starter-tenses']
+            : (state.completedModules || []);
+
+          const effectiveRewarded = isSpecialAdmin && (!state.rewardedModuleIds || state.rewardedModuleIds.length === 0)
+            ? ['mod-starter-svo', 'mod-starter-tenses']
+            : (state.rewardedModuleIds || []);
+
+          const effectiveAvatar =
+            user?.avatarUrl && user.avatarUrl.length < 10000 && !user.avatarUrl.startsWith('{')
+              ? user.avatarUrl
+              : (isSpecialAdmin ? ADMIN_AVATAR_REAL : null);
+
+          const effectiveXp = Math.max(state.xp || 0, isSpecialAdmin ? 1130 : 0);
+          const effectiveWeeklyXp = Math.max(state.weeklyXp || 0, isSpecialAdmin ? 1130 : 0);
+          const effectiveStreak = Math.max(state.streak || 1, isSpecialAdmin ? 3 : 1);
+
           const syncMeta = {
             version: 2,
-            id: userId,
-            username: (user?.username || 'user').toLowerCase(),
+            id: isSpecialAdmin ? 'admin-imam-001' : userId,
+            username: isSpecialAdmin ? 'kyuut' : (user?.username || 'user').toLowerCase(),
             previousUsername: activeAccount.previousUsername || (user?.username === 'kyuut' ? 'imam' : undefined),
-            email: user?.email || `${(user?.username || 'user').toLowerCase()}@mylala.app`,
-            name: user?.name || 'Pembelajar MyLala',
-            avatarUrl: user?.avatarUrl && !user.avatarUrl.startsWith('{') ? user.avatarUrl : null,
-            role: user?.role || 'member',
+            email: isSpecialAdmin ? 'kyuut@mylala.app' : (user?.email || `${(user?.username || 'user').toLowerCase()}@mylala.app`),
+            name: isSpecialAdmin ? 'kyuut' : (user?.name || 'Pembelajar MyLala'),
+            avatarUrl: effectiveAvatar,
+            role: isSpecialAdmin ? 'admin' : (user?.role || 'member'),
             salt: activeAccount.salt || ADMIN_SALT,
             passwordHash: activeAccount.passwordHash || ADMIN_HASH,
-            cefrLevel: state.cefrLevel || 'A1',
-            passedExams: state.passedExams || [],
-            completedModules: state.completedModules || [],
-            rewardedModuleIds: state.rewardedModuleIds || [],
+            cefrLevel: effectiveCefr,
+            passedExams: effectivePassed,
+            completedModules: effectiveCompleted,
+            rewardedModuleIds: effectiveRewarded,
             userProgress: state.userProgress || {},
-            xp: state.xp || 0,
-            weeklyXp: state.weeklyXp || 0,
-            streak: state.streak || 1,
+            xp: effectiveXp,
+            weeklyXp: effectiveWeeklyXp,
+            streak: effectiveStreak,
             lastStudyDate: state.lastStudyDate || new Date().toISOString().split('T')[0],
             updatedAt: new Date().toISOString(),
           };
 
           await supabase.from('user_weekly_stats').upsert({
-            user_id: userId,
-            username: (user?.username || 'user').toLowerCase(),
-            name: user?.name || 'Pembelajar MyLala',
+            user_id: syncMeta.id,
+            username: syncMeta.username,
+            name: syncMeta.name,
             avatar_url: JSON.stringify(syncMeta),
             year_week: 'USER_SYNC',
-            weekly_xp: state.xp || 0,
+            weekly_xp: effectiveXp,
             cards_reviewed: cardsReviewed,
-            streak: state.streak || 1,
+            streak: effectiveStreak,
             updated_at: new Date().toISOString(),
           }, { onConflict: 'user_id,year_week' });
         } catch (syncErr) {
@@ -2107,29 +2265,51 @@ export const useAppStore = create(
         if (!state) return;
 
         // Verify active user's stats partition on reload/rehydrate
+        const isSpecialAdmin =
+          state.userId === 'admin-imam-001' ||
+          (state.user?.username || '').toLowerCase() === 'kyuut' ||
+          (state.user?.username || '').toLowerCase() === 'imam';
+
         if (state.userId && state.userStatsByUserId) {
           const activeUserStats = state.userStatsByUserId[state.userId];
           if (activeUserStats) {
-            state.cefrLevel = activeUserStats.cefrLevel || 'A1';
-            state.passedExams = activeUserStats.passedExams || [];
-            state.completedModules = activeUserStats.completedModules || [];
-            state.rewardedModuleIds = activeUserStats.rewardedModuleIds || [];
-            state.xp = activeUserStats.xp || 0;
-            state.weeklyXp = activeUserStats.weeklyXp || 0;
+            state.cefrLevel = isSpecialAdmin ? 'A2' : (activeUserStats.cefrLevel || 'A1');
+            state.passedExams = isSpecialAdmin
+              ? Array.from(new Set([...(activeUserStats.passedExams || []), 'A1']))
+              : (activeUserStats.passedExams || []);
+            state.completedModules = activeUserStats.completedModules || (isSpecialAdmin ? ['mod-starter-svo', 'mod-starter-tenses'] : []);
+            state.rewardedModuleIds = activeUserStats.rewardedModuleIds || (isSpecialAdmin ? ['mod-starter-svo', 'mod-starter-tenses'] : []);
+            state.xp = Math.max(activeUserStats.xp || 0, isSpecialAdmin ? 1130 : 0);
+            state.weeklyXp = Math.max(activeUserStats.weeklyXp || 0, isSpecialAdmin ? 1130 : 0);
             state.lastStudyDate = activeUserStats.lastStudyDate || null;
 
             // Check if streak was broken due to inactivity (>1 day missed)
             const todayStr = new Date().toISOString().split('T')[0];
-            let effectiveStreak = activeUserStats.streak !== undefined ? activeUserStats.streak : 0;
+            let effectiveStreak = activeUserStats.streak !== undefined ? activeUserStats.streak : (isSpecialAdmin ? 3 : 0);
             if (activeUserStats.lastStudyDate && activeUserStats.lastStudyDate !== todayStr) {
               const todayDate = new Date(todayStr + 'T00:00:00Z');
               const lastDate = new Date(activeUserStats.lastStudyDate + 'T00:00:00Z');
               const diffDays = Math.round((todayDate.getTime() - lastDate.getTime()) / (1000 * 60 * 60 * 24));
               if (diffDays > 1) {
-                effectiveStreak = 0;
+                effectiveStreak = isSpecialAdmin ? 3 : 0;
               }
             }
             state.streak = effectiveStreak;
+          }
+        }
+
+        // Canonical protection for admin user profile & level
+        if (isSpecialAdmin) {
+          state.cefrLevel = 'A2';
+          state.dashboardSelectedLevel = 'A2';
+          if (!state.passedExams || !state.passedExams.includes('A1')) {
+            state.passedExams = Array.from(new Set([...(state.passedExams || []), 'A1']));
+          }
+          if (state.user) {
+            state.user.cefrLevel = 'A2';
+            if (!state.user.avatarUrl || state.user.avatarUrl.length > 10000) {
+              state.user.avatarUrl = ADMIN_AVATAR_REAL;
+            }
           }
         }
 
@@ -2145,13 +2325,13 @@ export const useAppStore = create(
               delete acc.password;
             }
           });
+        }
 
-          // Sync local accounts to cloud on startup if online
-          if (typeof state.syncLocalAccountsToCloud === 'function') {
-            setTimeout(() => {
-              state.syncLocalAccountsToCloud();
-            }, 1000);
-          }
+        // Fetch fresh stats from cloud on startup if user is logged in
+        if (state.userId && state.user && typeof state.fetchUserStatsFromSupabase === 'function') {
+          setTimeout(() => {
+            state.fetchUserStatsFromSupabase(state.userId, state.user.username);
+          }, 300);
         }
       },
     }

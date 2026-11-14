@@ -56,12 +56,15 @@ export default function DashboardPage() {
     }
   }, [dashboardSelectedLevel, setDashboardSelectedLevel]);
 
-  // Keep selected level aligned with user's CEFR level on initial load
+  // Keep selected level aligned with user's CEFR level on initial load and updates
   useEffect(() => {
-    if (cefrLevel && (!selectedLevel || selectedLevel === 'All')) {
-      setSelectedLevel(cefrLevel);
+    const activeUserLevel = cefrLevel || user?.cefrLevel || 'A1';
+    if (activeUserLevel && activeUserLevel !== 'A1') {
+      setSelectedLevel(activeUserLevel);
+    } else if (activeUserLevel && (!selectedLevel || selectedLevel === 'All')) {
+      setSelectedLevel(activeUserLevel);
     }
-  }, [cefrLevel]);
+  }, [cefrLevel, user?.cefrLevel]);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
