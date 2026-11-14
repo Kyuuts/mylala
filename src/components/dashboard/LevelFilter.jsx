@@ -19,7 +19,7 @@ export default function LevelFilter({ activeLevel = 'All', onSelectLevel, counts
   ];
 
   return (
-    <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+    <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto no-scrollbar py-0.5 sm:flex-wrap w-full">
       {allLevels.map((lvl) => {
         const isActive = activeLevel === lvl.id;
         const isUserLevel = lvl.code === userCefr;
@@ -29,7 +29,7 @@ export default function LevelFilter({ activeLevel = 'All', onSelectLevel, counts
           <button
             key={lvl.id}
             onClick={() => onSelectLevel(lvl.id)}
-            className={`inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+            className={`shrink-0 inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
               isActive
                 ? 'bg-slate-900 text-white shadow-xs'
                 : isUserLevel

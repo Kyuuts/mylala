@@ -48,7 +48,7 @@ export default function ModuleCard({ module, onOpenSoftLock }) {
 
   return (
     <div
-      className={`bg-white rounded-3xl border transition-all duration-200 p-5 sm:p-6 flex flex-col justify-between group relative overflow-hidden ${
+      className={`bg-white rounded-2xl sm:rounded-3xl border transition-all duration-200 p-4 sm:p-6 flex flex-col justify-between group relative overflow-hidden ${
         journey.isCurrentLevel
           ? 'border-emerald-300 ring-1 ring-emerald-400/30 shadow-xs'
           : journey.isNextLevel
@@ -56,12 +56,12 @@ export default function ModuleCard({ module, onOpenSoftLock }) {
           : 'border-slate-200/90 hover:border-slate-300'
       }`}
     >
-      <div className="space-y-3">
+      <div className="space-y-2 sm:space-y-3">
         {/* Top Header: Category & Level Indicator */}
-        <div className="flex items-center justify-between gap-2 flex-wrap">
+        <div className="flex items-center justify-between gap-1.5 sm:gap-2 flex-wrap">
           <div className="flex items-center gap-1.5 flex-wrap">
             <span
-              className={`px-2.5 py-0.5 rounded-full text-[11px] font-extrabold uppercase tracking-wider border ${getCategoryBadge(
+              className={`px-2 sm:px-2.5 py-0.5 rounded-full text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider border ${getCategoryBadge(
                 module.category
               )}`}
             >
@@ -70,8 +70,8 @@ export default function ModuleCard({ module, onOpenSoftLock }) {
 
             {/* Read Completion Badge */}
             {isCompleted && (
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
-                <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                <CheckCircle2 className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-emerald-600" />
                 <span>Selesai</span>
               </span>
             )}
@@ -79,7 +79,7 @@ export default function ModuleCard({ module, onOpenSoftLock }) {
 
           {/* CEFR Level Pill */}
           <span
-            className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold border shadow-2xs ${levelInfo.badgeClass}`}
+            className={`inline-flex items-center gap-1 px-2 sm:px-2.5 py-0.5 rounded-full text-[10px] sm:text-[11px] font-bold border shadow-2xs ${levelInfo.badgeClass}`}
             title={`CEFR: ${levelInfo.code} - ${levelInfo.tagline}`}
           >
             <span>{levelInfo.badge}</span>
@@ -90,7 +90,7 @@ export default function ModuleCard({ module, onOpenSoftLock }) {
         {/* Journey Advisory Badge */}
         <div className="pt-0.5">
           <span
-            className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-xl text-[10px] font-extrabold uppercase tracking-wider border ${journey.badgeClass}`}
+            className={`inline-flex items-center gap-1 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-lg sm:rounded-xl text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider border ${journey.badgeClass}`}
           >
             {journey.badgeText}
           </span>
@@ -99,17 +99,17 @@ export default function ModuleCard({ module, onOpenSoftLock }) {
         <div>
           <h3
             onClick={handleReadTheoryClick}
-            className="font-extrabold text-slate-900 text-base sm:text-lg group-hover:text-indigo-600 transition leading-snug cursor-pointer"
+            className="font-extrabold text-slate-900 text-sm sm:text-lg group-hover:text-indigo-600 transition leading-snug cursor-pointer"
           >
             {module.title}
           </h3>
-          <p className="text-xs sm:text-sm text-slate-600 mt-2 line-clamp-3 leading-relaxed">
+          <p className="text-xs sm:text-sm text-slate-600 mt-1 sm:mt-2 line-clamp-2 sm:line-clamp-3 leading-relaxed">
             {previewText}
           </p>
         </div>
       </div>
 
-      <div className="flex items-center justify-between pt-4 mt-4 border-t border-slate-100">
+      <div className="flex items-center justify-between pt-3 sm:pt-4 mt-3 sm:mt-4 border-t border-slate-100">
         <button
           onClick={handleReadTheoryClick}
           className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-700 hover:text-indigo-600 transition cursor-pointer"
@@ -120,7 +120,7 @@ export default function ModuleCard({ module, onOpenSoftLock }) {
 
         <Link
           to={`/flashcards/${module.id}`}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-50 hover:bg-indigo-50 hover:text-indigo-600 text-slate-700 text-xs font-bold border border-slate-200 transition"
+          className="inline-flex items-center gap-1 px-2.5 py-1.5 sm:px-3 sm:py-1.5 rounded-xl bg-slate-50 hover:bg-indigo-50 hover:text-indigo-600 text-slate-700 text-[11px] sm:text-xs font-bold border border-slate-200 transition"
         >
           <Layers className="w-3.5 h-3.5" />
           <span>Latihan Kartu</span>

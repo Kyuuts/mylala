@@ -64,8 +64,8 @@ export default function LanguageSelector({ activeLanguage = 'en', onSelectLangua
         </span>
       </div>
 
-      {/* Language Grid */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+      {/* Language Grid: Mobile Horizontal Swipeable Pills / Desktop Full Grid */}
+      <div className="flex sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-2.5 overflow-x-auto no-scrollbar py-1">
         {LANGUAGES.map((lang) => {
           const isActive = lang.id === activeLanguage && lang.status === 'active';
           const isComingSoon = lang.status === 'coming_soon';
@@ -74,7 +74,7 @@ export default function LanguageSelector({ activeLanguage = 'en', onSelectLangua
             <button
               key={lang.id}
               onClick={() => handleClick(lang)}
-              className={`relative text-left p-3.5 sm:p-4 rounded-2xl border transition-all duration-200 flex flex-col justify-between ${
+              className={`shrink-0 min-w-[130px] sm:min-w-0 text-left p-2.5 sm:p-4 rounded-xl sm:rounded-2xl border transition-all duration-200 flex flex-col justify-between ${
                 isActive
                   ? 'bg-gradient-to-br from-indigo-50 to-white border-indigo-500 ring-2 ring-indigo-500/20 shadow-xs'
                   : isComingSoon
@@ -83,30 +83,30 @@ export default function LanguageSelector({ activeLanguage = 'en', onSelectLangua
               }`}
             >
               <div className="flex items-start justify-between">
-                <span className="text-2xl sm:text-3xl select-none">{lang.flag}</span>
+                <span className="text-xl sm:text-3xl select-none">{lang.flag}</span>
                 {isActive ? (
-                  <span className="inline-flex items-center gap-1 text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-indigo-600 text-white">
+                  <span className="inline-flex items-center gap-1 text-[9px] sm:text-[10px] font-extrabold px-1.5 sm:px-2 py-0.5 rounded-full bg-indigo-600 text-white">
                     <CheckCircle2 className="w-2.5 h-2.5" /> Aktif
                   </span>
                 ) : (
-                  <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-200/80 text-slate-600">
+                  <span className="inline-flex items-center gap-1 text-[9px] sm:text-[10px] font-bold px-1.5 sm:px-2 py-0.5 rounded-full bg-slate-200/80 text-slate-600">
                     <Lock className="w-2.5 h-2.5 text-slate-500" /> Soon
                   </span>
                 )}
               </div>
 
-              <div className="mt-2.5">
-                <h4 className="font-extrabold text-slate-900 text-sm sm:text-base leading-tight">
+              <div className="mt-1.5 sm:mt-2.5">
+                <h4 className="font-extrabold text-slate-900 text-xs sm:text-base leading-tight truncate">
                   {lang.name}
                 </h4>
-                <p className="text-[11px] text-slate-500 font-medium mt-0.5 truncate">
+                <p className="text-[10px] sm:text-[11px] text-slate-500 font-medium mt-0.5 truncate hidden sm:block">
                   {lang.nativeName}
                 </p>
               </div>
 
-              <div className="mt-3 pt-2 border-t border-slate-200/60 flex items-center justify-between text-[11px]">
+              <div className="mt-2 sm:mt-3 pt-1.5 sm:pt-2 border-t border-slate-200/60 flex items-center justify-between text-[10px] sm:text-[11px]">
                 <span className={isActive ? 'font-bold text-indigo-700' : 'text-slate-400'}>
-                  {isActive ? `${lang.modulesCount} Modul Siap` : 'Dalam Kurasi'}
+                  {isActive ? `${lang.modulesCount} Modul` : 'Dalam Kurasi'}
                 </span>
                 {isActive && <Sparkles className="w-3 h-3 text-indigo-500" />}
               </div>
