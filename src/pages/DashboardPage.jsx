@@ -10,6 +10,8 @@ import ModuleCard from '../components/dashboard/ModuleCard';
 import ShareCardModal from '../components/common/ShareCardModal';
 import LanguageScannerModal from '../components/scanner/LanguageScannerModal';
 import SoftLockModal from '../components/common/SoftLockModal';
+import LevelProgressCard from '../components/dashboard/LevelProgressCard';
+import LevelExitExamModal from '../components/exam/LevelExitExamModal';
 import { getModuleLevel } from '../utils/moduleLevel';
 import { getTierFromXP } from '../utils/rankSystem';
 
@@ -42,6 +44,7 @@ export default function DashboardPage() {
   const [selectedCategory, setSelectedCategory] = useState('All'); // 'All' | 'Grammar' | 'Kosakata' | 'Konjungsi'
   const [scannerOpen, setScannerOpen] = useState(false);
   const [softLockModule, setSoftLockModule] = useState(null);
+  const [activeExamLevel, setActiveExamLevel] = useState(null);
 
   // Sync selected level if store triggers a one-shot level filter redirect (e.g. from placement test or exam)
   useEffect(() => {
@@ -300,6 +303,13 @@ export default function DashboardPage() {
           </div>
         </div>
 
+        {/* Level Journey Progress & Exit Exam Trigger */}
+        <LevelProgressCard
+          activeLevel={selectedLevel === 'All' ? (cefrLevel || user?.cefrLevel || 'A1') : selectedLevel}
+          modules={modules}
+          onOpenExam={(lvl) => setActiveExamLevel(lvl)}
+        />
+
         {error && (
           <div className="p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-sm flex items-center gap-2">
             <AlertCircle className="w-4 h-4 shrink-0" />
@@ -374,6 +384,16 @@ export default function DashboardPage() {
         }}
         onSwitchToCurrentLevel={(userLvl) => {
           setSelectedLevel(userLvl);
+        }}
+      />
+
+      {/* Level Exit Exam Modal (Comprehensive 15-Question Assessment) */}
+      <LevelExitExamModal
+        isOpen={!!activeExamLevel}
+        onClose={() => setActiveExamLevel(null)}
+        levelCode={activeExamLevel || 'A1'}
+        onGraduate={(nextLvl) => {
+          setSelectedLevel(nextLvl);
         }}
       />
     </div>
