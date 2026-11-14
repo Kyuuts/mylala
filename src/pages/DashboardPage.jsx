@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { PlayCircle, Sparkles, RefreshCw, AlertCircle, PlusCircle, Filter, Trophy, Flame, Share2, Compass, X, CheckCircle2 } from 'lucide-react';
 import { useAppStore } from '../store/useAppStore';
 import MetricsOverview from '../components/dashboard/MetricsOverview';
@@ -9,6 +9,7 @@ import CategoryFilter from '../components/dashboard/CategoryFilter';
 import ModuleCard from '../components/dashboard/ModuleCard';
 import ShareCardModal from '../components/common/ShareCardModal';
 import LanguageScannerModal from '../components/scanner/LanguageScannerModal';
+import SoftLockModal from '../components/common/SoftLockModal';
 import { getModuleLevel } from '../utils/moduleLevel';
 import { getTierFromXP } from '../utils/rankSystem';
 
@@ -35,10 +36,12 @@ export default function DashboardPage() {
   });
 
   // Filter States
+  const navigate = useNavigate();
   const [selectedLanguage, setSelectedLanguage] = useState('en');
   const [selectedLevel, setSelectedLevel] = useState('All'); // 'All' | 'A1' | 'A2' | 'B1' | 'B2' | 'C1'
   const [selectedCategory, setSelectedCategory] = useState('All'); // 'All' | 'Grammar' | 'Kosakata' | 'Konjungsi'
   const [scannerOpen, setScannerOpen] = useState(false);
+  const [softLockModule, setSoftLockModule] = useState(null);
 
   // Sync selected level if store triggers a one-shot level filter redirect (e.g. from placement test or exam)
   useEffect(() => {
@@ -335,7 +338,11 @@ export default function DashboardPage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {filteredModules.map((mod) => (
-              <ModuleCard key={mod.id} module={mod} />
+              <ModuleCard
+                key={mod.id}
+                module={mod}
+                onOpenSoftLock={(m) => setSoftLockModule(m)}
+              />
             ))}
           </div>
         )}
@@ -352,6 +359,22 @@ export default function DashboardPage() {
         isOpen={scannerOpen}
         onClose={() => setScannerOpen(false)}
         onSelectLevel={(lvl) => setSelectedLevel(lvl)}
+      />
+
+      {/* Friendly Soft Lock Advisory Modal */}
+      <SoftLockModal
+        isOpen={!!softLockModule}
+        onClose={() => setSoftLockModule(null)}
+        targetModule={softLockModule}
+        userCefrLevel={cefrLevel || user?.cefrLevel || 'A1'}
+        onContinue={() => {
+          if (softLockModule) {
+            navigate(`/module/${softLockModule.id}`);
+          }
+        }}
+        onSwitchToCurrentLevel={(userLvl) => {
+          setSelectedLevel(userLvl);
+        }}
       />
     </div>
   );

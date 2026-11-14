@@ -96,6 +96,62 @@ export const CEFR_LEVEL_LIST = [
   CEFR_LEVELS.C1,
 ];
 
+export const CEFR_ORDER = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
+
+/**
+ * Evaluates the module's CEFR level against the user's active CEFR level:
+ * - 'current': matches user level (green emerald, recommended)
+ * - 'next': 1 level above user (amber, next challenge, soft lock advisory)
+ * - 'advanced': 2+ levels above user (slate, not recommended yet, soft lock advisory)
+ * - 'passed': level below user (teal/slate, foundation mastered)
+ */
+export const getModuleJourneyStatus = (moduleCefrCode, userCefrCode = 'A1') => {
+  const modCode = (moduleCefrCode || 'A1').toUpperCase();
+  const userCode = (userCefrCode || 'A1').toUpperCase();
+
+  const modIdx = CEFR_ORDER.indexOf(modCode);
+  const userIdx = CEFR_ORDER.indexOf(userCode);
+
+  if (modIdx === -1 || userIdx === -1 || modIdx === userIdx) {
+    return {
+      status: 'current',
+      isCurrentLevel: true,
+      badgeText: '🟢 JALUR UTAMAMU',
+      badgeClass: 'bg-emerald-50 text-emerald-800 border-emerald-300 ring-1 ring-emerald-400/30',
+      softLock: false,
+    };
+  }
+
+  if (modIdx === userIdx + 1) {
+    return {
+      status: 'next',
+      isNextLevel: true,
+      badgeText: '⏳ TANTANGAN BERIKUTNYA',
+      badgeClass: 'bg-amber-50 text-amber-800 border-amber-300 ring-1 ring-amber-400/20',
+      softLock: true,
+    };
+  }
+
+  if (modIdx > userIdx + 1) {
+    return {
+      status: 'advanced',
+      isAdvanced: true,
+      badgeText: '🔒 BELUM DISARANKAN',
+      badgeClass: 'bg-slate-100 text-slate-700 border-slate-300',
+      softLock: true,
+    };
+  }
+
+  // modIdx < userIdx (Foundation already mastered)
+  return {
+    status: 'passed',
+    isPassed: true,
+    badgeText: '✓ DASAR DIKUASAI',
+    badgeClass: 'bg-teal-50 text-teal-800 border-teal-200',
+    softLock: false,
+  };
+};
+
 /**
  * Detects the CEFR level of a given module
  */

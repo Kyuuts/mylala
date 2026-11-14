@@ -1,10 +1,17 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { BookOpen, Layers } from 'lucide-react';
-import { getModuleLevel } from '../../utils/moduleLevel';
+import { Link, useNavigate } from 'react-router-dom';
+import { BookOpen, Layers, CheckCircle2 } from 'lucide-react';
+import { getModuleLevel, getModuleJourneyStatus } from '../../utils/moduleLevel';
+import { useAppStore } from '../../store/useAppStore';
 
-export default function ModuleCard({ module }) {
+export default function ModuleCard({ module, onOpenSoftLock }) {
+  const navigate = useNavigate();
+  const { completedModules, cefrLevel, user } = useAppStore();
+  const userCefr = cefrLevel || user?.cefrLevel || 'A1';
+
   const levelInfo = getModuleLevel(module);
+  const journey = getModuleJourneyStatus(levelInfo.code, userCefr);
+  const isCompleted = completedModules?.includes(module.id);
 
   const getCategoryBadge = (category) => {
     switch (category) {
@@ -21,7 +28,7 @@ export default function ModuleCard({ module }) {
     }
   };
 
-  // Extract a brief text summary from markdown (strip # and headers)
+  // Extract a brief text summary from markdown
   const previewText = module.content_markdown
     ? module.content_markdown
         .replace(/^#+.*$/gm, '')
@@ -30,26 +37,62 @@ export default function ModuleCard({ module }) {
         .slice(0, 135) + '...'
     : 'Materi ringkas cheat sheet 1 halaman.';
 
-  return (
-    <div className={`bg-white rounded-3xl border border-slate-200/90 hover:shadow-md transition-all duration-200 p-5 sm:p-6 flex flex-col justify-between group ${levelInfo.borderCard}`}>
-      <div className="space-y-3">
-        {/* Top Header: Category on Left, CEFR Level on Right */}
-        <div className="flex items-center justify-between gap-2">
-          <span
-            className={`px-2.5 py-0.5 rounded-full text-[11px] font-extrabold uppercase tracking-wider border ${getCategoryBadge(
-              module.category
-            )}`}
-          >
-            {module.category === 'Vocab' || module.category === 'Templates' ? 'Kosakata' : module.category}
-          </span>
+  const handleReadTheoryClick = (e) => {
+    if (journey.softLock && onOpenSoftLock) {
+      e.preventDefault();
+      onOpenSoftLock(module);
+    } else {
+      navigate(`/module/${module.id}`);
+    }
+  };
 
-          {/* Level Indicator (Right Side) */}
+  return (
+    <div
+      className={`bg-white rounded-3xl border transition-all duration-200 p-5 sm:p-6 flex flex-col justify-between group relative overflow-hidden ${
+        journey.isCurrentLevel
+          ? 'border-emerald-300 ring-1 ring-emerald-400/30 shadow-xs'
+          : journey.isNextLevel
+          ? 'border-amber-200/90 hover:border-amber-300'
+          : 'border-slate-200/90 hover:border-slate-300'
+      }`}
+    >
+      <div className="space-y-3">
+        {/* Top Header: Category & Level Indicator */}
+        <div className="flex items-center justify-between gap-2 flex-wrap">
+          <div className="flex items-center gap-1.5 flex-wrap">
+            <span
+              className={`px-2.5 py-0.5 rounded-full text-[11px] font-extrabold uppercase tracking-wider border ${getCategoryBadge(
+                module.category
+              )}`}
+            >
+              {module.category === 'Vocab' || module.category === 'Templates' ? 'Kosakata' : module.category}
+            </span>
+
+            {/* Read Completion Badge */}
+            {isCompleted && (
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                <span>Selesai</span>
+              </span>
+            )}
+          </div>
+
+          {/* CEFR Level Pill */}
           <span
             className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold border shadow-2xs ${levelInfo.badgeClass}`}
             title={`CEFR: ${levelInfo.code} - ${levelInfo.tagline}`}
           >
             <span>{levelInfo.badge}</span>
-            <span>{levelInfo.code} • {levelInfo.role}</span>
+            <span>{levelInfo.code}</span>
+          </span>
+        </div>
+
+        {/* Journey Advisory Badge */}
+        <div className="pt-0.5">
+          <span
+            className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-xl text-[10px] font-extrabold uppercase tracking-wider border ${journey.badgeClass}`}
+          >
+            {journey.badgeText}
           </span>
         </div>
 
@@ -64,13 +107,13 @@ export default function ModuleCard({ module }) {
       </div>
 
       <div className="flex items-center justify-between pt-4 mt-4 border-t border-slate-100">
-        <Link
-          to={`/module/${module.id}`}
-          className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-700 hover:text-indigo-600 transition"
+        <button
+          onClick={handleReadTheoryClick}
+          className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-700 hover:text-indigo-600 transition cursor-pointer"
         >
           <BookOpen className="w-3.5 h-3.5 text-indigo-600" />
           <span>Baca Teori</span>
-        </Link>
+        </button>
 
         <Link
           to={`/flashcards/${module.id}`}
