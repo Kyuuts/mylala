@@ -16,11 +16,22 @@ import {
 import { getLevelExam } from '../../services/levelExamData';
 import { useAppStore } from '../../store/useAppStore';
 
+// Fisher-Yates shuffle algorithm for exam question options
+const shuffleOptions = (options) => {
+  const array = [...options];
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+};
+
 export default function LevelExitExamModal({ isOpen, onClose, levelCode = 'A1', onGraduate }) {
   const { completeLevelExam } = useAppStore();
 
   const [step, setStep] = useState('intro'); // 'intro' | 'quiz' | 'result'
   const [examData, setExamData] = useState(null);
+  const [examQuestions, setExamQuestions] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState(null);
   const [isAnswerSubmitted, setIsAnswerSubmitted] = useState(false);
@@ -28,10 +39,19 @@ export default function LevelExitExamModal({ isOpen, onClose, levelCode = 'A1', 
   const [userAnswers, setUserAnswers] = useState([]); // [{ questionId, selectedIndex, isCorrect }]
   const [confettiActive, setConfettiActive] = useState(false);
 
+  // Countdown Timer States (10 Minutes Standard)
+  const [timeLeft, setTimeLeft] = useState(600);
+  const [isTimeUp, setIsTimeUp] = useState(false);
+
   useEffect(() => {
     if (isOpen) {
       const data = getLevelExam(levelCode);
       setExamData(data);
+      const shuffled = (data?.questions || []).map((q) => ({
+        ...q,
+        options: shuffleOptions(q.options || []),
+      }));
+      setExamQuestions(shuffled);
       setStep('intro');
       setCurrentIndex(0);
       setSelectedOption(null);
@@ -39,23 +59,66 @@ export default function LevelExitExamModal({ isOpen, onClose, levelCode = 'A1', 
       setCorrectAnswersCount(0);
       setUserAnswers([]);
       setConfettiActive(false);
+      setTimeLeft(data?.timeLimitSeconds || 600);
+      setIsTimeUp(false);
     }
   }, [isOpen, levelCode]);
 
+  // Countdown Timer Effect
+  useEffect(() => {
+    let interval = null;
+    if (step === 'quiz' && timeLeft > 0) {
+      interval = setInterval(() => {
+        setTimeLeft((prev) => {
+          if (prev <= 1) {
+            clearInterval(interval);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [step, timeLeft]);
+
+  // Auto-submit when time expires (BUG-05 Fix)
+  useEffect(() => {
+    if (step === 'quiz' && timeLeft === 0) {
+      setIsTimeUp(true);
+      finishExam();
+    }
+  }, [step, timeLeft]);
+
   if (!isOpen || !examData) return null;
 
-  const questions = examData.questions || [];
+  const questions = examQuestions.length > 0 ? examQuestions : (examData.questions || []);
   const currentQ = questions[currentIndex];
   const totalQuestions = questions.length;
   const passingScore = examData.passingScore || Math.ceil(totalQuestions * 0.8);
 
+  const formatTime = (seconds) => {
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+  };
+
   const handleStartExam = () => {
+    // Re-shuffle dynamically on each attempt
+    const shuffled = (examData?.questions || []).map((q) => ({
+      ...q,
+      options: shuffleOptions(q.options || []),
+    }));
+    setExamQuestions(shuffled);
     setStep('quiz');
     setCurrentIndex(0);
     setSelectedOption(null);
     setIsAnswerSubmitted(false);
     setCorrectAnswersCount(0);
     setUserAnswers([]);
+    setTimeLeft(examData?.timeLimitSeconds || 600);
+    setIsTimeUp(false);
   };
 
   const handleSelectOption = (index) => {
@@ -78,21 +141,27 @@ export default function LevelExitExamModal({ isOpen, onClose, levelCode = 'A1', 
     ]);
   };
 
+  const finishExam = () => {
+    setStep('result');
+    const isPassed = correctAnswersCount >= passingScore;
+
+    if (isPassed) {
+      setConfettiActive(true);
+      // Reward 150 XP & advance level in store
+      completeLevelExam(levelCode, correctAnswersCount, totalQuestions);
+      if (typeof onGraduate === 'function') {
+        onGraduate();
+      }
+    }
+  };
+
   const handleNext = () => {
     if (currentIndex < totalQuestions - 1) {
       setCurrentIndex((prev) => prev + 1);
       setSelectedOption(null);
       setIsAnswerSubmitted(false);
     } else {
-      // Exam finished, calculate results
-      setStep('result');
-      const isPassed = correctAnswersCount >= passingScore;
-
-      if (isPassed) {
-        setConfettiActive(true);
-        // Reward 150 XP & advance level in store
-        completeLevelExam(levelCode, correctAnswersCount, totalQuestions);
-      }
+      finishExam();
     }
   };
 
@@ -174,20 +243,26 @@ export default function LevelExitExamModal({ isOpen, onClose, levelCode = 'A1', 
               </div>
 
               {/* Rules Cards */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-left">
-                <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 text-left">
+                <div className="p-3 sm:p-3.5 rounded-2xl bg-slate-50 border border-slate-200">
                   <span className="text-[10px] font-bold text-slate-400 uppercase block">Jumlah Soal</span>
                   <p className="text-sm font-extrabold text-slate-800 mt-0.5">{totalQuestions} Soal Mix</p>
                   <span className="text-[10px] text-slate-500">Grammar &amp; Vocab</span>
                 </div>
 
-                <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200">
+                <div className="p-3 sm:p-3.5 rounded-2xl bg-slate-50 border border-slate-200">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase block">Batas Waktu</span>
+                  <p className="text-sm font-extrabold text-amber-600 mt-0.5">10 Menit</p>
+                  <span className="text-[10px] text-slate-500">Auto-submit</span>
+                </div>
+
+                <div className="p-3 sm:p-3.5 rounded-2xl bg-slate-50 border border-slate-200">
                   <span className="text-[10px] font-bold text-slate-400 uppercase block">Passing Grade</span>
                   <p className="text-sm font-extrabold text-emerald-600 mt-0.5">Minimal 80%</p>
                   <span className="text-[10px] text-slate-500">{passingScore} dari {totalQuestions} benar</span>
                 </div>
 
-                <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200">
+                <div className="p-3 sm:p-3.5 rounded-2xl bg-slate-50 border border-slate-200">
                   <span className="text-[10px] font-bold text-slate-400 uppercase block">Hadiah Lulus</span>
                   <p className="text-sm font-extrabold text-indigo-600 mt-0.5">+150 XP</p>
                   <span className="text-[10px] text-slate-500">Promosi Level Akun</span>
@@ -209,12 +284,27 @@ export default function LevelExitExamModal({ isOpen, onClose, levelCode = 'A1', 
           {/* STEP 2: QUIZ STEPPER */}
           {step === 'quiz' && currentQ && (
             <div className="space-y-5">
-              {/* Progress Bar & Counter */}
+              {/* Progress Bar & Counter with Realtime Timer */}
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between text-xs">
                   <span className="font-extrabold text-indigo-600">
                     Soal {currentIndex + 1} dari {totalQuestions}
                   </span>
+
+                  {/* Countdown Timer Pill */}
+                  <div
+                    className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-black border transition-all ${
+                      timeLeft <= 60
+                        ? 'bg-rose-50 text-rose-700 border-rose-300 animate-pulse'
+                        : timeLeft <= 180
+                        ? 'bg-amber-50 text-amber-700 border-amber-300'
+                        : 'bg-indigo-50 text-indigo-700 border-indigo-200'
+                    }`}
+                  >
+                    <Clock className={`w-3.5 h-3.5 ${timeLeft <= 60 ? 'text-rose-600' : 'text-indigo-600'}`} />
+                    <span>{formatTime(timeLeft)}</span>
+                  </div>
+
                   <span className="text-slate-400 font-bold">
                     Benar: {correctAnswersCount}
                   </span>
@@ -319,6 +409,13 @@ export default function LevelExitExamModal({ isOpen, onClose, levelCode = 'A1', 
                   </span>
                 )}
               </div>
+
+              {isTimeUp && (
+                <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-rose-50 border border-rose-200 text-rose-700 text-xs font-bold">
+                  <Clock className="w-4 h-4 text-rose-600" />
+                  <span>Batas Waktu 10 Menit Berakhir • Ujian Dikirim Otomatis</span>
+                </div>
+              )}
 
               <div className="space-y-1.5">
                 <span className="text-[11px] font-extrabold uppercase tracking-wider text-indigo-600">

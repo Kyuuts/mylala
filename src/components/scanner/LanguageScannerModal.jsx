@@ -16,6 +16,16 @@ import {
 import { SCANNER_QUESTIONS, resolvePlacementResult } from '../../services/placementTestData';
 import { useAppStore } from '../../store/useAppStore';
 
+// Fisher-Yates shuffle algorithm for question options
+const shuffleOptions = (options) => {
+  const array = [...options];
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+};
+
 export default function LanguageScannerModal({ isOpen, onClose, onSelectLevel }) {
   const { setUserCefrLevel } = useAppStore();
 
@@ -25,13 +35,26 @@ export default function LanguageScannerModal({ isOpen, onClose, onSelectLevel })
   const [isAnswerSubmitted, setIsAnswerSubmitted] = useState(false);
   const [correctAnswersCount, setCorrectAnswersCount] = useState(0);
   const [finalResult, setFinalResult] = useState(null);
+  const [quizQuestions, setQuizQuestions] = useState(() =>
+    SCANNER_QUESTIONS.map((q) => ({
+      ...q,
+      options: shuffleOptions(q.options),
+    }))
+  );
 
   if (!isOpen) return null;
 
-  const currentQuestion = SCANNER_QUESTIONS[currentIndex];
-  const progressPercent = Math.round(((currentIndex + 1) / SCANNER_QUESTIONS.length) * 100);
+  const currentQuestion = quizQuestions[currentIndex] || SCANNER_QUESTIONS[0];
+  const totalQuestions = quizQuestions.length;
+  const progressPercent = Math.round(((currentIndex + 1) / totalQuestions) * 100);
 
   const handleStart = () => {
+    // Re-shuffle options dynamically whenever test starts or restarts
+    const prepared = SCANNER_QUESTIONS.map((q) => ({
+      ...q,
+      options: shuffleOptions(q.options),
+    }));
+    setQuizQuestions(prepared);
     setStep('quiz');
     setCurrentIndex(0);
     setSelectedOption(null);
@@ -45,25 +68,22 @@ export default function LanguageScannerModal({ isOpen, onClose, onSelectLevel })
     setSelectedOption(index);
     setIsAnswerSubmitted(true);
 
-    const isCorrect = currentQuestion.options[index].isCorrect;
+    const isCorrect = currentQuestion.options[index]?.isCorrect;
     if (isCorrect) {
       setCorrectAnswersCount((prev) => prev + 1);
     }
   };
 
   const handleNextQuestion = () => {
-    if (currentIndex < SCANNER_QUESTIONS.length - 1) {
+    if (currentIndex < totalQuestions - 1) {
       setCurrentIndex((prev) => prev + 1);
       setSelectedOption(null);
       setIsAnswerSubmitted(false);
     } else {
-      // Calculate final result
+      // Calculate final result without prematurely triggering setUserCefrLevel (avoids double XP)
       const result = resolvePlacementResult(correctAnswersCount);
       setFinalResult(result);
       setStep('result');
-
-      // Persist to store & award +50 XP
-      setUserCefrLevel(result.levelCode);
     }
   };
 
@@ -143,7 +163,7 @@ export default function LanguageScannerModal({ isOpen, onClose, onSelectLevel })
               {/* Progress Bar & Header */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between text-xs font-bold text-slate-500">
-                  <span>Pertanyaan {currentIndex + 1} dari {SCANNER_QUESTIONS.length}</span>
+                  <span>Pertanyaan {currentIndex + 1} dari {totalQuestions}</span>
                   <span className="text-indigo-600 font-extrabold">{currentQuestion.levelLabel}</span>
                 </div>
 
@@ -341,7 +361,7 @@ export default function LanguageScannerModal({ isOpen, onClose, onSelectLevel })
               disabled={!isAnswerSubmitted}
               className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition shadow-xs disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
             >
-              <span>{currentIndex === SCANNER_QUESTIONS.length - 1 ? 'Lihat Hasil Scanner' : 'Pertanyaan Berikutnya'}</span>
+              <span>{currentIndex === totalQuestions - 1 ? 'Lihat Hasil Scanner' : 'Pertanyaan Berikutnya'}</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </div>

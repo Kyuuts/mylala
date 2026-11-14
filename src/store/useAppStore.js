@@ -18,16 +18,48 @@ const generateUUID = () => {
 // Clean Initial Accounts Registry (Production Standard: All accounts managed via Supabase GoTrue Auth)
 const INITIAL_ACCOUNTS = {};
 
+// Helper: Calculate accurate daily streak based on calendar day difference
+const calculateDailyStreak = (currentStreak, lastStudyDate) => {
+  const todayStr = new Date().toISOString().split('T')[0];
+
+  // If never studied, first study session starts streak at 1
+  if (!lastStudyDate) {
+    return { streak: 1, lastStudyDate: todayStr };
+  }
+
+  // Already studied today: streak remains unchanged
+  if (lastStudyDate === todayStr) {
+    return { streak: Math.max(1, currentStreak || 1), lastStudyDate: todayStr };
+  }
+
+  // Compare calendar days in UTC to prevent timezone skew
+  const todayDate = new Date(todayStr + 'T00:00:00Z');
+  const lastDate = new Date(lastStudyDate + 'T00:00:00Z');
+  const diffTime = todayDate.getTime() - lastDate.getTime();
+  const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
+
+  if (diffDays === 1) {
+    // Studied yesterday: continuous streak!
+    return { streak: (currentStreak || 0) + 1, lastStudyDate: todayStr };
+  } else if (diffDays > 1) {
+    // Missed 1 or more full days: streak broken, resets to 1
+    return { streak: 1, lastStudyDate: todayStr };
+  } else {
+    return { streak: Math.max(1, currentStreak || 1), lastStudyDate: todayStr };
+  }
+};
+
 // Helper: Extract snapshot of active user's progression stats
 const snapshotActiveStats = (state) => ({
   cefrLevel: state.cefrLevel || 'A1',
   passedExams: state.passedExams || [],
   completedModules: state.completedModules || [],
   rewardedModuleIds: state.rewardedModuleIds || [],
-  streak: state.streak || 1,
+  streak: state.streak !== undefined ? state.streak : 0,
   lastStudyDate: state.lastStudyDate || null,
   xp: state.xp || 0,
   weeklyXp: state.weeklyXp || 0,
+  hasClaimedScannerXP: state.hasClaimedScannerXP || false,
 });
 
 // Helper: Get clean or saved stats for a specific user ID
@@ -39,10 +71,11 @@ const resolveUserStats = (userId, userStatsByUserId) => {
       passedExams: existing.passedExams || [],
       completedModules: existing.completedModules || [],
       rewardedModuleIds: existing.rewardedModuleIds || [],
-      streak: existing.streak || 1,
+      streak: existing.streak !== undefined ? existing.streak : 0,
       lastStudyDate: existing.lastStudyDate || null,
       xp: existing.xp || 0,
       weeklyXp: existing.weeklyXp || 0,
+      hasClaimedScannerXP: existing.hasClaimedScannerXP || false,
     };
   }
   return {
@@ -50,10 +83,11 @@ const resolveUserStats = (userId, userStatsByUserId) => {
     passedExams: [],
     completedModules: [],
     rewardedModuleIds: [],
-    streak: 1,
+    streak: 0,
     lastStudyDate: null,
     xp: 0,
     weeklyXp: 0,
+    hasClaimedScannerXP: false,
   };
 };
 
@@ -66,7 +100,7 @@ export const useAppStore = create(
       userId: generateUUID(),
 
       // Gamification & Ranked State
-      streak: 1,
+      streak: 0,
       lastStudyDate: null, // 'YYYY-MM-DD'
       xp: 0,
       weeklyXp: 0,
@@ -242,7 +276,7 @@ export const useAppStore = create(
           rewardedModuleIds: [],
           xp: 0,
           weeklyXp: 0,
-          streak: 1,
+          streak: 0,
           lastStudyDate: null,
           dashboardSelectedLevel: 'A1',
           syncNotification: `Akun "${cleanUser}" berhasil dibuat! Selamat belajar, ${cleanName}.`,
@@ -611,7 +645,7 @@ export const useAppStore = create(
           passedExams: [],
           completedModules: [],
           rewardedModuleIds: [],
-          streak: 1,
+          streak: 0,
           lastStudyDate: null,
           xp: 0,
           weeklyXp: 0,
@@ -664,12 +698,16 @@ export const useAppStore = create(
         const state = get();
         const { user, userId } = state;
         const updatedUser = user ? { ...user, cefrLevel: levelCode } : user;
+        const currentStats = (state.userStatsByUserId || {})[userId] || snapshotActiveStats(state);
+        const alreadyClaimed = Boolean(currentStats.hasClaimedScannerXP);
+
         const updatedStats = userId
           ? {
               ...(state.userStatsByUserId || {}),
               [userId]: {
-                ...((state.userStatsByUserId || {})[userId] || snapshotActiveStats(state)),
+                ...currentStats,
                 cefrLevel: levelCode,
+                hasClaimedScannerXP: true,
               },
             }
           : state.userStatsByUserId;
@@ -681,8 +719,11 @@ export const useAppStore = create(
           dashboardSelectedLevel: levelCode,
           syncNotification: `Level belajarmu telah disetel ke ${levelCode}. Selamat belajar!`,
         });
-        get().addXP(50, `Menyelesaikan Language Scanner (${levelCode})`);
-        get().syncWeeklyStatsToSupabase();
+
+        if (!alreadyClaimed) {
+          get().addXP(50, `Menyelesaikan Language Scanner (${levelCode})`);
+          get().syncWeeklyStatsToSupabase();
+        }
       },
 
       // Action: Programmatic Dashboard Level Navigation
@@ -1426,14 +1467,11 @@ export const useAppStore = create(
         const xpEarned = rating === 'Easy' ? 15 : rating === 'Good' ? 10 : 5;
         get().addXP(xpEarned, `Latihan Kartu (${rating})`);
 
-        // 3. Update Daily Streak
-        const todayStr = new Date().toISOString().split('T')[0];
-        let newStreak = streak || 1;
-        let newLastStudyDate = lastStudyDate;
-        if (lastStudyDate !== todayStr) {
-          newStreak = (streak || 0) + 1;
-          newLastStudyDate = todayStr;
-        }
+        // 3. Update Daily Streak with accurate calendar date calculation
+        const { streak: newStreak, lastStudyDate: newLastStudyDate } = calculateDailyStreak(
+          streak,
+          lastStudyDate
+        );
 
         // 4. Optimistic update to isolated local user store
         const updatedProgMap = {
@@ -1673,7 +1711,7 @@ export const useAppStore = create(
           offlineQueue: [],
           xp: 0,
           weeklyXp: 0,
-          streak: 1,
+          streak: 0,
           lastStudyDate: null,
           cefrLevel: 'A1',
           passedExams: [],
@@ -1718,10 +1756,22 @@ export const useAppStore = create(
             state.passedExams = activeUserStats.passedExams || [];
             state.completedModules = activeUserStats.completedModules || [];
             state.rewardedModuleIds = activeUserStats.rewardedModuleIds || [];
-            state.streak = activeUserStats.streak || 1;
-            state.lastStudyDate = activeUserStats.lastStudyDate || null;
             state.xp = activeUserStats.xp || 0;
             state.weeklyXp = activeUserStats.weeklyXp || 0;
+            state.lastStudyDate = activeUserStats.lastStudyDate || null;
+
+            // Check if streak was broken due to inactivity (>1 day missed)
+            const todayStr = new Date().toISOString().split('T')[0];
+            let effectiveStreak = activeUserStats.streak !== undefined ? activeUserStats.streak : 0;
+            if (activeUserStats.lastStudyDate && activeUserStats.lastStudyDate !== todayStr) {
+              const todayDate = new Date(todayStr + 'T00:00:00Z');
+              const lastDate = new Date(activeUserStats.lastStudyDate + 'T00:00:00Z');
+              const diffDays = Math.round((todayDate.getTime() - lastDate.getTime()) / (1000 * 60 * 60 * 24));
+              if (diffDays > 1) {
+                effectiveStreak = 0;
+              }
+            }
+            state.streak = effectiveStreak;
           }
         }
 
