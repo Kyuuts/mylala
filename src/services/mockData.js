@@ -500,6 +500,366 @@ Kalimat pemula cenderung terputus-putus (*choppy*). Konjungsi adalah perekat yan
     content_markdown: "# A2 Future Time: Rencana Masa Depan Tanpa Ragu\n\n## 1. Tiga Wajah Masa Depan dalam Bahasa Inggris\nBanyak pembelajar selalu memakai kata **will** untuk semua hal di masa depan. Padahal penutur asli (*native speakers*) membedakannya dengan sangat spesifik:\n\n---\n\n## 2. Kapan Menggunakan Masing-masing Pola?\n\n### A. Will + V1 (Keputusan Spontan & Janji)\nDipakai saat keputusan diambil **detik ini juga** atau saat berjanji.\n* *\"The doorbell is ringing. I **will get** it!\"* *(Spontan).*\n* *\"I promise I **will call** you as soon as I arrive.\"* *(Janji).*\n\n### B. Be Going To + V1 (Rencana & Bukti Nyata)\nDipakai saat Anda sudah punya **niat sebelumnya**, atau saat ada **tanda fisik nyata** di depan mata.\n* *\"I **am going to buy** a new laptop next month; I have been saving up.\"* *(Rencana).*\n* *\"Look at those dark storm clouds! It **is going to rain**.\"* *(Bukti fisik).*\n\n### C. Present Continuous (Jadwal Pasti dengan Waktu & Tempat)\nDipakai saat janji temu sudah **100% terkunci** (ada tiket, jadwal dokter, dsb).\n* *\"We **are flying** to Singapore next Friday morning.\"* *(Tiket sudah dibeli).*\n* *\"I **am seeing** the doctor at 3:00 PM tomorrow.\"*\n",
     created_at: new Date('2026-01-11T03:00:00.000Z').toISOString(),
   },
+
+  // --- LEVEL A1 EXPANSION (6 to 10) ---
+  {
+    id: 'mod-a1-to-be',
+    category: 'Grammar',
+    cefr_level: 'A1',
+    sub_pillar: 'Grammar',
+    title: 'A1 Grammar: Penguasaan Mutlak To Be (Am, Is, Are) & Kalimat Nominal',
+    content_markdown: `# A1 Grammar: Penguasaan Mutlak To Be & Kalimat Nominal
+
+## 1. Kapan Menggunakan To Be?
+To Be (*am, is, are*) digunakan ketika kalimat **TIDAK memiliki kata kerja aksi** (*no action verb*). To Be berfungsi sebagai jembatan penghubung antara subjek dengan:
+1. **Profesi / Identitas:** *"She is an architect."*
+2. **Sifat / Kondisi:** *"They are very happy today."*
+3. **Lokasi:** *"We are at the library."*
+4. **Usia:** *"I am 21 years old."* (Bukan *"I have 21 years"*).
+
+---
+
+## 2. Pasangan Subjek & Bentuk Singkat Alami
+
+| Subjek | To Be (Positif) | Bentuk Singkat (*Contraction*) | Bentuk Negatif |
+| :--- | :--- | :--- | :--- |
+| **I** | am | **I'm** | I'm not |
+| **You / We / They** | are | **You're / We're / They're** | aren't *(are not)* |
+| **He / She / It** | is | **He's / She's / It's** | isn't *(is not)* |
+
+---
+
+## 3. Dua Jebakan Terbesar Pemula
+* ❌ *Salah:* "I am agree with you."  
+  ✅ *Benar:* "**I agree** with you."  
+  *(Kata 'agree' sudah merupakan kata kerja aksi, jangan tambahkan 'am'!)*
+* ❌ *Salah:* "He is play football."  
+  ✅ *Benar:* "**He plays** football." (kebiasaan) ATAU "**He is playing** football." (sedang berlangsung).
+
+---
+
+## 4. Pola Tanya Cepat (Yes/No Question)
+Tukar posisi To Be ke paling depan:
+* *"**Are you** ready?"* -> *"Yes, I am / No, I'm not."*
+* *"**Is this** your bag?"* -> *"Yes, it is / No, it isn't."*
+`,
+    created_at: new Date('2026-01-10T03:00:00.000Z').toISOString(),
+  },
+  {
+    id: 'mod-a1-numbers-prices',
+    category: 'Kosakata',
+    cefr_level: 'A1',
+    sub_pillar: 'Kosakata',
+    title: 'A1 Survival: Angka, Harga, Uang & Template Belanja Praktis',
+    content_markdown: `# A1 Survival: Angka, Harga & Belanja Tanpa Bingung
+
+## 1. Membaca Angka Ratusan, Ribuan, & Desimal
+* **100** = *One hundred* (atau *A hundred*)
+* **350** = *Three hundred (and) fifty*
+* **1,000** = *One thousand*
+* **25,000** = *Twenty-five thousand*
+* **$19.99** = *"Nineteen ninety-nine"* atau *"Nineteen dollars and ninety-nine cents"*
+
+> ⚠️ **Aturan Emas:** Kata *hundred*, *thousand*, dan *million* **TIDAK PERNAH** diberi akhiran **-s** jika didahului angka pasti!  
+> * *Salah:* "Three hundreds dollars"  
+> * *Benar:* "**Three hundred** dollars"
+
+---
+
+## 2. Membedakan Pengucapan -TEEN vs -TY
+Kesalahan mendengar harga paling sering terjadi pada angka belasan vs puluhan:
+* **-TEEN (13-19):** Tekanan suara di suku kata **KEDUA / AKHIR** (*thir-TEEN, fif-TEEN*).
+* **-TY (20-90):** Tekanan suara di suku kata **PERTAMA** (*THIR-ty, FIF-ty*).
+
+---
+
+## 3. Template Percakapan Belanja Otomatis
+* *Tanya Harga:* "**How much is this?**" / "**How much does this cost?**"
+* *Minta Ukuran/Warna Lain:* "**Do you have this in a larger size / in black?**"
+* *Metode Pembayaran:* "**Can I pay by card, or cash only?**"
+* *Memutuskan Membeli:* "**I'll take this one, please.**" *(Lebih alami dibanding "I want to buy this").*
+`,
+    created_at: new Date('2026-01-10T04:00:00.000Z').toISOString(),
+  },
+  {
+    id: 'mod-a1-prepositions-place',
+    category: 'Grammar',
+    cefr_level: 'A1',
+    sub_pillar: 'Grammar',
+    title: 'A1 Grammar: Preposisi Posisi & Tempat (In, On, At, Under, Next to, Between)',
+    content_markdown: `# A1 Grammar: Preposisi Ruang & Posisi Tempat
+
+## 1. Piramida Emas Ruang Fisik: IN vs ON vs AT
+* 📦 **IN (Di Dalam Wadah / Ruang Tertutup / Wilayah):**  
+  *in the room, in my bag, in a box, in Jakarta, in Indonesia*.
+* 📄 **ON (Menempel di Atas Permukaan / Lantai / Jalan):**  
+  *on the table, on the wall, on the 2nd floor, on Sudirman Street*.
+* 📍 **AT (Titik Lokasi / Tempat Tujuan Spesifik):**  
+  *at the bus stop, at the entrance, at home, at the airport*.
+
+---
+
+## 2. Jebakan Spesial Kendaraan: ON vs IN
+Ingat rumus kaki melangkah:
+* Jika di dalam kendaraan Anda **bisa berdiri atau berjalan**, gunakan **ON**:  
+  * **on** the bus, **on** the train, **on** the plane, **on** a ship.
+* Jika di dalam kendaraan Anda **harus langsung duduk membungkuk**, gunakan **IN**:  
+  * **in** the car, **in** a taxi, **in** a helicopter.
+
+---
+
+## 3. Preposisi Posisi Lain yang Sangat Sering Dipakai
+* **Next to / Beside:** Tepat di sebelah (*"The bank is next to the cafe."*)
+* **Between:** Di antara dua hal (*"I sat between Brian and Maya."*)
+* **In front of vs Behind:** Di depan vs Di belakang (*"Wait for me in front of the lobby."*)
+* **Under:** Di bawah permukaan tertutup (*"The cat is sleeping under the bed."*)
+`,
+    created_at: new Date('2026-01-10T05:00:00.000Z').toISOString(),
+  },
+  {
+    id: 'mod-a1-food-cafe',
+    category: 'Templates',
+    cefr_level: 'A1',
+    sub_pillar: 'Templates',
+    title: 'A1 Speaking: Cara Memesan Makanan & Minuman di Kafe/Restoran Tanpa Grogi',
+    content_markdown: `# A1 Speaking: Memesan Makanan & Minuman di Restoran
+
+## 1. Keluar dari Kata Kasar "I Want..."
+Di dunia nyata, mengatakan *"I want a coffee"* terdengar menuntut dan kurang sopan bagi penutur asli. Gunakan 2 formula sopan ini:
+
+> ☕ **Formula Pemesanan Sopan:**  
+> 1. **"Could I please get a/an [Menu]?"**  
+> 2. **"I'd like [Menu], please."** *(I'd like = I would like)*
+
+---
+
+## 2. Alur Percakapan Standar di Kafe
+1. **Pelayan:** *"Hi, what can I get started for you today?"*  
+   **Anda:** *"Hi! Could I please get an iced latte with oat milk?"*
+2. **Pelayan:** *"What size would you like? (Small, Medium, Large)?"*  
+   **Anda:** *"Medium, please."*
+3. **Pelayan:** *"For here or to go?"* *(Makan di sini atau dibawa pulang?)*  
+   **Anda:** *"For here, please."* ATAU *"To go, please."*
+4. **Pelayan:** *"Anything else for you today?"*  
+   **Anda:** *"That'll be all, thank you."*
+
+---
+
+## 3. Template Meminta Bantuan & Bayar
+* *Tanya Rekomendasi:* "**What do you recommend?**"
+* *Cek Komposisi Alergi:* "**Is this vegetarian / dairy-free / spicy?**"
+* *Minta Struk/Tagihan:* "**Could we have the bill/check, please?**"
+`,
+    created_at: new Date('2026-01-10T06:00:00.000Z').toISOString(),
+  },
+  {
+    id: 'mod-a1-family-appearance',
+    category: 'Kosakata',
+    cefr_level: 'A1',
+    sub_pillar: 'Kosakata',
+    title: 'A1 Vocab: Mendeskripsikan Keluarga, Penampilan Fisik & Sifat Dasar',
+    content_markdown: `# A1 Vocab: Deskripsi Keluarga, Penampilan & Karakter
+
+## 1. Kosakata Anggota Keluarga
+* **Orang Tua & Saudara:** *parents, father/mother, older brother, younger sister, only child (anak tunggal)*.
+* **Keluarga Besar:** *grandparents, uncle, aunt, cousin (sepupu), nephew (keponakan lk), niece (keponakan pr)*.
+* **Status:** *single, married, divorced*.
+
+---
+
+## 2. Aturan Tata Bahasa: IS vs HAS untuk Penampilan
+Banyak pemula salah menggabungkan kata kerja saat menggambarkan fisik:
+
+| Fitur | Pola Kalimat | Contoh Benar |
+| :--- | :--- | :--- |
+| **Postur Tubuh / Usia** | **Subject + IS/ARE + Adjective** | "He is **tall and slim**." |
+| **Rambut & Mata** | **Subject + HAS/HAVE + Noun** | "She has **curly brown hair** and blue eyes." |
+
+> ❌ *Salah:* "She is long hair."  
+> ✅ *Benar:* "She **has** long hair." ATAU "Her hair **is** long."
+
+---
+
+## 3. Kata Sifat Kepribadian Positif & Ramah
+* **Friendly:** Ramah dan mudah bergaul (*"My classmates are very friendly."*)
+* **Hard-working:** Rajin dan gigih (*"He is a hard-working software engineer."*)
+* **Polite:** Sopan santun (*"The receptionist was extremely polite."*)
+* **Humorous / Funny:** Lucu dan punya selera humor (*"My uncle is always humorous."*)
+`,
+    created_at: new Date('2026-01-10T07:00:00.000Z').toISOString(),
+  },
+
+  // --- LEVEL A2 EXPANSION (6 to 10) ---
+  {
+    id: 'mod-a2-past-simple-irregulars',
+    category: 'Grammar',
+    cefr_level: 'A2',
+    sub_pillar: 'Grammar',
+    title: 'A2 Grammar: 50 Irregular Verbs Paling Populer & Pola Lampau',
+    content_markdown: `# A2 Grammar: 50 Irregular Verbs Paling Sering Muncul
+
+## 1. Rahasia Menghafal Tanpa Stres: Sistem Keluarga Suara
+Jangan menghafal alfabetis dari A-Z! Hafalkan berdasarkan kesamaan pola bunyinya:
+
+### A. Pola "i -> a -> u" (Vokal Berubah)
+* **Sing -> Sang -> Sung** (Bernyanyi)
+* **Swim -> Swam -> Swum** (Berenang)
+* **Drink -> Drank -> Drunk** (Minum)
+* **Begin -> Began -> Begun** (Memulai)
+
+### B. Pola Akhiran "-ought / -aught"
+* **Buy -> Bought** (Membeli)
+* **Think -> Thought** (Berpikir)
+* **Bring -> Brought** (Membawa)
+* **Catch -> Caught** (Menangkap)
+
+### C. Pola Sama Persis (Bentuk V1 = V2 = V3)
+* **Cost -> Cost** (Berharga)
+* **Cut -> Cut** (Memotong)
+* **Put -> Put** (Meletakkan)
+* **Let -> Let** (Membiarkan)
+
+---
+
+## 2. Jebakan Fatal: Menggunakan V2 Setelah DID / DIDN'T
+Dalam kalimat tanya dan kalimat negatif masa lampau, kata kerja **WAJIB KEMBALI KE V1** karena sudah ada kata bantu *did/didn't*!
+* ❌ *Salah:* "I didn't saw him yesterday."  
+  ✅ *Benar:* "I didn't **see** him yesterday."
+* ❌ *Salah:* "Did you went to the concert?"  
+  ✅ *Benar:* "Did you **go** to the concert?"
+`,
+    created_at: new Date('2026-01-11T04:00:00.000Z').toISOString(),
+  },
+  {
+    id: 'mod-a2-past-continuous',
+    category: 'Grammar',
+    cefr_level: 'A2',
+    sub_pillar: 'Grammar',
+    title: 'A2 Grammar: Past Continuous vs Past Simple (Kejadian Menyela di Masa Lalu)',
+    content_markdown: `# A2 Grammar: Past Continuous vs Past Simple
+
+## 1. Konsep "Sedang Berlangsung vs Menyela"
+Gunakan kombinasi tenses ini saat ada satu aksi yang **sedang berjalan dengan durasi panjang**, lalu tiba-tiba terjadi **aksi singkat yang menyela**:
+
+> 📐 **Dua Pola Baku:**  
+> 1. **While / As** + **was/were + V-ing**, **Verb 2 (Past Simple)**  
+> 2. **was/were + V-ing** + **when** + **Verb 2 (Past Simple)**
+
+* *Contoh 1:*  
+  "**While I was cooking** dinner, the telephone **rang**."  
+  *(Memasak butuh waktu lama, dering telepon terjadi seketika).*
+* *Contoh 2:*  
+  "They **were driving** to Bandung **when** the tire **went flat**."
+
+---
+
+## 2. Dua Aksi Bersamaan di Masa Lalu (While ... While ...)
+Jika dua aksi sama-sama berlangsung panjang pada waktu yang bersamaan, gunakan *Past Continuous* pada kedua klausa:
+* *"While Brian **was studying**, his sister **was listening** to music."*
+
+---
+
+## 3. Peringatan: Stative Verbs Tidak Boleh Continuous!
+Kata kerja perasaan, kepemilikan, dan pikiran tidak boleh berakhiran -ing:
+* ❌ *Salah:* "I was knowing the answer."  
+  ✅ *Benar:* "I **knew** the answer."
+`,
+    created_at: new Date('2026-01-11T05:00:00.000Z').toISOString(),
+  },
+  {
+    id: 'mod-a2-connecting-words',
+    category: 'Grammar',
+    cefr_level: 'A2',
+    sub_pillar: 'Grammar',
+    title: 'A2 Grammar: Kata Hubung Alami (Because, Although, So, But, However)',
+    content_markdown: `# A2 Grammar: Merangkai Kalimat Alami dengan Konjungsi
+
+## 1. 4 Hubungan Logika Antar-Kalimat
+Jangan biarkan kalimat Anda terputus-putus pendek. Gunakan kata penghubung sesuai fungsinya:
+
+| Fungsi Logika | Kata Hubung | Letak & Pola | Contoh Kalimat |
+| :--- | :--- | :--- | :--- |
+| **Sebab (*Reason*)** | **Because** | Di tengah / di awal klausa | "I stayed home **because** it was raining." |
+| **Akibat (*Result*)** | **So** | Didahului tanda koma | "It was raining heavily, **so** I stayed home." |
+| **Kontras Langsung** | **But** | Menghubungkan 2 klausa pendek | "He studied diligently, **but** he didn't pass." |
+| **Kontras Anak Kalimat** | **Although / Even though** | Di awal atau tengah kalimat | "**Although** he was exhausted, he completed the project." |
+| **Transisi Formal** | **However** | Awal kalimat baru + koma | "The design is sleek. **However,** it is quite costly." |
+
+---
+
+## 2. Jebakan Paling Sering: Mendobel "Although" dan "But"
+Dalam bahasa Indonesia, kita sering berkata: *"Meskipun hujan, tapi kami tetap berangkat"*. Di bahasa Inggris, hal ini **SALAH BESAR**:
+* ❌ *Salah:* "**Although** it was raining, **but** we still went out."  
+* ✅ *Benar:* "**Although** it was raining, we still went out." ATAU "It was raining, **but** we still went out." *(Pilih salah satu saja!)*
+`,
+    created_at: new Date('2026-01-11T06:00:00.000Z').toISOString(),
+  },
+  {
+    id: 'mod-a2-health-feelings',
+    category: 'Kosakata',
+    cefr_level: 'A2',
+    sub_pillar: 'Kosakata',
+    title: 'A2 Vocab: Menjelaskan Gejala Sakit, Obat, & Perasaan Emosi',
+    content_markdown: `# A2 Vocab: Komunikasi Kesehatan, Dokter & Emosi
+
+## 1. Cara Menyatakan Rasa Sakit Fisik
+Dalam bahasa Inggris, rasa sakit dinyatakan dengan 3 pola utama:
+
+* **Have a + [Sakit]:**  
+  * *have a headache* (sakit kepala), *have a toothache* (sakit gigi), *have a stomachache* (sakit perut), *have a sore throat* (radang tenggorokan), *have a fever* (demam).
+* **Feel + [Kondisi]:**  
+  * *feel dizzy* (pusing keliyengan), *feel nauseous* (mual), *feel weak* (lemas).
+* **My [Bagian Tubuh] hurts:**  
+  * *"My left knee hurts when I walk."*
+
+---
+
+## 2. Aturan Minum Obat & Petunjuk Dokter
+* **Take medicine:** *"Take this pill twice a day after meals."* *(Gunakan 'take', jangan 'drink medicine').*
+* **Prescription:** Resep dokter resmi (*"You need a doctor's prescription for this antibiotic."*)
+* **Get some rest:** Istirahat cukup (*"You should drink plenty of fluids and get some rest."*)
+
+---
+
+## 3. Kosakata Emosi Sehari-hari
+* **Relieved:** Merasa sangat lega (*"I was so relieved after submitting the final report."*)
+* **Anxious / Nervous:** Cemas / gugup menghadapi ujian (*"She felt anxious before the interview."*)
+* **Exhausted:** Lelah luar biasa (*"After working 10 hours straight, I am exhausted."*)
+* **Disappointed:** Kecewa (*"We were disappointed with the test results."*)
+`,
+    created_at: new Date('2026-01-11T07:00:00.000Z').toISOString(),
+  },
+  {
+    id: 'mod-a2-making-plans',
+    category: 'Templates',
+    cefr_level: 'A2',
+    sub_pillar: 'Templates',
+    title: 'A2 Speaking: Mengajak, Menerima, & Menolak Ajakan dengan Sopan',
+    content_markdown: `# A2 Speaking: Mengatur Rencana, Janji Temu & Menolak Halus
+
+## 1. Tiga Pola Mengajak yang Natural
+* Santai & Akrab: "**Are you free this weekend?**"
+* Mengajak Melakukan Sesuatu: "**How about grabbing some lunch together?**" *(Setelah 'How about', gunakan V-ing).*
+* Menawarkan Waktu: "**Would you like to meet up on Friday afternoon?**"
+
+---
+
+## 2. Merespon Ajakan
+* **Menerima dengan Antusias:**  
+  * *"I'd love to! What time should we meet?"*  
+  * *"Sounds like a fantastic plan! Count me in."*
+* **Menolak Secara Halus (Formula: Apresiasi + Maaf + Alasan + Alternatif):**  
+  > *"I'd really love to, but I'm afraid I have another appointment. Could we take a rain check for next week?"*  
+  > *(💡 'Take a rain check' adalah idiom populer yang berarti menunda/menjadwalkan ulang di lain waktu).*
+
+---
+
+## 3. Mengonfirmasi & Mengunci Janji
+* *"Let's confirm the venue tomorrow morning."*
+* *"See you at the coffee shop at 4 PM sharp!"*
+`,
+    created_at: new Date('2026-01-11T08:00:00.000Z').toISOString(),
+  },
   {
     id: 'mod-b1-passive-voice',
     category: 'Grammar',
@@ -1107,6 +1467,312 @@ export const MOCK_FLASHCARDS = [
     front_text: "Membuat janji: \"I promise that I ______ never forget your kindness.\"",
     back_text: "will",
     example_sentence: "Kunci: Kalimat janji (*promises*) secara tata bahasa selalu dipasangkan dengan \"will\".",
+  },
+
+  // ==========================================
+  // CARDS: A1 EXPANSION (Modules 6-10)
+  // ==========================================
+  // mod-a1-to-be
+  {
+    id: 'card-a1-tobe-1',
+    module_id: 'mod-a1-to-be',
+    front_text: 'Menyatakan usia: "I ______ 22 years old."',
+    back_text: 'am',
+    example_sentence: 'Kunci A1: Usia dalam bahasa Inggris dinyatakan dengan To Be (am/is/are), bukan "have".',
+  },
+  {
+    id: 'card-a1-tobe-2',
+    module_id: 'mod-a1-to-be',
+    front_text: 'Perbaiki kalimat: "I am agree with your proposal."',
+    back_text: 'I agree with your proposal.',
+    example_sentence: 'Kunci A1: Kata "agree" adalah kata kerja aksi, jangan ditambahkan To Be ("am").',
+  },
+  {
+    id: 'card-a1-tobe-3',
+    module_id: 'mod-a1-to-be',
+    front_text: 'To be subjek jamak: "The university students ______ currently at the library."',
+    back_text: 'are',
+    example_sentence: 'Kunci A1: Subjek jamak (students) selalu berpasangan dengan "are".',
+  },
+  {
+    id: 'card-a1-tobe-4',
+    module_id: 'mod-a1-to-be',
+    front_text: 'Bentuk tanya: "______ you ready to start our English discussion?"',
+    back_text: 'Are',
+    example_sentence: 'Kunci A1: Kalimat tanya nominal memindahkan To Be ke awal kalimat (Are you ready?).',
+  },
+
+  // mod-a1-numbers-prices
+  {
+    id: 'card-a1-num-1',
+    module_id: 'mod-a1-numbers-prices',
+    front_text: 'Tanya harga barang: "Permisi, berapa harga kemeja ini?"',
+    back_text: 'Excuse me, how much is this shirt? (atau how much does this cost?)',
+    example_sentence: 'Template belanja paling natural untuk menanyakan harga barang.',
+  },
+  {
+    id: 'card-a1-num-2',
+    module_id: 'mod-a1-numbers-prices',
+    front_text: 'Aturan ratusan: "The jacket costs three ______ (hundred / hundreds) dollars."',
+    back_text: 'hundred',
+    example_sentence: 'Kunci A1: Hundred/thousand/million tidak memakai akhiran -s jika ada angka pasti di depannya.',
+  },
+  {
+    id: 'card-a1-num-3',
+    module_id: 'mod-a1-numbers-prices',
+    front_text: 'Tanya metode pembayaran: "Bisakah saya membayar dengan kartu kredit?"',
+    back_text: 'Can I pay by credit card?',
+    example_sentence: 'Gunakan preposisi "by" untuk metode pembayaran: by card, by transfer, atau "in cash".',
+  },
+  {
+    id: 'card-a1-num-4',
+    module_id: 'mod-a1-numbers-prices',
+    front_text: 'Memutuskan membeli: "Saya mau ambil/beli yang ini."',
+    back_text: "I'll take this one, please.",
+    example_sentence: 'Ungkapan standar penutur asli saat memutuskan membeli barang di kasir.',
+  },
+
+  // mod-a1-prepositions-place
+  {
+    id: 'card-a1-prep-1',
+    module_id: 'mod-a1-prepositions-place',
+    front_text: 'Preposisi kendaraan besar: "I am currently ______ the commuter train to Jakarta."',
+    back_text: 'on',
+    example_sentence: 'Kunci A1: Kendaraan umum yang bisa berdiri/berjalan di dalamnya menggunakan preposisi "on".',
+  },
+  {
+    id: 'card-a1-prep-2',
+    module_id: 'mod-a1-prepositions-place',
+    front_text: 'Preposisi mobil/taksi: "She left her umbrella ______ the taxi."',
+    back_text: 'in',
+    example_sentence: 'Kunci A1: Kendaraan kecil di mana penumpang langsung duduk membungkuk menggunakan "in".',
+  },
+  {
+    id: 'card-a1-prep-3',
+    module_id: 'mod-a1-prepositions-place',
+    front_text: 'Posisi bersebelahan: "The modern pharmacy is situated right ______ to the supermarket."',
+    back_text: 'next',
+    example_sentence: 'Frasa posisi: "next to" berarti persis di samping / berdampingan.',
+  },
+  {
+    id: 'card-a1-prep-4',
+    module_id: 'mod-a1-prepositions-place',
+    front_text: 'Posisi di antara 2 tempat: "The cafe is located ______ the bank and the bookstore."',
+    back_text: 'between',
+    example_sentence: 'Gunakan "between" untuk posisi di tengah-tengah dua benda/tempat.',
+  },
+
+  // mod-a1-food-cafe
+  {
+    id: 'card-a1-food-1',
+    module_id: 'mod-a1-food-cafe',
+    front_text: 'Pemesanan sopan di kafe: "Bisa tolong beri saya satu cangkir kopi panas?"',
+    back_text: 'Could I please get a cup of hot coffee? (atau I would like a hot coffee, please)',
+    example_sentence: 'Hindari mengatakan "I want...", gunakan "Could I please get..." atau "I would like...".',
+  },
+  {
+    id: 'card-a1-food-2',
+    module_id: 'mod-a1-food-cafe',
+    front_text: 'Pertanyaan kasir: "For here or to go?" artinya ______',
+    back_text: 'Makan di sini atau dibungkus untuk dibawa pulang?',
+    example_sentence: 'Jawab dengan: "For here, please" atau "To go, please".',
+  },
+  {
+    id: 'card-a1-food-3',
+    module_id: 'mod-a1-food-cafe',
+    front_text: 'Meminta struk/tagihan: "Bolehkah kami minta tagihannya?"',
+    back_text: 'Could we have the bill, please? (US: check)',
+    example_sentence: 'Di Inggris umum memakai "bill", di Amerika Serikat umum memakai "check".',
+  },
+  {
+    id: 'card-a1-food-4',
+    module_id: 'mod-a1-food-cafe',
+    front_text: 'Tanya rekomendasi menu: "Apa menu yang Anda rekomendasikan?"',
+    back_text: 'What do you recommend?',
+    example_sentence: 'Frasa ringkas dan percaya diri untuk bertanya menu andalan pada staf restoran.',
+  },
+
+  // mod-a1-family-appearance
+  {
+    id: 'card-a1-fam-1',
+    module_id: 'mod-a1-family-appearance',
+    front_text: 'Deskripsi rambut: "My younger sister ______ curly black hair."',
+    back_text: 'has',
+    example_sentence: 'Kunci A1: Ciri fisik rambut dan mata menggunakan has/have (has curly hair).',
+  },
+  {
+    id: 'card-a1-fam-2',
+    module_id: 'mod-a1-family-appearance',
+    front_text: 'Deskripsi postur: "My uncle is very tall and ______."',
+    back_text: 'slim (atau well-built)',
+    example_sentence: 'Kunci A1: Postur tubuh berpasangan dengan To Be (is tall and slim).',
+  },
+  {
+    id: 'card-a1-fam-3',
+    module_id: 'mod-a1-family-appearance',
+    front_text: 'Karakter ramah: "The new manager is very polite and ______ (mudah bergaul/ramah)."',
+    back_text: 'friendly',
+    example_sentence: 'Friendly adalah kata sifat kepribadian paling umum untuk orang yang hangat.',
+  },
+  {
+    id: 'card-a1-fam-4',
+    module_id: 'mod-a1-family-appearance',
+    front_text: 'Anak tunggal dalam bahasa Inggris: "I do not have siblings; I am an ______ child."',
+    back_text: 'only',
+    example_sentence: 'An only child = anak tunggal.',
+  },
+
+  // ==========================================
+  // CARDS: A2 EXPANSION (Modules 6-10)
+  // ==========================================
+  // mod-a2-past-simple-irregulars
+  {
+    id: 'card-a2-irreg-1',
+    module_id: 'mod-a2-past-simple-irregulars',
+    front_text: 'V2 dari Buy: "She ______ a brand new laptop last weekend."',
+    back_text: 'bought',
+    example_sentence: 'Kunci A2: Bentuk lampau (V2) dari "buy" adalah "bought".',
+  },
+  {
+    id: 'card-a2-irreg-2',
+    module_id: 'mod-a2-past-simple-irregulars',
+    front_text: 'Bentuk setelah didn\'t: "I didn\'t ______ (see) your message earlier."',
+    back_text: 'see',
+    example_sentence: 'Kunci A2: Setelah kata bantu "didn\'t", kata kerja wajib kembali ke bentuk V1 dasar.',
+  },
+  {
+    id: 'card-a2-irreg-3',
+    module_id: 'mod-a2-past-simple-irregulars',
+    front_text: 'V2 dari Cost: "The train ticket to Surabaya ______ (cost) forty dollars yesterday."',
+    back_text: 'cost',
+    example_sentence: 'Kunci A2: Kata kerja "cost" memiliki bentuk V1, V2, dan V3 yang persis sama.',
+  },
+  {
+    id: 'card-a2-irreg-4',
+    module_id: 'mod-a2-past-simple-irregulars',
+    front_text: 'V2 dari Think: "We ______ that the workshop was scheduled for Friday."',
+    back_text: 'thought',
+    example_sentence: 'Kunci A2: Bentuk lampau dari "think" adalah "thought".',
+  },
+
+  // mod-a2-past-continuous
+  {
+    id: 'card-a2-pastc-1',
+    module_id: 'mod-a2-past-continuous',
+    front_text: 'Kejadian berdurasi panjang: "While she ______ (cook), someone knocked on the front door."',
+    back_text: 'was cooking',
+    example_sentence: 'Kunci A2: Aksi masa lalu yang sedang berlangsung saat aksi lain menyela memakai was/were + V-ing.',
+  },
+  {
+    id: 'card-a2-pastc-2',
+    module_id: 'mod-a2-past-continuous',
+    front_text: 'Kejadian menyela: "We were watching the movie when the electricity suddenly ______ (go) out."',
+    back_text: 'went',
+    example_sentence: 'Kunci A2: Aksi singkat yang menyela menggunakan Simple Past (V2: went).',
+  },
+  {
+    id: 'card-a2-pastc-3',
+    module_id: 'mod-a2-past-continuous',
+    front_text: 'Tanya kegiatan lampau: "What ______ you ______ (do) at 9 PM yesterday?"',
+    back_text: 'were you doing',
+    example_sentence: 'Menanyakan kegiatan yang sedang berlangsung pada waktu spesifik di masa lampau.',
+  },
+  {
+    id: 'card-a2-pastc-4',
+    module_id: 'mod-a2-past-continuous',
+    front_text: 'Dua aksi bersamaan: "While Brian was studying, his roommate ______ (play) guitar."',
+    back_text: 'was playing',
+    example_sentence: 'Dua aksi berdurasi panjang yang berlangsung bersamaan sama-sama menggunakan Past Continuous.',
+  },
+
+  // mod-a2-connecting-words
+  {
+    id: 'card-a2-conn-1',
+    module_id: 'mod-a2-connecting-words',
+    front_text: 'Konjungsi akibat: "He was thoroughly exhausted, ______ he went to bed early."',
+    back_text: 'so',
+    example_sentence: 'Kunci A2: "So" menyatakan akibat atau hasil logis dari klausa sebelumnya.',
+  },
+  {
+    id: 'card-a2-conn-2',
+    module_id: 'mod-a2-connecting-words',
+    front_text: 'Konjungsi kontras: "______ it was raining heavily, the match continued."',
+    back_text: 'Although (atau Even though)',
+    example_sentence: 'Kunci A2: "Although" mengawali klausa pengandaian/pertentangan.',
+  },
+  {
+    id: 'card-a2-conn-3',
+    module_id: 'mod-a2-connecting-words',
+    front_text: 'Perbaiki kesalahan: "Although she prepared well, but she felt nervous."',
+    back_text: 'Although she prepared well, she felt nervous. (Hilangkan kata "but")',
+    example_sentence: 'Jangan pernah menggabungkan "Although" dan "but" dalam satu kalimat!',
+  },
+  {
+    id: 'card-a2-conn-4',
+    module_id: 'mod-a2-connecting-words',
+    front_text: 'Transisi formal: "The smartphone is expensive. ______, its camera is unparalleled."',
+    back_text: 'However',
+    example_sentence: '"However" digunakan sebagai kata transisi formal di awal kalimat untuk menunjukkan kontras.',
+  },
+
+  // mod-a2-health-feelings
+  {
+    id: 'card-a2-hlt-1',
+    module_id: 'mod-a2-health-feelings',
+    front_text: 'Menjelaskan gejala sakit: "Saya merasa pusing dan sakit kepala sejak pagi."',
+    back_text: 'I feel dizzy and have a headache since this morning.',
+    example_sentence: 'Gunakan "feel dizzy" untuk pusing dan "have a headache" untuk sakit kepala.',
+  },
+  {
+    id: 'card-a2-hlt-2',
+    module_id: 'mod-a2-health-feelings',
+    front_text: 'Aturan obat: "______ this antibiotic twice a day after meals."',
+    back_text: 'Take',
+    example_sentence: 'Kunci A2: Mengonsumsi obat dalam bahasa Inggris menggunakan kata kerja "take", bukan "drink".',
+  },
+  {
+    id: 'card-a2-hlt-3',
+    module_id: 'mod-a2-health-feelings',
+    front_text: 'Perasaan sangat lega: "We were immensely ______ when the medical test was negative."',
+    back_text: 'relieved',
+    example_sentence: 'Relieved = merasa lega setelah melewati kecemasan.',
+  },
+  {
+    id: 'card-a2-hlt-4',
+    module_id: 'mod-a2-health-feelings',
+    front_text: 'Frasa flu: "I think I ______ (catch) a cold because of the heavy rain."',
+    back_text: 'caught',
+    example_sentence: 'Frasa baku terserang masuk angin/flu adalah "catch a cold" (V2: caught a cold).',
+  },
+
+  // mod-a2-making-plans
+  {
+    id: 'card-a2-plan-1',
+    module_id: 'mod-a2-making-plans',
+    front_text: 'Pola santai mengajak: "How about ______ (grab) a cup of coffee this afternoon?"',
+    back_text: 'grabbing',
+    example_sentence: 'Kunci A2: Setelah frasa ajakan "How about...", kata kerja wajib berbentuk V-ing.',
+  },
+  {
+    id: 'card-a2-plan-2',
+    module_id: 'mod-a2-making-plans',
+    front_text: 'Respon antusias menerima janji: "Tentu, saya sangat mau! Jam berapa kita bertemu?"',
+    back_text: "I'd love to! What time should we meet?",
+    example_sentence: 'Respon paling alami dan ramah untuk menyambut ajakan teman atau kolega.',
+  },
+  {
+    id: 'card-a2-plan-3',
+    module_id: 'mod-a2-making-plans',
+    front_text: 'Idiom menolak sopan: "Can we take a rain check?" maknanya adalah ______',
+    back_text: 'Bolehkah kita tunda atau jadwalkan ulang di lain waktu?',
+    example_sentence: '"Take a rain check" adalah idiom sopan untuk menolak ajakan hari ini tanpa menyinggung lawan bicara.',
+  },
+  {
+    id: 'card-a2-plan-4',
+    module_id: 'mod-a2-making-plans',
+    front_text: 'Formula menolak halus: "I\'d really love to, but I\'m ______ I have another commitment."',
+    back_text: 'afraid',
+    example_sentence: '"I\'m afraid..." digunakan untuk menyampaikan permohonan maaf/penolakan dengan sopan.',
   },
   {
     id: 'card-b1-pass-1',
