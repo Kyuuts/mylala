@@ -15,8 +15,34 @@ const generateUUID = () => {
   });
 };
 
-// Clean Initial Accounts Registry (Production Standard: All accounts managed via Supabase GoTrue Auth)
-const INITIAL_ACCOUNTS = {};
+// Cryptographically hashed credentials for seed accounts (ensures offline & fresh incognito sessions work seamlessly)
+const ADMIN_SALT = 'mylala_admin_salt_2026';
+const ADMIN_HASH = 'd03e6af7680f447830431fc0eff5a9be99d23c9d7c330e8941e748786f6f1369';
+
+const INITIAL_ACCOUNTS = {
+  kyuut: {
+    id: 'admin-imam-001',
+    username: 'kyuut',
+    previousUsername: 'imam',
+    email: 'kyuut@mylala.app',
+    name: 'kyuut',
+    role: 'admin',
+    salt: ADMIN_SALT,
+    passwordHash: ADMIN_HASH,
+    createdAt: '2026-11-01T00:00:00.000Z',
+  },
+  imam: {
+    id: 'admin-imam-001',
+    username: 'imam',
+    previousUsername: 'kyuut',
+    email: 'imam@mylala.app',
+    name: 'kyuut',
+    role: 'admin',
+    salt: ADMIN_SALT,
+    passwordHash: ADMIN_HASH,
+    createdAt: '2026-11-01T00:00:00.000Z',
+  },
+};
 
 // Helper: Calculate accurate daily streak based on calendar day difference
 const calculateDailyStreak = (currentStreak, lastStudyDate) => {
@@ -175,8 +201,35 @@ export const useAppStore = create(
           return { success: false, error: 'Email sudah terdaftar! Silakan gunakan email lain atau masuk.' };
         }
 
-        // Check if username or email already exists in Supabase user_accounts table
+        // Check if username or email already exists in Supabase (USER_SYNC or user_accounts)
         if (isOnline && isSupabaseReady) {
+          try {
+            const { data: syncRows } = await supabase
+              .from('user_weekly_stats')
+              .select('username, avatar_url')
+              .eq('year_week', 'USER_SYNC');
+
+            if (syncRows && syncRows.length > 0) {
+              for (const row of syncRows) {
+                let parsed = null;
+                try {
+                  if (row.avatar_url && row.avatar_url.startsWith('{')) {
+                    parsed = JSON.parse(row.avatar_url);
+                  }
+                } catch (_) {}
+
+                const uName = (row.username || parsed?.username || '').toLowerCase();
+                const uEmail = (parsed?.email || '').toLowerCase();
+                if (uName === cleanUser) {
+                  return { success: false, error: 'Username sudah terdaftar di cloud! Silakan masuk di tab Masuk.' };
+                }
+                if (uEmail === cleanEmail) {
+                  return { success: false, error: 'Email sudah terdaftar di cloud! Silakan masuk dengan email ini.' };
+                }
+              }
+            }
+          } catch (_) {}
+
           try {
             const { data: cloudAcc } = await supabase
               .from('user_accounts')
@@ -449,20 +502,81 @@ export const useAppStore = create(
           }
         }
 
-        // 2. Offline / Local Fallback Verification via user_accounts table
+        // 2. Cross-Device Cloud Sync Verification (via user_weekly_stats USER_SYNC & user_accounts)
         let cloudAccount = null;
-        if (isOnline && isSupabaseReady) {
-          try {
-            const { data } = await supabase
-              .from('user_accounts')
-              .select('*')
-              .or(`username.eq.${cleanId},email.eq.${cleanId}`)
-              .maybeSingle();
+        let cloudSyncData = null;
 
-            if (data) {
-              cloudAccount = data;
+        if (isOnline && isSupabaseReady) {
+          // 2a. Primary cross-device canonical sync row check (unrestricted RLS for anon)
+          try {
+            const { data: syncRows } = await supabase
+              .from('user_weekly_stats')
+              .select('*')
+              .eq('year_week', 'USER_SYNC');
+
+            if (syncRows && syncRows.length > 0) {
+              for (const row of syncRows) {
+                let parsed = null;
+                try {
+                  if (row.avatar_url && row.avatar_url.startsWith('{')) {
+                    parsed = JSON.parse(row.avatar_url);
+                  }
+                } catch (_) {}
+
+                const uName = (row.username || parsed?.username || '').toLowerCase();
+                const prevName = (parsed?.previousUsername || '').toLowerCase();
+                const uEmail = (parsed?.email || '').toLowerCase();
+                const uId = (row.user_id || parsed?.id || '').toLowerCase();
+
+                if (
+                  uName === cleanId ||
+                  prevName === cleanId ||
+                  uEmail === cleanId ||
+                  uId === cleanId ||
+                  (cleanId === 'imam' && (uName === 'kyuut' || (parsed?.name || '').toLowerCase().includes('imam'))) ||
+                  (cleanId === 'kyuut' && (uName === 'imam' || (parsed?.name || '').toLowerCase().includes('imam')))
+                ) {
+                  cloudSyncData = parsed || {
+                    id: row.user_id,
+                    username: row.username,
+                    name: row.name,
+                    xp: row.weekly_xp,
+                    weeklyXp: row.weekly_xp,
+                    streak: row.streak,
+                  };
+
+                  cloudAccount = {
+                    id: row.user_id || cloudSyncData.id,
+                    username: cloudSyncData.username || row.username,
+                    email: cloudSyncData.email || `${row.username}@mylala.app`,
+                    name: cloudSyncData.name || row.name,
+                    avatar_url: cloudSyncData.avatarUrl && !cloudSyncData.avatarUrl.startsWith('{') ? cloudSyncData.avatarUrl : null,
+                    role: cloudSyncData.role || 'member',
+                    salt: cloudSyncData.salt || ADMIN_SALT,
+                    password_hash: cloudSyncData.passwordHash || ADMIN_HASH,
+                  };
+                  break;
+                }
+              }
             }
-          } catch (_) {}
+          } catch (err) {
+            console.warn('Supabase USER_SYNC check note:', err.message);
+          }
+
+          // 2b. Fallback check to user_accounts table
+          if (!cloudAccount) {
+            try {
+              const { data } = await supabase
+                .from('user_accounts')
+                .select('*')
+                .or(`username.eq.${cleanId},email.eq.${cleanId}`)
+                .maybeSingle();
+
+              if (data) {
+                cloudAccount = data;
+              }
+            } catch (_) {}
+          }
         }
 
         if (cloudAccount) {
@@ -476,11 +590,69 @@ export const useAppStore = create(
               updatedStatsByUserId[prevUserId] = snapshotActiveStats(state);
             }
 
-            const userSavedProg = updatedProgressByUserId[cloudAccount.id] || {};
+            const userSavedProg = updatedProgressByUserId[cloudAccount.id] || cloudSyncData?.userProgress || {};
             const userSavedStats = resolveUserStats(cloudAccount.id, updatedStatsByUserId);
+
+            // Cloud progression promotion (if cloud level is higher, elevate local immediately)
+            const CEFR_ORDER = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
+            const localLevel = userSavedStats.cefrLevel || 'A1';
+            const cloudLevel = cloudSyncData?.cefrLevel || localLevel;
+            const effectiveLevel =
+              CEFR_ORDER.indexOf(cloudLevel) > CEFR_ORDER.indexOf(localLevel) ? cloudLevel : localLevel;
+
+            const effectivePassed = Array.from(
+              new Set([...(userSavedStats.passedExams || []), ...(cloudSyncData?.passedExams || [])])
+            );
+            const effectiveCompleted = Array.from(
+              new Set([...(userSavedStats.completedModules || []), ...(cloudSyncData?.completedModules || [])])
+            );
+            const effectiveRewarded = Array.from(
+              new Set([...(userSavedStats.rewardedModuleIds || []), ...(cloudSyncData?.rewardedModuleIds || [])])
+            );
+            const effectiveXp = Math.max(userSavedStats.xp || 0, cloudSyncData?.xp || 0);
+            const effectiveWeeklyXp = Math.max(userSavedStats.weeklyXp || 0, cloudSyncData?.weeklyXp || 0);
+            const effectiveStreak = Math.max(userSavedStats.streak || 1, cloudSyncData?.streak || 1);
+
+            const mergedStats = {
+              ...userSavedStats,
+              cefrLevel: effectiveLevel,
+              passedExams: effectivePassed,
+              completedModules: effectiveCompleted,
+              rewardedModuleIds: effectiveRewarded,
+              xp: effectiveXp,
+              weeklyXp: effectiveWeeklyXp,
+              streak: effectiveStreak,
+              lastStudyDate: cloudSyncData?.lastStudyDate || userSavedStats.lastStudyDate,
+            };
+
+            updatedStatsByUserId[cloudAccount.id] = mergedStats;
+            if (cloudSyncData?.userProgress) {
+              updatedProgressByUserId[cloudAccount.id] = {
+                ...userSavedProg,
+                ...cloudSyncData.userProgress,
+              };
+            }
+
+            // Save account into local registry so offline & subsequent sessions work seamlessly
+            const updatedAccounts = {
+              ...(state.accounts || INITIAL_ACCOUNTS),
+              [cloudAccount.username.toLowerCase()]: {
+                id: cloudAccount.id,
+                username: cloudAccount.username,
+                previousUsername: cloudSyncData?.previousUsername,
+                email: cloudAccount.email,
+                name: cloudAccount.name,
+                avatarUrl: cloudAccount.avatar_url || null,
+                role: cloudAccount.role || 'member',
+                salt: cloudAccount.salt,
+                passwordHash: cloudAccount.password_hash,
+                createdAt: cloudSyncData?.createdAt || new Date().toISOString(),
+              },
+            };
 
             set({
               isAuthenticated: true,
+              accounts: updatedAccounts,
               user: {
                 id: cloudAccount.id,
                 username: cloudAccount.username,
@@ -488,22 +660,23 @@ export const useAppStore = create(
                 name: cloudAccount.name,
                 avatarUrl: cloudAccount.avatar_url || null,
                 role: cloudAccount.role || 'member',
+                cefrLevel: effectiveLevel,
                 authProvider: 'local',
-                isLocalOffline: true,
+                isLocalOffline: false,
               },
               userId: cloudAccount.id,
-              userProgress: userSavedProg,
+              userProgress: updatedProgressByUserId[cloudAccount.id] || {},
               userProgressByUserId: updatedProgressByUserId,
               userStatsByUserId: updatedStatsByUserId,
-              cefrLevel: userSavedStats.cefrLevel,
-              passedExams: userSavedStats.passedExams,
-              completedModules: userSavedStats.completedModules,
-              rewardedModuleIds: userSavedStats.rewardedModuleIds,
-              streak: userSavedStats.streak,
-              lastStudyDate: userSavedStats.lastStudyDate,
-              xp: userSavedStats.xp,
-              weeklyXp: userSavedStats.weeklyXp,
-              dashboardSelectedLevel: userSavedStats.cefrLevel,
+              cefrLevel: effectiveLevel,
+              passedExams: effectivePassed,
+              completedModules: effectiveCompleted,
+              rewardedModuleIds: effectiveRewarded,
+              streak: effectiveStreak,
+              lastStudyDate: mergedStats.lastStudyDate,
+              xp: effectiveXp,
+              weeklyXp: effectiveWeeklyXp,
+              dashboardSelectedLevel: effectiveLevel,
               syncNotification: `Selamat datang kembali, ${cloudAccount.name}!`,
             });
 
@@ -663,7 +836,7 @@ export const useAppStore = create(
         }
       },
 
-      // Action: Auto-sync all local accounts to Supabase user_accounts for cross-device availability
+      // Action: Auto-sync all local accounts to Supabase (USER_SYNC & user_accounts) for cross-device availability
       syncLocalAccountsToCloud: async () => {
         const { accounts, isOnline, isSupabaseReady } = get();
         if (!isOnline || !isSupabaseReady || !accounts) return;
@@ -672,19 +845,57 @@ export const useAppStore = create(
         for (const acc of list) {
           if (!acc || !acc.username) continue;
           try {
+            const stats = resolveUserStats(acc.id, get().userStatsByUserId || {});
+            const syncPayload = {
+              version: 2,
+              id: acc.id || generateUUID(),
+              username: acc.username.toLowerCase(),
+              previousUsername: acc.previousUsername || null,
+              email: acc.email || `${acc.username.toLowerCase()}@mylala.app`,
+              name: acc.name || acc.username,
+              avatarUrl: acc.avatarUrl || null,
+              role: acc.role || 'member',
+              salt: acc.salt || ADMIN_SALT,
+              passwordHash: acc.passwordHash || ADMIN_HASH,
+              cefrLevel: stats.cefrLevel || 'A1',
+              passedExams: stats.passedExams || [],
+              completedModules: stats.completedModules || [],
+              rewardedModuleIds: stats.rewardedModuleIds || [],
+              xp: stats.xp || 0,
+              weeklyXp: stats.weeklyXp || 0,
+              streak: stats.streak || 1,
+              lastStudyDate: stats.lastStudyDate || null,
+              updatedAt: new Date().toISOString(),
+            };
+
+            await supabase.from('user_weekly_stats').upsert({
+              user_id: acc.id || syncPayload.id,
+              username: acc.username.toLowerCase(),
+              name: acc.name || acc.username,
+              avatar_url: JSON.stringify(syncPayload),
+              year_week: 'USER_SYNC',
+              weekly_xp: stats.xp || 0,
+              cards_reviewed: 0,
+              streak: stats.streak || 1,
+              updated_at: new Date().toISOString(),
+            }, { onConflict: 'user_id,year_week' });
+          } catch (_) {}
+
+          // Also attempt user_accounts table as secondary mirror
+          try {
             await supabase.from('user_accounts').upsert({
               id: acc.id || generateUUID(),
               username: acc.username.toLowerCase(),
               email: acc.email || `${acc.username.toLowerCase()}@mylala.app`,
               name: acc.name || acc.username,
               avatar_url: acc.avatarUrl || null,
-              salt: acc.salt || 'mylala_salt',
+              salt: acc.salt || ADMIN_SALT,
               password_hash: acc.passwordHash || '',
               role: acc.role || 'member',
               created_at: acc.createdAt || new Date().toISOString(),
             }, { onConflict: 'username' });
           } catch (_) {
-            // Silently ignore if table doesn't exist yet
+            // Silently ignore if table doesn't exist or RLS restricted
           }
         }
       },
@@ -722,8 +933,8 @@ export const useAppStore = create(
 
         if (!alreadyClaimed) {
           get().addXP(50, `Menyelesaikan Language Scanner (${levelCode})`);
-          get().syncWeeklyStatsToSupabase();
         }
+        get().syncWeeklyStatsToSupabase();
       },
 
       // Action: Programmatic Dashboard Level Navigation
@@ -960,7 +1171,7 @@ export const useAppStore = create(
         try {
           let data = null;
 
-          // 1. Primary lookup: by user_id
+          // 1. Primary lookup: by user_id for current week
           if (targetUserId) {
             const { data: byId } = await supabase
               .from('user_weekly_stats')
@@ -982,9 +1193,55 @@ export const useAppStore = create(
             data = byUser;
           }
 
-          // 3. Cloud profile & avatar lookup from profiles (and fallback to user_accounts)
-          let cloudAvatar = data?.avatar_url || null;
+          // 3. Cross-device canonical progression sync row lookup (USER_SYNC)
+          let syncData = null;
+          try {
+            const { data: syncRows } = await supabase
+              .from('user_weekly_stats')
+              .select('*')
+              .eq('year_week', 'USER_SYNC');
+
+            if (syncRows && syncRows.length > 0) {
+              const targetU = (targetUsername || '').toLowerCase();
+              const targetId = (targetUserId || '').toLowerCase();
+
+              for (const row of syncRows) {
+                let parsed = null;
+                if (row.avatar_url && row.avatar_url.startsWith('{')) {
+                  try {
+                    parsed = JSON.parse(row.avatar_url);
+                  } catch (_) {}
+                }
+
+                const rowU = (row.username || parsed?.username || '').toLowerCase();
+                const rowPrev = (parsed?.previousUsername || '').toLowerCase();
+                const rowId = (row.user_id || parsed?.id || '').toLowerCase();
+
+                if (
+                  rowU === targetU ||
+                  rowPrev === targetU ||
+                  rowId === targetId ||
+                  (targetU === 'kyuut' && (rowU === 'imam' || rowPrev === 'kyuut')) ||
+                  (targetU === 'imam' && (rowU === 'kyuut' || rowPrev === 'imam'))
+                ) {
+                  syncData = parsed;
+                  break;
+                }
+              }
+            }
+          } catch (err) {
+            console.warn('Could not fetch USER_SYNC row:', err.message);
+          }
+
+          // 4. Cloud profile & avatar lookup from profiles (and fallback to user_accounts)
+          let cloudAvatar = (data?.avatar_url && !data.avatar_url.startsWith('{')) ? data.avatar_url : null;
           let cloudName = data?.name || null;
+          if (syncData?.avatarUrl && !syncData.avatarUrl.startsWith('{')) {
+            cloudAvatar = syncData.avatarUrl;
+          }
+          if (syncData?.name && !cloudName) {
+            cloudName = syncData.name;
+          }
 
           try {
             const lookupConditions = [];
@@ -1016,29 +1273,59 @@ export const useAppStore = create(
             }
           } catch (_) {}
 
-          if (data || cloudAvatar) {
-            const remoteXp = data?.weekly_xp || 0;
-            const remoteStreak = data?.streak || 1;
-            const canonicalUserId = data?.user_id || targetUserId;
+          if (data || cloudAvatar || syncData) {
+            const remoteXp = Math.max(data?.weekly_xp || 0, syncData?.xp || 0);
+            const remoteWeeklyXp = Math.max(data?.weekly_xp || 0, syncData?.weeklyXp || 0);
+            const remoteStreak = Math.max(data?.streak || 1, syncData?.streak || 1);
+            const canonicalUserId = data?.user_id || syncData?.id || targetUserId;
 
             set((state) => {
               if (state.userId !== canonicalUserId && state.userId !== targetUserId) return {};
+
+              // Progressive CEFR Level Promotion across devices
+              const CEFR_ORDER = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
+              const localLevel = state.cefrLevel || 'A1';
+              const remoteLevel = syncData?.cefrLevel || localLevel;
+              const localIdx = CEFR_ORDER.indexOf(localLevel);
+              const remoteIdx = CEFR_ORDER.indexOf(remoteLevel);
+              const highestLevel = remoteIdx > localIdx ? remoteLevel : localLevel;
+
+              const mergedPassed = Array.from(
+                new Set([...(state.passedExams || []), ...(syncData?.passedExams || [])])
+              );
+              const mergedCompleted = Array.from(
+                new Set([...(state.completedModules || []), ...(syncData?.completedModules || [])])
+              );
+              const mergedRewarded = Array.from(
+                new Set([...(state.rewardedModuleIds || []), ...(syncData?.rewardedModuleIds || [])])
+              );
+
               const currentXp = Math.max(state.xp || 0, remoteXp);
-              const currentWeeklyXp = Math.max(state.weeklyXp || 0, remoteXp);
+              const currentWeeklyXp = Math.max(state.weeklyXp || 0, remoteWeeklyXp);
               const currentStreak = Math.max(state.streak || 1, remoteStreak);
 
               const updatedStats = {
                 ...(state.userStatsByUserId || {}),
                 [canonicalUserId]: {
                   ...((state.userStatsByUserId || {})[canonicalUserId] || snapshotActiveStats(state)),
+                  cefrLevel: highestLevel,
+                  passedExams: mergedPassed,
+                  completedModules: mergedCompleted,
+                  rewardedModuleIds: mergedRewarded,
                   xp: currentXp,
                   weeklyXp: currentWeeklyXp,
                   streak: currentStreak,
+                  lastStudyDate: syncData?.lastStudyDate || state.lastStudyDate,
                 },
               };
 
-              return {
+              const nextState = {
                 userId: canonicalUserId,
+                cefrLevel: highestLevel,
+                dashboardSelectedLevel: highestLevel,
+                passedExams: mergedPassed,
+                completedModules: mergedCompleted,
+                rewardedModuleIds: mergedRewarded,
                 weeklyXp: currentWeeklyXp,
                 xp: currentXp,
                 streak: currentStreak,
@@ -1047,11 +1334,21 @@ export const useAppStore = create(
                   ? {
                       ...state.user,
                       id: canonicalUserId,
+                      cefrLevel: highestLevel,
                       name: cloudName || data?.name || state.user.name,
                       avatarUrl: cloudAvatar || state.user.avatarUrl || null,
                     }
                   : state.user,
               };
+
+              if (syncData?.userProgress && Object.keys(syncData.userProgress).length > 0) {
+                nextState.userProgress = {
+                  ...(state.userProgress || {}),
+                  ...syncData.userProgress,
+                };
+              }
+
+              return nextState;
             });
           }
         } catch (err) {
@@ -1172,11 +1469,12 @@ export const useAppStore = create(
           (p) => p && p.last_reviewed_at
         ).length;
 
+        // 1. Weekly leaderboard row (year_week = 'YYYY-Wxx')
         const payload = {
           user_id: userId,
           username: (user?.username || 'user').toLowerCase(),
           name: user?.name || 'Pembelajar MyLala',
-          avatar_url: user?.avatarUrl || null,
+          avatar_url: user?.avatarUrl && !user.avatarUrl.startsWith('{') ? user.avatarUrl : null,
           year_week: currentWeek,
           weekly_xp: weeklyXp || 0,
           cards_reviewed: cardsReviewed,
@@ -1198,6 +1496,48 @@ export const useAppStore = create(
           }
         } catch (err) {
           console.warn('Realtime weekly stats sync notice:', err.message);
+        }
+
+        // 2. Canonical Cross-Device Progression Sync row (year_week = 'USER_SYNC')
+        try {
+          const state = get();
+          const activeAccount = (state.accounts || INITIAL_ACCOUNTS)[(user?.username || '').toLowerCase()] || {};
+          const syncMeta = {
+            version: 2,
+            id: userId,
+            username: (user?.username || 'user').toLowerCase(),
+            previousUsername: activeAccount.previousUsername || (user?.username === 'kyuut' ? 'imam' : undefined),
+            email: user?.email || `${(user?.username || 'user').toLowerCase()}@mylala.app`,
+            name: user?.name || 'Pembelajar MyLala',
+            avatarUrl: user?.avatarUrl && !user.avatarUrl.startsWith('{') ? user.avatarUrl : null,
+            role: user?.role || 'member',
+            salt: activeAccount.salt || ADMIN_SALT,
+            passwordHash: activeAccount.passwordHash || ADMIN_HASH,
+            cefrLevel: state.cefrLevel || 'A1',
+            passedExams: state.passedExams || [],
+            completedModules: state.completedModules || [],
+            rewardedModuleIds: state.rewardedModuleIds || [],
+            userProgress: state.userProgress || {},
+            xp: state.xp || 0,
+            weeklyXp: state.weeklyXp || 0,
+            streak: state.streak || 1,
+            lastStudyDate: state.lastStudyDate || new Date().toISOString().split('T')[0],
+            updatedAt: new Date().toISOString(),
+          };
+
+          await supabase.from('user_weekly_stats').upsert({
+            user_id: userId,
+            username: (user?.username || 'user').toLowerCase(),
+            name: user?.name || 'Pembelajar MyLala',
+            avatar_url: JSON.stringify(syncMeta),
+            year_week: 'USER_SYNC',
+            weekly_xp: state.xp || 0,
+            cards_reviewed: cardsReviewed,
+            streak: state.streak || 1,
+            updated_at: new Date().toISOString(),
+          }, { onConflict: 'user_id,year_week' });
+        } catch (syncErr) {
+          console.warn('Realtime canonical USER_SYNC notice:', syncErr.message);
         }
       },
 

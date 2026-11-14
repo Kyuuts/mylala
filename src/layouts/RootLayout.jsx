@@ -12,13 +12,29 @@ export default function RootLayout() {
   const fetchUserStatsFromSupabase = useAppStore((state) => state.fetchUserStatsFromSupabase);
   const fetchUserProgressFromSupabase = useAppStore((state) => state.fetchUserProgressFromSupabase);
 
-  // Sync cloud stats and progress from Supabase on mount
+  // Sync cloud stats and progress from Supabase on mount and tab focus/visibility
   useEffect(() => {
     if (user) {
       if (fetchUserStatsFromSupabase) fetchUserStatsFromSupabase(user.id, user.username);
       if (fetchUserProgressFromSupabase) fetchUserProgressFromSupabase(user.id);
     }
-  }, [user?.id, user?.username]);
+  }, [user?.id, user?.username, fetchUserStatsFromSupabase, fetchUserProgressFromSupabase]);
+
+  useEffect(() => {
+    const handleSyncOnVisible = () => {
+      if (document.visibilityState === 'visible' && user) {
+        if (fetchUserStatsFromSupabase) fetchUserStatsFromSupabase(user.id, user.username);
+      }
+    };
+
+    window.addEventListener('visibilitychange', handleSyncOnVisible);
+    window.addEventListener('focus', handleSyncOnVisible);
+
+    return () => {
+      window.removeEventListener('visibilitychange', handleSyncOnVisible);
+      window.removeEventListener('focus', handleSyncOnVisible);
+    };
+  }, [user?.id, user?.username, fetchUserStatsFromSupabase]);
 
   useEffect(() => {
     const handleOnline = () => setOnline(true);
