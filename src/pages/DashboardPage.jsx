@@ -13,7 +13,17 @@ import { getModuleLevel } from '../utils/moduleLevel';
 import { getTierFromXP } from '../utils/rankSystem';
 
 export default function DashboardPage() {
-  const { fetchModules, getMetrics, user, weeklyXp, streak, fetchUserStatsFromSupabase } = useAppStore();
+  const {
+    fetchModules,
+    getMetrics,
+    user,
+    weeklyXp,
+    streak,
+    fetchUserStatsFromSupabase,
+    dashboardSelectedLevel,
+    setDashboardSelectedLevel,
+    cefrLevel,
+  } = useAppStore();
   const [shareModalOpen, setShareModalOpen] = useState(false);
   const [modules, setModules] = useState([]);
   const [metrics, setMetrics] = useState({
@@ -29,6 +39,16 @@ export default function DashboardPage() {
   const [selectedLevel, setSelectedLevel] = useState('All'); // 'All' | 'A1' | 'A2' | 'B1' | 'B2' | 'C1'
   const [selectedCategory, setSelectedCategory] = useState('All'); // 'All' | 'Grammar' | 'Kosakata' | 'Konjungsi'
   const [scannerOpen, setScannerOpen] = useState(false);
+
+  // Sync selected level if store triggers a one-shot level filter redirect (e.g. from placement test or exam)
+  useEffect(() => {
+    if (dashboardSelectedLevel) {
+      setSelectedLevel(dashboardSelectedLevel);
+      if (setDashboardSelectedLevel) {
+        setDashboardSelectedLevel(null);
+      }
+    }
+  }, [dashboardSelectedLevel, setDashboardSelectedLevel]);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -331,6 +351,7 @@ export default function DashboardPage() {
       <LanguageScannerModal
         isOpen={scannerOpen}
         onClose={() => setScannerOpen(false)}
+        onSelectLevel={(lvl) => setSelectedLevel(lvl)}
       />
     </div>
   );

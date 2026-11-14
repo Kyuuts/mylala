@@ -16,7 +16,7 @@ import {
 import { SCANNER_QUESTIONS, resolvePlacementResult } from '../../services/placementTestData';
 import { useAppStore } from '../../store/useAppStore';
 
-export default function LanguageScannerModal({ isOpen, onClose }) {
+export default function LanguageScannerModal({ isOpen, onClose, onSelectLevel }) {
   const { setUserCefrLevel } = useAppStore();
 
   const [step, setStep] = useState('intro'); // 'intro' | 'quiz' | 'result'
@@ -311,7 +311,15 @@ export default function LanguageScannerModal({ isOpen, onClose }) {
                 </button>
 
                 <button
-                  onClick={onClose}
+                  onClick={() => {
+                    if (finalResult?.levelCode) {
+                      setUserCefrLevel(finalResult.levelCode);
+                      if (onSelectLevel) {
+                        onSelectLevel(finalResult.levelCode);
+                      }
+                    }
+                    onClose();
+                  }}
                   className="flex-1 py-3 px-5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-xs sm:text-sm shadow-md transition active:scale-95 cursor-pointer"
                 >
                   Terapkan Level &amp; Lanjut Belajar 🚀

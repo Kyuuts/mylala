@@ -7,11 +7,13 @@ import { getModuleLevel } from '../utils/moduleLevel';
 
 export default function ModuleDetailPage() {
   const { id } = useParams();
-  const { fetchModuleById, markModuleRead } = useAppStore();
+  const { fetchModuleById, markModuleRead, completedModules, toggleModuleCompleted } = useAppStore();
   const [module, setModule] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [copied, setCopied] = useState(false);
+
+  const isCompleted = completedModules?.includes(id);
 
   useEffect(() => {
     async function loadModule() {
@@ -151,22 +153,38 @@ export default function ModuleDetailPage() {
         <MarkdownViewer content={module.content_markdown} />
       </article>
 
-      {/* Bottom Practice Banner */}
+      {/* Bottom Practice & Completion Action Banner */}
       <div className="bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-100 rounded-3xl p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="space-y-1 text-center sm:text-left">
           <h3 className="font-bold text-slate-900 text-base sm:text-lg">
             Siap Menguji Pemahaman Anda?
           </h3>
           <p className="text-xs sm:text-sm text-slate-600">
-            Latih active recall dengan kartu flashcard yang dirancang khusus untuk materi ini.
+            {isCompleted
+              ? 'Materi ini telah Anda tandai selesai dibaca. Latih retensi jangka panjang dengan flashcard di samping!'
+              : 'Tandai materi ini selesai dibaca untuk memenuhi syarat Ujian Kelulusan Level.'}
           </p>
         </div>
-        <Link
-          to={`/flashcards/${module.id}`}
-          className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold shadow-md transition active:scale-95 shrink-0"
-        >
-          <Layers className="w-4 h-4" /> Mulai Flashcard Modul Ini
-        </Link>
+        <div className="flex flex-col sm:flex-row items-center gap-2.5 shrink-0 w-full sm:w-auto">
+          <button
+            onClick={() => toggleModuleCompleted(module.id)}
+            className={`w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl text-xs sm:text-sm font-extrabold transition shadow-xs cursor-pointer ${
+              isCompleted
+                ? 'bg-emerald-600 text-white hover:bg-emerald-700'
+                : 'bg-white border border-slate-300 text-slate-700 hover:bg-slate-50'
+            }`}
+          >
+            <Check className="w-4 h-4" />
+            <span>{isCompleted ? '✓ Selesai Dibaca' : 'Tandai Selesai (+20 XP)'}</span>
+          </button>
+
+          <Link
+            to={`/flashcards/${module.id}`}
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-bold shadow-md transition active:scale-95 shrink-0"
+          >
+            <Layers className="w-4 h-4" /> Latihan Flashcard
+          </Link>
+        </div>
       </div>
     </div>
   );

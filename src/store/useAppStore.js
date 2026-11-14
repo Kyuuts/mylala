@@ -34,6 +34,11 @@ export const useAppStore = create(
       lastWeekId: getCurrentWeekId(),
       completedModules: [], // array of read module IDs
 
+      // CEFR Level & Journey Progression State
+      cefrLevel: 'A1', // Active level: 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2'
+      passedExams: [], // Array of passed level codes e.g. ['A1']
+      dashboardSelectedLevel: null, // One-shot level redirect
+
       // Network & Sync State
       isOnline: typeof navigator !== 'undefined' ? navigator.onLine : true,
       isSupabaseReady: isSupabaseConfigured(),
@@ -543,12 +548,22 @@ export const useAppStore = create(
 
       // Action: Set CEFR placement test result
       setUserCefrLevel: (levelCode) => {
-        const { user } = get();
-        if (user) {
-          const updatedUser = { ...user, cefrLevel: levelCode };
-          set({ user: updatedUser });
-        }
+        const state = get();
+        const { user } = state;
+        const updatedUser = user ? { ...user, cefrLevel: levelCode } : user;
+        set({
+          cefrLevel: levelCode,
+          user: updatedUser,
+          dashboardSelectedLevel: levelCode,
+          syncNotification: `Level belajarmu telah disetel ke ${levelCode}. Selamat belajar!`,
+        });
         get().addXP(50, `Menyelesaikan Language Scanner (${levelCode})`);
+        get().syncWeeklyStatsToSupabase();
+      },
+
+      // Action: Programmatic Dashboard Level Navigation
+      setDashboardSelectedLevel: (levelCode) => {
+        set({ dashboardSelectedLevel: levelCode });
       },
 
       // Action: Update User Profile (Username, Name, and Avatar / Photo)
@@ -998,6 +1013,53 @@ export const useAppStore = create(
           });
           get().addXP(20, 'Menyelesaikan Cheat Sheet Modul');
         }
+      },
+
+      // Action: Toggle module cheat sheet as read/unread
+      toggleModuleCompleted: (moduleId) => {
+        const state = get();
+        const readList = state.completedModules || [];
+        const isRead = readList.includes(moduleId);
+        if (isRead) {
+          set({
+            completedModules: readList.filter((id) => id !== moduleId),
+          });
+          return { completed: false };
+        } else {
+          set({
+            completedModules: [...readList, moduleId],
+          });
+          get().addXP(20, 'Menyelesaikan Cheat Sheet Modul');
+          return { completed: true };
+        }
+      },
+
+      // Action: Complete Level Exit Exam & Level Up
+      completeLevelExam: (levelCode, score, totalQuestions) => {
+        const state = get();
+        const passedList = state.passedExams || [];
+        const CEFR_ORDER = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
+        const currentIdx = CEFR_ORDER.indexOf(levelCode);
+        const nextLevel =
+          currentIdx !== -1 && currentIdx < CEFR_ORDER.length - 1
+            ? CEFR_ORDER[currentIdx + 1]
+            : levelCode;
+
+        const updatedPassed = passedList.includes(levelCode) ? passedList : [...passedList, levelCode];
+        const updatedUser = state.user ? { ...state.user, cefrLevel: nextLevel } : state.user;
+
+        set({
+          cefrLevel: nextLevel,
+          passedExams: updatedPassed,
+          user: updatedUser,
+          dashboardSelectedLevel: nextLevel,
+          syncNotification: `Selamat! Kamu resmi lulus Ujian ${levelCode} dan naik ke Level ${nextLevel}! 🎉`,
+        });
+
+        get().addXP(150, `Lulus Ujian Kelulusan Level ${levelCode} (${score}/${totalQuestions})`);
+        get().syncWeeklyStatsToSupabase();
+
+        return { success: true, nextLevel };
       },
 
       // Action: Compute live weekly leaderboard from Supabase with user position
