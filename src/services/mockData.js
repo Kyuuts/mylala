@@ -860,6 +860,521 @@ Dalam bahasa Inggris, rasa sakit dinyatakan dengan 3 pola utama:
 `,
     created_at: new Date('2026-01-11T08:00:00.000Z').toISOString(),
   },
+  // --- LEVEL A1 EXPANSION (11 to 15) ---
+  {
+    id: 'mod-a1-telling-time',
+    category: 'Kosakata',
+    cefr_level: 'A1',
+    sub_pillar: 'Kosakata',
+    title: "A1 Daily: Menanyakan & Menyatakan Jam (Past, To, Half, Quarter)",
+    content_markdown: `# A1 Daily: Menanyakan & Menyatakan Jam
+
+## 1. Dua Cara Menyatakan Jam dalam Bahasa Inggris
+1. **Cara Digital (Mudah & Santai):** Sebutkan jam lalu menitnya secara langsung.
+   * 07:15 = *"Seven fifteen"*
+   * 08:30 = *"Eight thirty"*
+   * 09:45 = *"Nine forty-five"*
+2. **Cara Tradisional (Alami & Formal Inggris):** Sebutkan menitnya terlebih dahulu, baru jamnya.
+   * **Past (Lewat):** Menit 1 s.d. 30. (*"It's ten past eight"* = 08.10).
+   * **To (Menuju):** Menit 31 s.d. 59. (*"It's twenty to nine"* = 08.40 / 20 menit menuju jam 9).
+
+---
+
+## 2. Kata Kunci Waktu Khusus
+* **O'clock:** Tepat jam bulat tanpa lebihan menit (*"It's 7 o'clock"*).
+* **A quarter past:** Lewat 15 menit (*"A quarter past seven"* = 07.15).
+* **Half past:** Lewat 30 menit (*"Half past seven"* = 07.30).
+* **A quarter to:** Kurang 15 menit (*"A quarter to eight"* = 07.45).
+
+---
+
+## 3. Jebakan O'clock
+Jangan pernah mengucapkan kata *o'clock* jika ada menit di belakangnya!
+* ❌ *Salah:* "The class starts at 8:30 o'clock."
+* ✅ *Benar:* "The class starts at **8:30**" ATAU "**half past eight**."
+
+---
+
+## 4. Template Menanyakan Jam
+* *"Excuse me, what time is it?"*
+* *"Do you have the time, please?"*
+`,
+    created_at: new Date('2026-01-10T08:00:00.000Z').toISOString(),
+  },
+  {
+    id: 'mod-a1-weather-seasons',
+    category: 'Kosakata',
+    cefr_level: 'A1',
+    sub_pillar: 'Kosakata',
+    title: 'A1 Vocab: Cuaca, Musim, Prakiraan Harian & Pakaian',
+    content_markdown: `# A1 Vocab: Cuaca, Musim & Prakiraan Harian
+
+## 1. Menanyakan Kondisi Cuaca
+* *"What's the weather like today?"* (Bagaimana cuaca hari ini?)
+* *"How is the weather outside?"*
+
+---
+
+## 2. Pola Menjawab Kondisi Cuaca (It's + Adjective)
+* **It's sunny:** Cerah berpanas matahari
+* **It's rainy / pouring:** Hujan / Hujan deras
+* **It's cloudy:** Berawan mendung
+* **It's windy:** Berangin kencang
+* **It's chilly / cold:** Dingin menusuk
+* **It's hot & humid:** Panas dan lembap
+
+---
+
+## 3. Empat Musim di Dunia
+* 🌸 **Spring (Musim Semi):** Bunga bermekaran, cuaca menghangat.
+* ☀️ **Summer (Musim Panas):** Siang panjang, liburan pantai.
+* 🍁 **Autumn / Fall (Musim Gugur):** Daun menguning dan berguguran.
+* ❄️ **Winter (Musim Dingin):** Dingin bersalju, malam panjang.
+
+---
+
+## 4. Nasihat Pakaian Sesuai Cuaca
+* *"Put on your jacket; it is quite chilly outside."*
+* *"Don't forget to bring an umbrella; it looks like rain."*
+`,
+    created_at: new Date('2026-01-10T09:00:00.000Z').toISOString(),
+  },
+  {
+    id: 'mod-a1-can-basics',
+    category: 'Grammar',
+    cefr_level: 'A1',
+    sub_pillar: 'Grammar',
+    title: "A1 Grammar: Menyatakan Kemampuan & Permintaan Izin Sederhana (Can / Can't)",
+    content_markdown: `# A1 Grammar: Kemampuan & Izin Santai dengan Can
+
+## 1. Fungsi Utama Kata Bantu 'Can'
+1. **Kemampuan / Bakat (Ability):** Menyatakan hal yang sanggup Anda lakukan (*"I can speak English"*).
+2. **Izin Santai (Permission):** Meminta atau memberi izin (*"Can I sit here?"*).
+
+---
+
+## 2. Aturan Emas Pola Kalimat
+Setelah kata 'can', kata kerja **SELALU BERBENTUK V1 DASAR** (tanpa tambahan -s, -ed, atau -ing):
+* ❌ *Salah:* "He can plays guitar."
+* ✅ *Benar:* "He **can play** guitar."
+* ❌ *Salah:* "She can to swim."
+* ✅ *Benar:* "She **can swim**."
+
+---
+
+## 3. Kalimat Negatif & Tanya
+* **Bentuk Negatif:** *cannot* atau singkatan santai *can't* (/kænt/ atau /kɑːnt/).  
+  * *"I **can't come** to the meeting this morning."*
+* **Bentuk Tanya (Yes/No Question):** Tukar posisi 'Can' ke depan.  
+  * *"**Can you help** me with this box?"* -> *"Yes, I can / No, I can't."*
+`,
+    created_at: new Date('2026-01-10T10:00:00.000Z').toISOString(),
+  },
+  {
+    id: 'mod-a1-singular-plural',
+    category: 'Grammar',
+    cefr_level: 'A1',
+    sub_pillar: 'Grammar',
+    title: 'A1 Grammar: Kata Benda Tunggal & Jamak (Regular vs Irregular Plurals)',
+    content_markdown: `# A1 Grammar: Aturan Kata Benda Tunggal & Jamak
+
+## 1. Jamak Reguler (Aturan Standar)
+* **Umum:** Cukup tambahkan **-s** (*book -> books, phone -> phones*).
+* **Akhiran -s, -sh, -ch, -x, -z:** Tambahkan **-es** (*bus -> buses, watch -> watches, box -> boxes*).
+* **Konsonan + Y:** Ubah 'y' menjadi **-ies** (*city -> cities, story -> stories*).
+* **Vokal + Y:** Tetap tambahkan **-s** (*boy -> boys, key -> keys*).
+
+---
+
+## 2. Jamak Tak Beraturan (Irregular Plurals - Wajib Hafal!)
+Kata-kata ini tidak memakai akhiran -s, melainkan berubah bentuk secara unik:
+
+| Bentuk Tunggal (1 Benda) | Bentuk Jamak (2+ Benda) | Arti |
+| :--- | :--- | :--- |
+| **Child** | **Children** | Anak-anak *(Bukan 'childs')* |
+| **Man** | **Men** | Laki-laki |
+| **Woman** | **Women** | Perempuan *(Lafal: /wɪmɪn/)* |
+| **Person** | **People** | Orang-orang |
+| **Foot** | **Feet** | Kaki |
+| **Tooth** | **Teeth** | Gigi |
+| **Mouse** | **Mice** | Tikus |
+
+---
+
+## 3. Benda Tanpa Perubahan Bentuk
+Beberapa hewan bentuk tunggal dan jamaknya sama persis:
+* *one sheep -> two sheep*
+* *one fish -> three fish*
+`,
+    created_at: new Date('2026-01-10T11:00:00.000Z').toISOString(),
+  },
+  {
+    id: 'mod-a1-days-months-dates',
+    category: 'Kosakata',
+    cefr_level: 'A1',
+    sub_pillar: 'Kosakata',
+    title: 'A1 Survival: Hari, Bulan, Tanggal Kalender & Ordinal Numbers',
+    content_markdown: `# A1 Survival: Hari, Bulan, Tanggal & Angka Urutan
+
+## 1. Tujuh Hari dalam Seminggu
+* **Senin s.d. Jumat (Weekdays):** *Monday, Tuesday, Wednesday (lafal: wenz-day), Thursday, Friday*.
+* **Akhir Pekan (Weekend):** *Saturday, Sunday*.
+> 💡 Semua nama hari **wajib diawali huruf kapital**!
+
+---
+
+## 2. Angka Urutan Kalender (Ordinal Numbers)
+Saat menyebut tanggal, orang Inggris tidak membaca angka biasa (*one, two, three*), melainkan angka urutan (*first, second, third*):
+* 1st = *First*
+* 2nd = *Second*
+* 3rd = *Third*
+* 4th = *Fourth*
+* 21st = *Twenty-first*
+* 31st = *Thirty-first*
+
+---
+
+## 3. Aturan Preposisi Tanggal: ON vs IN
+* Gunakan **ON** jika menyebutkan **hari** atau **tanggal lengkap**:  
+  * *"The event is **on** Monday."*  
+  * *"Her birthday is **on** October 15th."*
+* Gunakan **IN** jika menyebutkan **bulan saja** atau **tahun saja**:  
+  * *"We will travel **in** December."*  
+  * *"I was born **in** 2002."*
+`,
+    created_at: new Date('2026-01-10T12:00:00.000Z').toISOString(),
+  },
+
+  // --- LEVEL A2 EXPANSION (11 to 20) ---
+  {
+    id: 'mod-a2-present-perfect-basics',
+    category: 'Grammar',
+    cefr_level: 'A2',
+    sub_pillar: 'Grammar',
+    title: 'A2 Grammar: Present Perfect Fondasi (Ever, Never, Just, Already, Yet)',
+    content_markdown: `# A2 Grammar: Present Perfect Fondasi & Pengalaman Hidup
+
+## 1. Mengapa Kita Butuh Present Perfect?
+Present Perfect (**have/has + Verb 3**) digunakan ketika **waktu kejadian tidak penting**, yang penting adalah **fakta atau pengalaman tersebut pernah terjadi** dalam hidup Anda.
+
+* *Past Simple (Waktu jelas):* "I visited Bali **last year**."
+* *Present Perfect (Fokus pengalaman):* "I **have visited** Bali twice."
+
+---
+
+## 2. Lima Kata Kunci Wajib Present Perfect
+1. **Ever (Pernah):** Digunakan dalam kalimat tanya.  
+   * *"Have you **ever** tasted rendang?"*
+2. **Never (Tidak pernah):** Mengungkapkan belum pernah sekali pun.  
+   * *"I have **never** been to New York."*
+3. **Just (Baru saja):** Kejadian selesai beberapa detik/menit lalu.  
+   * *"The train has **just** arrived at Platform 3."*
+4. **Already (Sudah):** Selesai lebih awal dari perkiraan.  
+   * *"She has **already** finished her assignment."*
+5. **Yet (Belum / Sudahkah?):** Selalu diletakkan di akhir kalimat negatif & tanya.  
+   * *"I haven't received the confirmation email **yet**."*
+   * *"Have you eaten lunch **yet**?"*
+`,
+    created_at: new Date('2026-01-11T09:00:00.000Z').toISOString(),
+  },
+  {
+    id: 'mod-a2-adverbs-frequency',
+    category: 'Grammar',
+    cefr_level: 'A2',
+    sub_pillar: 'Grammar',
+    title: 'A2 Grammar: Tingkat Keseringan (Always, Often, Sometimes, Seldom, Never)',
+    content_markdown: `# A2 Grammar: Menjelaskan Seberapa Sering Anda Beraktivitas
+
+## 1. Skala Persentase Frekuensi
+* **Always (100%):** Selalu tanpa terkecuali (*"I always brush my teeth before bed."*)
+* **Usually (90%):** Biasanya (*"She usually drinks tea in the morning."*)
+* **Often / Frequently (70%):** Seringkali (*"We often go to the gym on Tuesdays."*)
+* **Sometimes (50%):** Kadang-kadang (*"I sometimes cook dinner myself."*)
+* **Rarely / Seldom (10%):** Jarang sekali (*"He rarely watches television."*)
+* **Never (0%):** Tidak pernah (*"They never skip morning meetings."*)
+
+---
+
+## 2. Aturan Emas Posisi Adverb of Frequency
+* **Sebelum Kata Kerja Utama (Main Verb):**  
+  * *"Brian **always wakes up** at 6:00 AM."* (Bukan *"wakes up always"*).
+* **Setelah To Be (am, is, are, was, were):**  
+  * *"She **is always** cheerful and optimistic."*
+* **Di antara Kata Bantu dan Kata Kerja Utama:**  
+  * *"I have **never visited** that museum."*
+
+---
+
+## 3. Menanyakan Frekuensi
+Gunakan rumus: **How often + do/does + Subject + Verb 1?**
+* *"**How often do you** exercise?"* -> *"I exercise three times a week."*
+`,
+    created_at: new Date('2026-01-11T10:00:00.000Z').toISOString(),
+  },
+  {
+    id: 'mod-a2-gerund-infinitive-intro',
+    category: 'Grammar',
+    cefr_level: 'A2',
+    sub_pillar: 'Grammar',
+    title: 'A2 Grammar: Kapan Pakai V-ing vs To + V1 (Like dancing vs Want to go)',
+    content_markdown: `# A2 Grammar: Gerund (-ing) vs To-Infinitive (To + V1)
+
+## 1. Permasalahan Dua Kata Kerja Berurutan
+Dalam bahasa Inggris, ketika ada dua kata kerja yang berdampingan, kata kerja kedua tidak boleh berbentuk V1 polos. Kata kerja kedua harus memilih menjadi:
+* **Gerund (Verb-ing)** ATAU
+* **To-Infinitive (To + Verb 1)**
+
+---
+
+## 2. Kelompok Kata Kerja 'Wajib To + V1'
+Kata-kata kerja yang berorientasi rencana ke depan selalu berpasangan dengan **to + V1**:
+* **Want to:** *"I **want to travel** to Europe."*
+* **Need to:** *"You **need to rest** right now."*
+* **Plan to:** *"They **plan to launch** the app next month."*
+* **Decide to:** *"She **decided to study** computer science."*
+* **Hope to / Promise to:** *"I **hope to see** you again soon."*
+
+---
+
+## 3. Kelompok Kata Kerja 'Wajib Gerund (-ing)'
+Kata kerja yang berkaitan dengan menikmati, menyelesaikan, atau menghindari sesuatu berpasangan dengan **V-ing**:
+* **Enjoy:** *"I **enjoy reading** novels."* *(Salah: enjoy to read).*
+* **Finish:** *"Have you **finished eating**?"*
+* **Avoid:** *"He tries to **avoid eating** junk food."*
+* **Mind:** *"Do you **mind opening** the window?"*
+`,
+    created_at: new Date('2026-01-11T11:00:00.000Z').toISOString(),
+  },
+  {
+    id: 'mod-a2-shopping-clothes-returns',
+    category: 'Templates',
+    cefr_level: 'A2',
+    sub_pillar: 'Templates',
+    title: 'A2 Speaking: Menukar Barang, Komplain Sopan & Ukuran di Toko Pakaian',
+    content_markdown: `# A2 Speaking: Menukar Barang & Komplain Sopan di Toko Pakaian
+
+## 1. Menanyakan Kamar Pas & Ukuran
+* *"Excuse me, **could I try this on**?"* (Bolehkah saya mencoba baju ini?)
+* *"Where is the **fitting room**?"* (Di mana kamar pasnya?)
+* *"It's a bit too **tight / loose**; do you have this in a **size medium**?"* (Baju ini agak sempit/longgar).
+
+---
+
+## 2. Menukar Ukuran / Warna (Exchange)
+Saat barang yang dibeli tidak pas di badan:
+> 🛍️ **Formula Menukar Barang:**  
+> *"Hi, I bought this yesterday, but the size is too small. **Could I please exchange it for a size large?**"*
+
+---
+
+## 3. Meminta Pengembalian Dana (Refund)
+* *"I would like to get a refund for this jacket, please. **Here is the original receipt.**"*
+* *"I am afraid there is a defect along the seam."* (Ada cacat jahitan).
+`,
+    created_at: new Date('2026-01-11T12:00:00.000Z').toISOString(),
+  },
+  {
+    id: 'mod-a2-airport-flying',
+    category: 'Kosakata',
+    cefr_level: 'A2',
+    sub_pillar: 'Kosakata',
+    title: 'A2 Travel: Menavigasi Bandara, Check-in, Imigrasi & Bagasi',
+    content_markdown: `# A2 Travel: Menavigasi Bandara & Penerbangan Internasional
+
+## 1. Di Meja Check-in Bandara
+* Petugas: *"Passports and booking confirmation, please."*
+* Petugas: *"Would you prefer an **aisle seat** or a **window seat**?"*  
+  *(Aisle seat = kursi dekat lorong jalan; Window seat = kursi dekat jendela).*
+* Anda: *"A window seat, please. Could we also be seated together?"*
+
+---
+
+## 2. Istilah Bagasi yang Wajib Dipahami
+* **Carry-on / Cabin luggage:** Koper kecil/tas ransel yang dibawa masuk ke kabin (maksimal 7 kg).
+* **Checked baggage:** Koper besar yang masuk lambung bagasi pesawat di counter check-in.
+* **Overweight / Excess baggage fee:** Denda kelebihan muatan berat koper.
+
+---
+
+## 3. Tanya Jawab di Meja Imigrasi
+Petugas imigrasi di bandara luar negeri umumnya hanya menanyakan 3 hal dasar ini:
+1. *"What is the purpose of your visit?"*  
+   * Jawaban: *"Tourism and sightseeing"* ATAU *"Attending a business conference"*.
+2. *"How long will you be staying?"*  
+   * Jawaban: *"For ten days. Here is my return flight ticket."*
+3. *"Where will you be staying?"*  
+   * Jawaban: *"At the Grand Hyatt Hotel in Tokyo."*
+`,
+    created_at: new Date('2026-01-11T13:00:00.000Z').toISOString(),
+  },
+  {
+    id: 'mod-a2-quantifiers-countability',
+    category: 'Grammar',
+    cefr_level: 'A2',
+    sub_pillar: 'Grammar',
+    title: 'A2 Grammar: Many vs Much, A few vs A little, Some vs Any',
+    content_markdown: `# A2 Grammar: Many vs Much, A Few vs A Little, Some vs Any
+
+## 1. Konsep Utama: Bisa Dihitung vs Tidak Bisa Dihitung
+* **Countable Nouns (Bisa Dihitung):** Memiliki bentuk jamak berakhiran -s (*books, cars, dollars, chairs, ideas*).
+* **Uncountable Nouns (Tidak Bisa Dihitung):** Cairan, konsep abstrak, atau massa (*water, coffee, money, time, information, advice*).
+
+---
+
+## 2. Matriks Penggunaan Quantifier
+
+| Jenis Benda | Jumlah Banyak | Jumlah Sedikit (Cukup) |
+| :--- | :--- | :--- |
+| **Countable (Jamak)** | **Many** (*many students*) | **A few** (*a few close friends*) |
+| **Uncountable (Abstrak/Massa)**| **Much** (*much time, much money*) | **A little** (*a little sugar, a little water*) |
+
+> ⚠️ *Jebakan TOEFL & Percakapan:*  
+> * *Salah:* "How many money do you need?"  
+> * *Benar:* "**How much money** do you need?" *(Kata 'money' tidak bisa dihitung; yang bisa dihitung adalah 'dollars/rupiah')*.
+
+---
+
+## 3. Some vs Any
+* **Some:** Digunakan pada kalimat **positif** dan penawaran ramah.  
+  * *"I have **some** great news."*  
+  * *"Would you like **some** coffee?"*
+* **Any:** Digunakan pada kalimat **negatif** dan **pertanyaan umum**.  
+  * *"I don't have **any** cash with me."*  
+  * *"Do you have **any** questions?"*
+`,
+    created_at: new Date('2026-01-11T14:00:00.000Z').toISOString(),
+  },
+  {
+    id: 'mod-a2-used-to',
+    category: 'Grammar',
+    cefr_level: 'A2',
+    sub_pillar: 'Grammar',
+    title: 'A2 Grammar: Menceritakan Kebiasaan Masa Lalu yang Sudah Berhenti ("I used to...")',
+    content_markdown: `# A2 Grammar: Kebiasaan Masa Lalu yang Sudah Berhenti (Used To)
+
+## 1. Makna & Fungsi "Used To"
+Gunakan pola **used to + Verb 1** untuk menceritakan kegiatan, hobi, atau fakta masa lampau yang **SEKARANG SUDAH TIDAK BERLAKU LAGI**.
+
+* *"I **used to smoke**, but I quit five years ago."*  
+  *(Dulu saya merokok, sekarang sudah berhenti total).*
+* *"She **used to live** in Bandung before moving to Yogyakarta."*
+
+---
+
+## 2. Pola Negatif & Tanya (Perhatikan Huruf 'd' Hilang!)
+Karena sudah ada kata bantu *did/didn't*, huruf **-d** pada kata *used* dihilangkan kembali menjadi **use**:
+* **Negatif (Didn't use to):**  
+  * *"He **didn't use to like** seafood, but now he loves sushi."*
+* **Tanya (Did ... use to?):**  
+  * *"**Did you use to play** video games when you were a teenager?"*
+
+---
+
+## 3. Peringatan: Jangan Pakai "Used to" untuk Masa Sekarang!
+Untuk kebiasaan masa kini, gunakan kata keterangan biasa (*usually / normally*):
+* ❌ *Salah:* "I used to drink coffee every morning now."
+* ✅ *Benar:* "I **usually drink** coffee every morning."
+`,
+    created_at: new Date('2026-01-11T15:00:00.000Z').toISOString(),
+  },
+  {
+    id: 'mod-a2-phone-calls-emails',
+    category: 'Templates',
+    cefr_level: 'A2',
+    sub_pillar: 'Templates',
+    title: 'A2 Business: Menelepon Sopan & Email Singkat Sehari-hari',
+    content_markdown: `# A2 Business: Etika Telepon & Email Kantor Singkat
+
+## 1. Menjawab Telepon Bisnis & Mengenalkan Diri
+* *"Hello, **this is [Nama] speaking** from [Departemen/Perusahaan]."*  
+  *(⚠️ Di telepon, jangan bilang "I am [Nama]", gunakan "This is [Nama]").*
+* *"May I ask **who is calling**, please?"* (Bolehkah saya tahu dengan siapa saya berbicara?)
+* *"**Could I speak to** Mr. Brian, please?"* (Bisakah saya berbicara dengan Pak Brian?)
+
+---
+
+## 2. Meninggalkan Pesan Jika Orang Tersebut Sedang Sibuk
+* *"I am afraid she is in a meeting right now. **Would you like to leave a message?**"*
+* *"Could you please ask him to **call me back at this number**?"*
+
+---
+
+## 3. Struktur Email Kantor 3 Menit
+1. **Salam Pembuka:** *"Dear Mr. Smith,"* atau *"Hi Team,"*
+2. **Menyatakan Tujuan Langsung:**  
+   * *"I am writing to inquire about the workshop schedule."*  
+   * *"I am writing to confirm our meeting on Friday at 2 PM."*
+3. **Menyertakan Dokumen Lampiran:**  
+   * *"Please find the attached document for your review."*
+4. **Salam Penutup:** *"Best regards,"* atau *"Sincerely,"*.
+`,
+    created_at: new Date('2026-01-11T16:00:00.000Z').toISOString(),
+  },
+  {
+    id: 'mod-a2-hobbies-free-time',
+    category: 'Kosakata',
+    cefr_level: 'A2',
+    sub_pillar: 'Kosakata',
+    title: 'A2 Vocab: Membicarakan Minat, Olahraga (Play vs Do vs Go) & Waktu Luang',
+    content_markdown: `# A2 Vocab: Hobi, Minat & Pasangan Olahraga (Play vs Do vs Go)
+
+## 1. Aturan Emas Olahraga: PLAY vs DO vs GO
+Jangan sembarang menggabungkan kata kerja dengan olahraga! Ikuti aturan pasti ini:
+
+| Kata Kerja | Karakteristik Olahraga | Contoh Alami |
+| :--- | :--- | :--- |
+| ⚽ **PLAY** | Olahraga bola, tim beregu, atau permainan kompetitif | *play football, play tennis, play badminton, play chess* |
+| 🏊 **GO** | Olahraga/aktivitas luar ruangan berakhiran **-ing** | *go swimming, go cycling, go jogging, go hiking, go fishing* |
+| 🥋 **DO** | Olahraga bela diri, senam, atau latihan fisik individual | *do yoga, do karate, do gymnastics, do martial arts* |
+
+---
+
+## 2. Frasa Alami Menyatakan Hobi & Minat
+Alih-alih selalu berkata *"My hobby is..."*, penutur asli lebih sering memakai frasa ini:
+* *"I am really **into photography** lately."* (Saya sangat menggemari fotografi).
+* *"In my free time, I love **listening to jazz**."*
+* *"I'm a big fan of **historical fiction**."*
+
+---
+
+## 3. Menanyakan Minat Orang Lain
+* *"What do you like doing in your spare time?"*
+* *"What are your plans for the weekend?"*
+`,
+    created_at: new Date('2026-01-11T17:00:00.000Z').toISOString(),
+  },
+  {
+    id: 'mod-a2-zero-first-conditional',
+    category: 'Grammar',
+    cefr_level: 'A2',
+    sub_pillar: 'Grammar',
+    title: 'A2 Grammar: Pengandaian Nyata & Sebab Akibat (Zero & First Conditional)',
+    content_markdown: `# A2 Grammar: Pengandaian Nyata (Zero & First Conditional)
+
+## 1. Zero Conditional: Fakta Ilmiah & Kebenaran Umum
+Gunakan saat satu aksi **pasti selalu menghasilkan reaksi yang sama**:
+> 💡 **Formula:** **If + Simple Present (V1), Simple Present (V1)**
+
+* *"If you heat water to 100 degrees, it **boils**."* (Fakta ilmiah).
+* *"If people don't drink water, they **get dehydrated**."*
+
+---
+
+## 2. First Conditional: Kemungkinan Nyata di Masa Depan
+Gunakan saat ada syarat di masa kini yang jika terpenuhi, akan membawa hasil nyata di masa depan:
+> 💡 **Formula:** **If + Simple Present (V1), Subject + will + V1**
+
+* *"If it **rains** tomorrow, we **will postpone** the football match."*
+* *"If I **pass** this examination, my parents **will celebrate**."*
+
+---
+
+## 3. Jebakan Klasik: Jangan Masukkan 'Will' ke Dalam Klausa 'If'!
+* ❌ *Salah:* "If it will rain tomorrow, I will stay home."
+* ✅ *Benar:* "If it **rains** tomorrow, I will stay home."
+`,
+    created_at: new Date('2026-01-11T18:00:00.000Z').toISOString(),
+  },
   {
     id: 'mod-b1-passive-voice',
     category: 'Grammar',
@@ -1773,6 +2288,461 @@ export const MOCK_FLASHCARDS = [
     front_text: 'Formula menolak halus: "I\'d really love to, but I\'m ______ I have another commitment."',
     back_text: 'afraid',
     example_sentence: '"I\'m afraid..." digunakan untuk menyampaikan permohonan maaf/penolakan dengan sopan.',
+  },
+  // ==========================================
+  // CARDS: A1 EXPANSION (Modules 11-15)
+  // ==========================================
+  // mod-a1-telling-time
+  {
+    id: 'card-a1-time-1',
+    module_id: 'mod-a1-telling-time',
+    front_text: 'Jam 07:15 dalam bahasa Inggris tradisional:',
+    back_text: 'A quarter past seven',
+    example_sentence: 'Kunci A1: 15 menit lewat diungkapkan dengan "a quarter past".',
+  },
+  {
+    id: 'card-a1-time-2',
+    module_id: 'mod-a1-telling-time',
+    front_text: 'Jam 08:45 (15 menit menuju jam 9):',
+    back_text: 'A quarter to nine',
+    example_sentence: 'Kunci A1: 15 menit sebelum jam berikutnya diungkapkan dengan "a quarter to".',
+  },
+  {
+    id: 'card-a1-time-3',
+    module_id: 'mod-a1-telling-time',
+    front_text: 'Jam 06:30 dalam bahasa Inggris tradisional:',
+    back_text: 'Half past six',
+    example_sentence: 'Kunci A1: Lewat 30 menit selalu menggunakan frasa "half past".',
+  },
+  {
+    id: 'card-a1-time-4',
+    module_id: 'mod-a1-telling-time',
+    front_text: 'Perbaiki kalimat: "The train departs at 08:30 o\'clock."',
+    back_text: 'The train departs at 08:30 (atau half past eight).',
+    example_sentence: 'Kata "o\'clock" hanya boleh digunakan untuk jam bulat tanpa menit lebihan.',
+  },
+
+  // mod-a1-weather-seasons
+  {
+    id: 'card-a1-wth-1',
+    module_id: 'mod-a1-weather-seasons',
+    front_text: 'Tanya cuaca: "Bagaimana cuaca di luar hari ini?"',
+    back_text: "What's the weather like today? (atau How's the weather outside?)",
+    example_sentence: 'Template menanyakan cuaca paling populer bagi penutur asli.',
+  },
+  {
+    id: 'card-a1-wth-2',
+    module_id: 'mod-a1-weather-seasons',
+    front_text: 'Hari ini cerah berawan dan sedikit berangin:',
+    back_text: "It's partly cloudy and slightly windy.",
+    example_sentence: 'Gunakan pola "It is + [adjective]" untuk menyatakan kondisi cuaca.',
+  },
+  {
+    id: 'card-a1-wth-3',
+    module_id: 'mod-a1-weather-seasons',
+    front_text: 'Musim gugur dalam bahasa Inggris (versi UK dan US):',
+    back_text: 'Autumn (UK) / Fall (US)',
+    example_sentence: 'Keduanya merujuk pada musim yang sama saat dedaunan berguguran.',
+  },
+  {
+    id: 'card-a1-wth-4',
+    module_id: 'mod-a1-weather-seasons',
+    front_text: 'Nasihat cuaca: "Pakailah jaketmu, di luar udaranya cukup dingin."',
+    back_text: 'Put on your jacket; it is quite chilly outside.',
+    example_sentence: '"Put on" = mengenakan pakaian; "chilly" = dingin sejuk menusuk.',
+  },
+
+  // mod-a1-can-basics
+  {
+    id: 'card-a1-can-1',
+    module_id: 'mod-a1-can-basics',
+    front_text: 'Kemampuan: "Dia (lk) bisa berenang dengan sangat cepat."',
+    back_text: 'He can swim very fast.',
+    example_sentence: 'Kunci A1: Setelah "can", kata kerja selalu V1 dasar tanpa imbuhan (bukan "can swims").',
+  },
+  {
+    id: 'card-a1-can-2',
+    module_id: 'mod-a1-can-basics',
+    front_text: 'Meminta izin santai: "Bolehkah saya duduk di sini?"',
+    back_text: 'Can I sit here?',
+    example_sentence: 'Pola meminta izin sopan dan santai dalam percakapan sehari-hari.',
+  },
+  {
+    id: 'card-a1-can-3',
+    module_id: 'mod-a1-can-basics',
+    front_text: 'Ketidakmampuan: "Saya tidak bisa menghadiri seminar besok pagi."',
+    back_text: "I cannot (can't) attend the seminar tomorrow morning.",
+    example_sentence: 'Bentuk negatif dari can adalah cannot atau disingkat can\'t.',
+  },
+  {
+    id: 'card-a1-can-4',
+    module_id: 'mod-a1-can-basics',
+    front_text: 'Meminta pertolongan: "Bisa tolong bantu saya mengangkat koper ini?"',
+    back_text: 'Can you please help me lift this suitcase?',
+    example_sentence: 'Tukar posisi "Can" ke paling depan untuk membuat kalimat permohonan bantuan.',
+  },
+
+  // mod-a1-singular-plural
+  {
+    id: 'card-a1-plu-1',
+    module_id: 'mod-a1-singular-plural',
+    front_text: 'Bentuk jamak dari "child" adalah:',
+    back_text: 'children',
+    example_sentence: 'Child adalah kata benda jamak tak beraturan (irregular plural), bukan "childs".',
+  },
+  {
+    id: 'card-a1-plu-2',
+    module_id: 'mod-a1-singular-plural',
+    front_text: 'Bentuk jamak dari "woman" adalah:',
+    back_text: 'women (lafal: /wɪmɪn/)',
+    example_sentence: 'Bentuk jamak dari woman adalah women.',
+  },
+  {
+    id: 'card-a1-plu-3',
+    module_id: 'mod-a1-singular-plural',
+    front_text: 'Bentuk jamak dari "city" adalah:',
+    back_text: 'cities',
+    example_sentence: 'Konsonan + y diubah menjadi -ies pada bentuk jamak.',
+  },
+  {
+    id: 'card-a1-plu-4',
+    module_id: 'mod-a1-singular-plural',
+    front_text: 'Bentuk jamak dari "person" yang paling alami:',
+    back_text: 'people',
+    example_sentence: 'People adalah bentuk jamak yang umum untuk person.',
+  },
+
+  // mod-a1-days-months-dates
+  {
+    id: 'card-a1-date-1',
+    module_id: 'mod-a1-days-months-dates',
+    front_text: 'Preposisi tanggal kalender: "The meeting is scheduled ______ October 15th."',
+    back_text: 'on',
+    example_sentence: 'Kunci A1: Jika ada tanggal kalender lengkap, selalu gunakan preposisi "on".',
+  },
+  {
+    id: 'card-a1-date-2',
+    module_id: 'mod-a1-days-months-dates',
+    front_text: 'Ejaan hari Rabu dalam bahasa Inggris (huruf d bisu):',
+    back_text: 'Wednesday (lafal: wenz-day)',
+    example_sentence: 'Huruf "d" pada Wednesday tidak dilafalkan.',
+  },
+  {
+    id: 'card-a1-date-3',
+    module_id: 'mod-a1-days-months-dates',
+    front_text: 'Cara membaca tanggal "August 3rd":',
+    back_text: 'August the third (atau the third of August)',
+    example_sentence: 'Tanggal kalender dibaca menggunakan ordinal numbers (first, second, third, etc.).',
+  },
+  {
+    id: 'card-a1-date-4',
+    module_id: 'mod-a1-days-months-dates',
+    front_text: 'Preposisi bulan saja: "Our new semester starts ______ February."',
+    back_text: 'in',
+    example_sentence: 'Kunci A1: Nama bulan atau tahun tanpa tanggal spesifik menggunakan preposisi "in".',
+  },
+
+  // ==========================================
+  // CARDS: A2 EXPANSION (Modules 11-20)
+  // ==========================================
+  // mod-a2-present-perfect-basics
+  {
+    id: 'card-a2-pp-1',
+    module_id: 'mod-a2-present-perfect-basics',
+    front_text: 'Tanya pengalaman: "Apakah kamu pernah pergi ke Jepang?"',
+    back_text: 'Have you ever been to Japan?',
+    example_sentence: 'Gunakan "Have you ever been to..." untuk menanyakan pengalaman perjalanan seumur hidup.',
+  },
+  {
+    id: 'card-a2-pp-2',
+    module_id: 'mod-a2-present-perfect-basics',
+    front_text: 'Kalimat negatif: "Saya belum menerima email konfirmasi itu."',
+    back_text: 'I have not received the confirmation email yet.',
+    example_sentence: 'Kata "yet" diletakkan di akhir kalimat negatif Present Perfect.',
+  },
+  {
+    id: 'card-a2-pp-3',
+    module_id: 'mod-a2-present-perfect-basics',
+    front_text: 'Kejadian baru saja: "Dia baru saja menyelesaikan tugas akhirnya."',
+    back_text: 'She has just finished her final assignment.',
+    example_sentence: '"Just" diletakkan di antara has/have dan Verb 3 untuk aksi yang baru saja tuntas.',
+  },
+  {
+    id: 'card-a2-pp-4',
+    module_id: 'mod-a2-present-perfect-basics',
+    front_text: 'Pengalaman hidup: "I have ______ (never / not ever) seen such a breathtaking sunset."',
+    back_text: 'never',
+    example_sentence: '"Never" bermakna tidak pernah sama sekali dalam pengalaman hidup.',
+  },
+
+  // mod-a2-adverbs-frequency
+  {
+    id: 'card-a2-adv-1',
+    module_id: 'mod-a2-adverbs-frequency',
+    front_text: 'Posisi Adverb dengan To Be: "Brian (always / is) cheerful."',
+    back_text: 'is always',
+    example_sentence: 'Kunci A2: Adverb of frequency selalu diletakkan SETELAH To Be (is always).',
+  },
+  {
+    id: 'card-a2-adv-2',
+    module_id: 'mod-a2-adverbs-frequency',
+    front_text: 'Posisi Adverb dengan Main Verb: "She (often / reads) novels at night."',
+    back_text: 'often reads',
+    example_sentence: 'Kunci A2: Adverb of frequency diletakkan SEBELUM kata kerja utama (often reads).',
+  },
+  {
+    id: 'card-a2-adv-3',
+    module_id: 'mod-a2-adverbs-frequency',
+    front_text: 'Tanya frekuensi: "Seberapa sering Anda berolahraga setiap minggu?"',
+    back_text: 'How often do you exercise each week?',
+    example_sentence: 'Gunakan "How often do you..." untuk menanyakan tingkat keseringan aktivitas.',
+  },
+  {
+    id: 'card-a2-adv-4',
+    module_id: 'mod-a2-adverbs-frequency',
+    front_text: 'Jarang sekali: "He ______ (rarely / usually) eats fast food because he is health-conscious."',
+    back_text: 'rarely',
+    example_sentence: 'Rarely / seldom menyatakan frekuensi sangat rendah (hanya sekitar 10%).',
+  },
+
+  // mod-a2-gerund-infinitive-intro
+  {
+    id: 'card-a2-gi-1',
+    module_id: 'mod-a2-gerund-infinitive-intro',
+    front_text: 'Pola kata kerja: "We decided ______ (travel) by commuter train."',
+    back_text: 'to travel',
+    example_sentence: 'Kunci A2: Kata kerja "decide" wajib berpasangan dengan To-Infinitive (decided to travel).',
+  },
+  {
+    id: 'card-a2-gi-2',
+    module_id: 'mod-a2-gerund-infinitive-intro',
+    front_text: 'Pola kata kerja: "Do you mind ______ (open) the door, please?"',
+    back_text: 'opening',
+    example_sentence: 'Kunci A2: Kata kerja "mind" wajib diikuti oleh Gerund (V-ing: mind opening).',
+  },
+  {
+    id: 'card-a2-gi-3',
+    module_id: 'mod-a2-gerund-infinitive-intro',
+    front_text: 'Pola kata kerja: "She really enjoys ______ (read) historical fiction."',
+    back_text: 'reading',
+    example_sentence: 'Kata kerja "enjoy" selalu berpasangan dengan Gerund (enjoys reading).',
+  },
+  {
+    id: 'card-a2-gi-4',
+    module_id: 'mod-a2-gerund-infinitive-intro',
+    front_text: 'Pola kata kerja: "They plan ______ (launch) their mobile app next month."',
+    back_text: 'to launch',
+    example_sentence: 'Kata kerja "plan" selalu berpasangan dengan To-Infinitive (plan to launch).',
+  },
+
+  // mod-a2-shopping-clothes-returns
+  {
+    id: 'card-a2-shp-1',
+    module_id: 'mod-a2-shopping-clothes-returns',
+    front_text: 'Mencoba pakaian: "Bolehkah saya mencoba baju ini di kamar pas?"',
+    back_text: 'Could I try this on? (Where is the fitting room?)',
+    example_sentence: '"Try on" adalah phrasal verb untuk mencoba pakaian.',
+  },
+  {
+    id: 'card-a2-shp-2',
+    module_id: 'mod-a2-shopping-clothes-returns',
+    front_text: 'Ukuran tidak pas: "Celana ini agak terlalu ketat di pinggang saya."',
+    back_text: 'These trousers are a bit too tight around my waist.',
+    example_sentence: '"Tight" = sempit / ketat; "loose" = longgar.',
+  },
+  {
+    id: 'card-a2-shp-3',
+    module_id: 'mod-a2-shopping-clothes-returns',
+    front_text: 'Menukar barang: "Bolehkah saya menukar jaket ini dengan ukuran yang lebih besar?"',
+    back_text: 'Could I please exchange this jacket for a larger size?',
+    example_sentence: 'Gunakan kata "exchange ... for ..." untuk menukar barang belanjaan.',
+  },
+  {
+    id: 'card-a2-shp-4',
+    module_id: 'mod-a2-shopping-clothes-returns',
+    front_text: 'Pengembalian dana: "Saya ingin meminta refund; ini struk pembelian aslinya."',
+    back_text: 'I would like to get a refund, please. Here is the original receipt.',
+    example_sentence: 'Receipt (/rɪˈsiːt/) = struk pembelian (huruf p tidak dibaca).',
+  },
+
+  // mod-a2-airport-flying
+  {
+    id: 'card-a2-air-1',
+    module_id: 'mod-a2-airport-flying',
+    front_text: 'Kursi lorong vs kursi jendela dalam bahasa Inggris penerbangan:',
+    back_text: 'Aisle seat (/aɪl/) vs Window seat',
+    example_sentence: 'Huruf "s" pada kata "aisle" bisu (tidak dibaca).',
+  },
+  {
+    id: 'card-a2-air-2',
+    module_id: 'mod-a2-airport-flying',
+    front_text: 'Tanya imigrasi: "What is the purpose of your visit?" Respon untuk liburan:',
+    back_text: 'Tourism and holiday. (atau I am here for vacation.)',
+    example_sentence: 'Jawaban singkat, lugas, dan jelas di depan petugas imigrasi bandara.',
+  },
+  {
+    id: 'card-a2-air-3',
+    module_id: 'mod-a2-airport-flying',
+    front_text: 'Bagasi kabin vs bagasi lambung pesawat:',
+    back_text: 'Carry-on / Cabin baggage vs Checked baggage',
+    example_sentence: 'Checked baggage ditimbang di konter check-in sebelum masuk lambung pesawat.',
+  },
+  {
+    id: 'card-a2-air-4',
+    module_id: 'mod-a2-airport-flying',
+    front_text: 'Pemberitahuan keberangkatan: "Flight GA402 is now boarding at ______ 4."',
+    back_text: 'Gate',
+    example_sentence: 'Gate adalah pintu terminal keberangkatan menuju pesawat.',
+  },
+
+  // mod-a2-quantifiers-countability
+  {
+    id: 'card-a2-qnt-1',
+    module_id: 'mod-a2-quantifiers-countability',
+    front_text: 'Pertanyaan kuantitas uang: "How ______ money did you spend on books?"',
+    back_text: 'much',
+    example_sentence: 'Kunci A2: Uang (money) adalah kata benda tak bisa dihitung (uncountable), gunakan "much".',
+  },
+  {
+    id: 'card-a2-qnt-2',
+    module_id: 'mod-a2-quantifiers-countability',
+    front_text: 'Pertanyaan kuantitas benda jamak: "How ______ participants attended the lecture?"',
+    back_text: 'many',
+    example_sentence: 'Kunci A2: Participants adalah countable noun jamak, selalu berpasangan dengan "many".',
+  },
+  {
+    id: 'card-a2-qnt-3',
+    module_id: 'mod-a2-quantifiers-countability',
+    front_text: 'Sedikit cairan: "Could you please add a ______ milk into my tea?"',
+    back_text: 'little',
+    example_sentence: 'Gunakan "a little" untuk benda cair atau tak bisa dihitung (a little milk/sugar).',
+  },
+  {
+    id: 'card-a2-qnt-4',
+    module_id: 'mod-a2-quantifiers-countability',
+    front_text: 'Kalimat tanya umum: "Do you have ______ questions regarding this topic?"',
+    back_text: 'any',
+    example_sentence: 'Gunakan "any" dalam kalimat tanya dan kalimat negatif.',
+  },
+
+  // mod-a2-used-to
+  {
+    id: 'card-a2-ut-1',
+    module_id: 'mod-a2-used-to',
+    front_text: 'Kebiasaan lampau yang sudah berhenti: "I ______ to play the violin when I was a child."',
+    back_text: 'used',
+    example_sentence: 'Pola "used to + V1" untuk kebiasaan masa lalu yang tidak lagi dilakukan hari ini.',
+  },
+  {
+    id: 'card-a2-ut-2',
+    module_id: 'mod-a2-used-to',
+    front_text: 'Bentuk negatif used to: "He didn\'t ______ to drink black coffee."',
+    back_text: 'use',
+    example_sentence: 'Kunci A2: Setelah "didn\'t", huruf -d pada used dihilangkan kembali menjadi "use".',
+  },
+  {
+    id: 'card-a2-ut-3',
+    module_id: 'mod-a2-used-to',
+    front_text: 'Fakta masa lampau: "They used to ______ (live) in Surabaya before moving."',
+    back_text: 'live',
+    example_sentence: 'Setelah used to, kata kerja selalu kembali ke bentuk dasar V1 (live).',
+  },
+  {
+    id: 'card-a2-ut-4',
+    module_id: 'mod-a2-used-to',
+    front_text: 'Bentuk tanya used to: "______ you use to ride a bicycle to school?"',
+    back_text: 'Did',
+    example_sentence: 'Bentuk tanya masa lalu menggunakan kata bantu "Did".',
+  },
+
+  // mod-a2-phone-calls-emails
+  {
+    id: 'card-a2-phn-1',
+    module_id: 'mod-a2-phone-calls-emails',
+    front_text: 'Mengenalkan diri saat mengangkat telepon kantor:',
+    back_text: 'Hello, this is [Name] speaking. (Bukan "I am [Name]")',
+    example_sentence: 'Standar etika telepon profesional bahasa Inggris selalu menggunakan "This is...".',
+  },
+  {
+    id: 'card-a2-phn-2',
+    module_id: 'mod-a2-phone-calls-emails',
+    front_text: 'Menghubungkan telepon: "Bisakah saya berbicara dengan Ibu Sarah, tolong?"',
+    back_text: 'Could I speak to Ms. Sarah, please?',
+    example_sentence: 'Frasa sopan dan profesional saat meminta disambungkan ke rekan kerja.',
+  },
+  {
+    id: 'card-a2-phn-3',
+    module_id: 'mod-a2-phone-calls-emails',
+    front_text: 'Menyebutkan dokumen lampiran email:',
+    back_text: 'Please find the attached document for your review.',
+    example_sentence: 'Formula baku menyertakan file lampiran di email bisnis.',
+  },
+  {
+    id: 'card-a2-phn-4',
+    module_id: 'mod-a2-phone-calls-emails',
+    front_text: 'Minta ditelepon kembali: "Bisa tolong minta beliau menelepon saya kembali?"',
+    back_text: 'Could you please ask him to call me back?',
+    example_sentence: '"Call me back" = menelepon kembali.',
+  },
+
+  // mod-a2-hobbies-free-time
+  {
+    id: 'card-a2-hob-1',
+    module_id: 'mod-a2-hobbies-free-time',
+    front_text: 'Pasangan olahraga beregu/bola: "My friends and I ______ basketball every Friday."',
+    back_text: 'play',
+    example_sentence: 'Kunci A2: Olahraga beregu atau menggunakan bola berpasangan dengan "play".',
+  },
+  {
+    id: 'card-a2-hob-2',
+    module_id: 'mod-a2-hobbies-free-time',
+    front_text: 'Pasangan olahraga -ing: "Let\'s ______ cycling around the park this afternoon."',
+    back_text: 'go',
+    example_sentence: 'Kunci A2: Aktivitas luar ruangan berakhiran -ing berpasangan dengan "go".',
+  },
+  {
+    id: 'card-a2-hob-3',
+    module_id: 'mod-a2-hobbies-free-time',
+    front_text: 'Pasangan olahraga bela diri / senam: "She ______ yoga every morning before breakfast."',
+    back_text: 'does',
+    example_sentence: 'Kunci A2: Senam dan bela diri berpasangan dengan "do/does".',
+  },
+  {
+    id: 'card-a2-hob-4',
+    module_id: 'mod-a2-hobbies-free-time',
+    front_text: 'Menyatakan minat: "Akhir-akhir ini saya sangat menggemari fotografi."',
+    back_text: 'I am really into photography lately. (atau I am interested in...)',
+    example_sentence: '"To be into something" adalah idiom alami yang berarti sangat meminati/menyukai.',
+  },
+
+  // mod-a2-zero-first-conditional
+  {
+    id: 'card-a2-cnd-1',
+    module_id: 'mod-a2-zero-first-conditional',
+    front_text: 'Koreksi kesalahan: "If it will rain tomorrow, we will stay at home."',
+    back_text: 'If it rains tomorrow, we will stay at home. (Hilangkan kata "will" setelah if)',
+    example_sentence: 'Kunci A2: Klausa "if" pada First Conditional selalu menggunakan Simple Present (V1).',
+  },
+  {
+    id: 'card-a2-cnd-2',
+    module_id: 'mod-a2-zero-first-conditional',
+    front_text: 'Zero Conditional (fakta ilmiah): "If you heat ice, it ______ (melt)."',
+    back_text: 'melts',
+    example_sentence: 'Kunci A2: Fakta ilmiah mutlak menggunakan Simple Present di kedua klausa.',
+  },
+  {
+    id: 'card-a2-cnd-3',
+    module_id: 'mod-a2-zero-first-conditional',
+    front_text: 'First Conditional: "If you ______ (study) consistently, you will achieve TOEFL 600."',
+    back_text: 'study',
+    example_sentence: 'Klausa kondisi memakai Simple Present V1 ("study"), klausa hasil memakai will + V1.',
+  },
+  {
+    id: 'card-a2-cnd-4',
+    module_id: 'mod-a2-zero-first-conditional',
+    front_text: 'First Conditional: "If the train is delayed, we ______ (miss) the opening ceremony."',
+    back_text: 'will miss',
+    example_sentence: 'Hasil kemungkinan di masa depan menggunakan: will + V1.',
   },
   {
     id: 'card-b1-pass-1',
