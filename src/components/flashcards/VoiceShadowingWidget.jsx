@@ -69,6 +69,14 @@ export default function VoiceShadowingWidget({ targetSentence, cardId, isFlipped
     setLiveTranscript('');
     setEvaluation(null);
 
+    // Bersihkan instance sebelumnya jika masih aktif agar tidak terjadi bentrok resource
+    if (recognitionRef.current) {
+      try {
+        recognitionRef.current.abort();
+      } catch {}
+      recognitionRef.current = null;
+    }
+
     const recognition = getSpeechRecognitionInstance();
     if (!recognition) {
       setIsSupported(false);
@@ -107,9 +115,19 @@ export default function VoiceShadowingWidget({ targetSentence, cardId, isFlipped
       console.warn('Speech recognition error:', err.error);
       setIsListening(false);
       if (err.error === 'not-allowed') {
-        setErrorNotice('Izin mikrofon belum diberikan. Silakan izinkan akses mikrofon di browser.');
+        setErrorNotice(
+          'Akses mikrofon terblokir oleh browser atau kebijakan keamanan server (Permissions-Policy). Jika server baru saja di-deploy atau izin baru diaktifkan, silakan muat ulang (refresh/tutup-buka) halaman/PWA.'
+        );
       } else if (err.error === 'no-speech') {
-        setErrorNotice('Tidak ada suara terdengar. Silakan coba lagi lebih dekat.');
+        setErrorNotice('Tidak ada suara terdengar. Silakan coba bicara lebih jelas dan lebih dekat ke mikrofon.');
+      } else if (err.error === 'network') {
+        setErrorNotice('Gagal menghubungkan ke layanan speech recognition Google. Periksa koneksi internet Anda.');
+      } else if (err.error === 'audio-capture') {
+        setErrorNotice('Perangkat mikrofon tidak terdeteksi atau sedang dipakai aplikasi lain.');
+      } else if (err.error === 'service-not-allowed') {
+        setErrorNotice('Layanan pengenalan suara tidak diizinkan oleh browser ini.');
+      } else {
+        setErrorNotice(`Kendala suara (${err.error}). Silakan coba lagi.`);
       }
     };
 
@@ -129,6 +147,7 @@ export default function VoiceShadowingWidget({ targetSentence, cardId, isFlipped
     } catch (err) {
       console.warn('Could not start recognition:', err);
       setIsListening(false);
+      setErrorNotice('Gagal mengaktifkan mikrofon: ' + err.message);
     }
   };
 
