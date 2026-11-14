@@ -123,13 +123,22 @@ export default function Navbar() {
             </NavLink>
           </nav>
 
+          {/* Mobile + Modul Shortcut Button */}
+          <NavLink
+            to="/create"
+            title="Buat Modul Baru"
+            className="md:hidden flex items-center justify-center p-2 rounded-xl bg-indigo-50 hover:bg-indigo-100 active:scale-95 text-indigo-700 transition min-w-[38px] min-h-[38px] cursor-pointer"
+          >
+            <PlusCircle className="w-4 h-4 text-indigo-600" />
+          </NavLink>
+
           {/* User Profile & Logout */}
           <div className="flex items-center gap-1.5 sm:gap-2 pl-2 border-l border-slate-200">
             <button
               type="button"
               onClick={() => setEditProfileOpen(true)}
               title="Edit Profil & Avatar"
-              className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 active:scale-95 px-2.5 py-1 rounded-full transition cursor-pointer"
+              className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-800 bg-slate-100 hover:bg-slate-200 active:scale-95 px-3 py-1.5 min-h-[38px] rounded-full transition cursor-pointer"
             >
               <div className="w-4 h-4 rounded-full overflow-hidden shrink-0 flex items-center justify-center bg-indigo-100">
                 {user?.avatarUrl ? (
@@ -144,7 +153,7 @@ export default function Navbar() {
               </div>
               <span className="max-w-[80px] sm:max-w-none truncate">{user?.name || 'Imam'}</span>
               {user?.cefrLevel && (
-                <span className="px-1.5 py-0.2 rounded-full bg-indigo-600 text-white text-[9px] font-extrabold">
+                <span className="px-2 py-0.5 rounded-full bg-indigo-600 text-white text-[10px] font-black">
                   {user.cefrLevel}
                 </span>
               )}
@@ -153,7 +162,7 @@ export default function Navbar() {
             <button
               onClick={handleLogout}
               title="Keluar dari Akun"
-              className="p-1.5 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition"
+              className="p-2 min-h-[38px] min-w-[38px] rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition cursor-pointer flex items-center justify-center"
             >
               <LogOut className="w-4 h-4" />
             </button>

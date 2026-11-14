@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { ArrowLeft, Plus, Trash2, Eye, Edit3, Sparkles, FileText, Upload } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, Eye, Edit3, Sparkles, FileText, Upload, AlertCircle, X } from 'lucide-react';
 import { useAppStore } from '../store/useAppStore';
 import MarkdownViewer from '../components/modules/MarkdownViewer';
 
@@ -13,6 +13,7 @@ export default function CreateModulePage() {
   const [title, setTitle] = useState('');
   const [markdownContent, setMarkdownContent] = useState('');
   const [isPreview, setIsPreview] = useState(false);
+  const [formError, setFormError] = useState(null);
 
   // Flashcards state
   const [flashcards, setFlashcards] = useState([
@@ -102,8 +103,11 @@ export default function CreateModulePage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    setFormError(null);
+
     if (!title.trim()) {
-      alert('Judul modul wajib diisi!');
+      setFormError('Judul modul wajib diisi sebelum menyimpan!');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
 
@@ -113,7 +117,8 @@ export default function CreateModulePage() {
     );
 
     if (validCards.length === 0) {
-      alert('Tambahkan minimal 1 flashcard dengan Sisi Depan dan Sisi Belakang terisi!');
+      setFormError('Tambahkan minimal 1 flashcard dengan Sisi Depan dan Sisi Belakang terisi!');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
 
@@ -136,7 +141,8 @@ export default function CreateModulePage() {
         navigate(`/module/${result.moduleId}`);
       }
     } catch (err) {
-      alert('Gagal menyimpan modul: ' + err.message);
+      setFormError('Gagal menyimpan modul: ' + err.message);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     } finally {
       setSubmitting(false);
     }
@@ -163,6 +169,23 @@ export default function CreateModulePage() {
           Tambahkan ringkasan materi 1 halaman dan kartu active recall khusus untuk target belajar Anda.
         </p>
       </div>
+
+      {/* In-app Validation Error Banner */}
+      {formError && (
+        <div className="p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-xs sm:text-sm font-semibold flex items-center justify-between gap-3 shadow-xs animate-fade-in">
+          <div className="flex items-center gap-2.5">
+            <AlertCircle className="w-5 h-5 text-rose-600 shrink-0" />
+            <span>{formError}</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setFormError(null)}
+            className="p-1 rounded-lg text-rose-400 hover:text-rose-700 hover:bg-rose-100 transition cursor-pointer"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      )}
 
       {/* Main Form Card */}
       <form onSubmit={handleSubmit} className="space-y-6">

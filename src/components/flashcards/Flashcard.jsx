@@ -43,8 +43,22 @@ export default function Flashcard({ card, isFlipped, onFlip, onToggleShadowing, 
 
   return (
     <div
+      role="button"
+      tabIndex={0}
+      aria-label={
+        isFlipped
+          ? 'Sisi Belakang Kartu: Jawaban dan Arti. Tekan Enter atau Spasi untuk membalik ke depan'
+          : 'Sisi Depan Kartu: Pertanyaan Active Recall. Tekan Enter atau Spasi untuk membalik ke belakang'
+      }
+      aria-pressed={isFlipped}
       onClick={onFlip}
-      className="w-full max-w-lg mx-auto h-84 sm:h-96 cursor-pointer perspective-1000 select-none group"
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onFlip();
+        }
+      }}
+      className="w-full max-w-lg mx-auto h-84 sm:h-96 cursor-pointer perspective-1000 select-none group focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded-3xl"
     >
       <div
         className={`relative w-full h-full duration-500 transform-style-3d transition-transform ${
@@ -54,26 +68,30 @@ export default function Flashcard({ card, isFlipped, onFlip, onToggleShadowing, 
         {/* FRONT SIDE (English Active Recall) */}
         <div className="absolute inset-0 w-full h-full bg-white rounded-3xl p-6 sm:p-8 flex flex-col justify-between items-center text-center shadow-md border-2 border-slate-200 group-hover:border-indigo-300 transition-colors backface-hidden">
           <div className="w-full flex items-center justify-between text-xs">
-            <span className="font-bold tracking-wider text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full uppercase">
+            <span className="font-bold tracking-wider text-indigo-700 bg-indigo-50 px-3 py-1 rounded-full uppercase">
               English
             </span>
             <div className="flex items-center gap-1">
               <button
+                type="button"
                 onClick={(e) => {
                   e.stopPropagation();
                   if (onToggleShadowing) onToggleShadowing();
                 }}
                 title="Latih pengucapan suara (Voice Shadowing)"
-                className={`p-2 rounded-full transition ${
-                  isShadowingActive ? 'bg-indigo-100 text-indigo-700' : 'hover:bg-indigo-50 text-slate-500 hover:text-indigo-600'
+                aria-label="Latih pengucapan suara (Voice Shadowing)"
+                className={`p-2 min-w-[36px] min-h-[36px] flex items-center justify-center rounded-full transition cursor-pointer ${
+                  isShadowingActive ? 'bg-indigo-100 text-indigo-700' : 'hover:bg-indigo-50 text-slate-600 hover:text-indigo-600'
                 }`}
               >
                 <Mic className="w-4 h-4" />
               </button>
               <button
+                type="button"
                 onClick={playPronunciation}
                 title="Dengarkan pengucapan audio (jeda otomatis pada titik kosong)"
-                className="p-2 rounded-full hover:bg-indigo-50 text-slate-500 hover:text-indigo-600 transition"
+                aria-label="Dengarkan pengucapan audio"
+                className="p-2 min-w-[36px] min-h-[36px] flex items-center justify-center rounded-full hover:bg-indigo-50 text-slate-600 hover:text-indigo-600 transition cursor-pointer"
               >
                 <Volume2 className="w-4 h-4" />
               </button>
@@ -84,10 +102,10 @@ export default function Flashcard({ card, isFlipped, onFlip, onToggleShadowing, 
             <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 leading-snug">
               {card.front_text}
             </h2>
-            <p className="text-xs text-slate-400">Tebak arti &amp; jawabannya sebelum membalik kartu</p>
+            <p className="text-xs text-slate-600 font-medium">Tebak arti &amp; jawabannya sebelum membalik kartu</p>
           </div>
 
-          <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-400 group-hover:text-indigo-600 transition">
+          <div className="flex items-center gap-1.5 text-xs font-bold text-slate-500 group-hover:text-indigo-600 transition">
             <RotateCw className="w-3.5 h-3.5 group-hover:rotate-45 transition-transform" />
             <span>Klik atau tekan Spasi untuk membalik</span>
           </div>
@@ -101,21 +119,25 @@ export default function Flashcard({ card, isFlipped, onFlip, onToggleShadowing, 
             </span>
             <div className="flex items-center gap-1">
               <button
+                type="button"
                 onClick={(e) => {
                   e.stopPropagation();
                   if (onToggleShadowing) onToggleShadowing();
                 }}
                 title="Latih pengucapan suara (Voice Shadowing)"
-                className={`p-2 rounded-full transition ${
+                aria-label="Latih pengucapan suara (Voice Shadowing)"
+                className={`p-2 min-w-[36px] min-h-[36px] flex items-center justify-center rounded-full transition cursor-pointer ${
                   isShadowingActive ? 'bg-white/20 text-white' : 'hover:bg-white/10 text-indigo-200 hover:text-white'
                 }`}
               >
                 <Mic className="w-4 h-4" />
               </button>
               <button
+                type="button"
                 onClick={playPronunciation}
                 title="Dengarkan pelafalan kalimat lengkap"
-                className="p-2 rounded-full hover:bg-white/10 text-indigo-200 hover:text-white transition"
+                aria-label="Dengarkan pelafalan kalimat lengkap"
+                className="p-2 min-w-[36px] min-h-[36px] flex items-center justify-center rounded-full hover:bg-white/10 text-indigo-200 hover:text-white transition cursor-pointer"
               >
                 <Volume2 className="w-4 h-4" />
               </button>
