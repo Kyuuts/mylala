@@ -97,7 +97,10 @@ export default function ModuleCard({ module, onOpenSoftLock }) {
         </div>
 
         <div>
-          <h3 className="font-extrabold text-slate-900 text-base sm:text-lg group-hover:text-indigo-600 transition leading-snug">
+          <h3
+            onClick={handleReadTheoryClick}
+            className="font-extrabold text-slate-900 text-base sm:text-lg group-hover:text-indigo-600 transition leading-snug cursor-pointer"
+          >
             {module.title}
           </h3>
           <p className="text-xs sm:text-sm text-slate-600 mt-2 line-clamp-3 leading-relaxed">
