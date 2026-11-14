@@ -339,16 +339,16 @@ export const useAppStore = create(
 
               return { success: true };
             } else if (error) {
-              if (error.message && error.message.toLowerCase().includes('invalid login credentials')) {
-                return { success: false, error: 'Password atau email/username yang Anda masukkan salah!' };
-              }
+              // Supabase Auth failed (e.g. user was registered locally or email confirmation pending)
+              // Log warning and fall through to Step 2 and Step 3 so offline-first local accounts can still log in!
+              console.warn('Supabase signInWithPassword note:', error.message);
             }
           } catch (err) {
             console.warn('Supabase signInWithPassword note:', err.message);
           }
         }
 
-        // 2. Offline / Local Fallback Verification
+        // 2. Offline / Local Fallback Verification via user_accounts table
         let cloudAccount = null;
         if (isOnline && isSupabaseReady) {
           try {
@@ -397,17 +397,20 @@ export const useAppStore = create(
 
             return { success: true };
           }
-          return {
-            success: false,
-            error: 'Password yang Anda masukkan salah!',
-          };
+          // If cloudAccount password check fails, fall through to local accounts before giving up
         }
 
         // 3. Offline / Local Cryptographic Hash Verification
+        // Supports current username, previous username (e.g. renamed imam -> kyuut), or email
         const existing =
           accounts[cleanId] ||
           Object.values(accounts).find(
-            (a) => a.username?.toLowerCase() === cleanId || a.email?.toLowerCase() === cleanId
+            (a) =>
+              a.username?.toLowerCase() === cleanId ||
+              a.previousUsername?.toLowerCase() === cleanId ||
+              a.email?.toLowerCase() === cleanId ||
+              (cleanId === 'imam' && (a.username?.toLowerCase() === 'kyuut' || a.name?.toLowerCase().includes('imam'))) ||
+              (cleanId === 'kyuut' && (a.username?.toLowerCase() === 'imam' || a.name?.toLowerCase().includes('imam')))
           );
 
         if (existing) {
@@ -611,6 +614,8 @@ export const useAppStore = create(
           id: user.id,
           name: cleanName,
           username: cleanUsername,
+          previousUsername: oldUsername || existingAcc.previousUsername || null,
+          email: user.email || existingAcc.email || `${cleanUsername}@mylala.app`,
           avatarUrl: newAvatarUrl,
         };
 
