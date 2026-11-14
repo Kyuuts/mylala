@@ -40,7 +40,7 @@ export default function DashboardPage() {
   // Filter States
   const navigate = useNavigate();
   const [selectedLanguage, setSelectedLanguage] = useState('en');
-  const [selectedLevel, setSelectedLevel] = useState('All'); // 'All' | 'A1' | 'A2' | 'B1' | 'B2' | 'C1'
+  const [selectedLevel, setSelectedLevel] = useState(cefrLevel || user?.cefrLevel || 'A1'); // 'A1' | 'A2' | 'B1' | 'B2' | 'C1'
   const [selectedCategory, setSelectedCategory] = useState('All'); // 'All' | 'Grammar' | 'Kosakata' | 'Konjungsi'
   const [scannerOpen, setScannerOpen] = useState(false);
   const [softLockModule, setSoftLockModule] = useState(null);
@@ -55,6 +55,13 @@ export default function DashboardPage() {
       }
     }
   }, [dashboardSelectedLevel, setDashboardSelectedLevel]);
+
+  // Keep selected level aligned with user's CEFR level on initial load
+  useEffect(() => {
+    if (cefrLevel && (!selectedLevel || selectedLevel === 'All')) {
+      setSelectedLevel(cefrLevel);
+    }
+  }, [cefrLevel]);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -92,14 +99,11 @@ export default function DashboardPage() {
     return counts;
   }, [modules]);
 
-  // Combined Filtering: Level & Category
+  // Scoped Filtering: Strictly matches selectedLevel (A1-C1) and optional Category
   const filteredModules = useMemo(() => {
     return modules.filter((m) => {
       const levelInfo = getModuleLevel(m);
-      const matchesLevel =
-        selectedLevel === 'All' ||
-        levelInfo.code === selectedLevel ||
-        levelInfo.id === selectedLevel;
+      const matchesLevel = levelInfo.code === selectedLevel;
 
       const normalizedCat =
         m.category === 'Vocab' || m.category === 'Templates'
@@ -116,247 +120,243 @@ export default function DashboardPage() {
   }, [modules, selectedLevel, selectedCategory]);
 
   return (
-    <div className="space-y-4 sm:space-y-6 md:space-y-8">
-      {/* Title & Greeting */}
-      <div className="flex items-center justify-between gap-3">
-        <div>
-          <h1 className="text-xl sm:text-3xl font-black text-slate-900 tracking-tight">
-            Dashboard Belajar
-          </h1>
-          <div className="text-xs sm:text-sm text-slate-600 mt-0.5 flex items-center gap-1.5 sm:gap-2 flex-wrap">
-            <span>Halo,</span>
-            <span className="font-extrabold text-indigo-600">{user?.name || 'Imam'}</span>
-            {user?.cefrLevel && (
-              <span className="px-2 py-0.2 rounded-full bg-indigo-600 text-white text-[9px] font-extrabold shadow-2xs">
-                {user.cefrLevel}
-              </span>
-            )}
-            <span className="text-slate-300 hidden sm:inline">•</span>
-            <span className="text-xs text-slate-500 hidden sm:inline">Pantau retensi memori dan modul bahasa Anda.</span>
+    <div className="space-y-4 sm:space-y-6">
+      {/* 1. Header & Greeting Bar with Placement Test Trigger */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-white p-4 sm:p-5 rounded-2xl sm:rounded-3xl border border-slate-200/80 shadow-xs">
+        <div className="space-y-0.5">
+          <div className="flex items-center gap-2 flex-wrap">
+            <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+              Dashboard Belajar
+            </h1>
+            <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-[10px] font-extrabold uppercase tracking-wider">
+              🟢 Level Aktif: {cefrLevel || 'A1'}
+            </span>
           </div>
+          <p className="text-xs text-slate-500">
+            Halo, <strong className="text-indigo-600 font-bold">{user?.name || 'Imam'}</strong>! Kuasai bahasa secara bertahap &amp; terstruktur.
+          </p>
         </div>
 
-        <button
-          onClick={loadData}
-          disabled={loading}
-          className="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1.5 sm:px-3 sm:py-1.5 rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 transition active:scale-95 disabled:opacity-50 cursor-pointer shadow-2xs shrink-0"
-        >
-          <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
-          <span className="hidden sm:inline">Segarkan Data</span>
-        </button>
+        <div className="flex items-center gap-2 self-start sm:self-auto shrink-0">
+          <button
+            onClick={() => setScannerOpen(true)}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl bg-gradient-to-r from-teal-600 to-indigo-600 hover:from-teal-500 hover:to-indigo-500 text-white text-xs font-bold shadow-xs transition active:scale-95 cursor-pointer"
+          >
+            <Compass className="w-3.5 h-3.5 text-yellow-300" />
+            <span>Scan Level (3 Menit)</span>
+          </button>
+
+          <button
+            onClick={loadData}
+            disabled={loading}
+            className="p-1.5 sm:p-2 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-600 transition active:scale-95 disabled:opacity-50 cursor-pointer"
+            title="Segarkan Data"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
+          </button>
+        </div>
       </div>
 
-      {/* Metrics Section */}
-      <MetricsOverview metrics={metrics} totalModules={modules.length} />
-
-      {/* Rank & Weekly League Banner Bar */}
+      {/* 2. Unified High-Impact Daily Action Hub (Hero: SRS Due + Liga Mingguan) */}
       {(() => {
         const tier = getTierFromXP(weeklyXp || 0);
         return (
-          <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 rounded-2xl sm:rounded-3xl p-3.5 sm:p-5 text-white flex items-center justify-between gap-3 sm:gap-4 border border-slate-800 shadow-xs">
+          <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 rounded-2xl sm:rounded-3xl p-4 sm:p-5 text-white flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 border border-slate-800 shadow-md">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-amber-500/20 border border-amber-400/30 flex items-center justify-center text-xl sm:text-2xl shrink-0">
+              <div className="w-11 h-11 rounded-2xl bg-amber-500/20 border border-amber-400/30 flex items-center justify-center text-2xl shrink-0">
                 {tier.badge}
               </div>
               <div>
-                <div className="flex items-center gap-1.5">
-                  <span className="text-[10px] sm:text-[11px] font-bold text-amber-400 uppercase tracking-wider">Liga:</span>
-                  <span className="font-extrabold text-xs sm:text-base text-white">{tier.name}</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-bold text-amber-400 uppercase tracking-wider">Liga {tier.name}</span>
+                  <span className="text-slate-500">•</span>
+                  <span className="text-xs text-slate-300 font-bold">{weeklyXp || 0} XP</span>
                 </div>
-                <p className="text-[11px] sm:text-xs text-slate-300">
-                  <span className="text-amber-300 font-bold">{weeklyXp || 0} XP</span> minggu ini
-                </p>
+                <h3 className="text-sm sm:text-base font-extrabold text-white mt-0.5">
+                  {metrics.dueCount > 0
+                    ? `Ada ${metrics.dueCount} Flashcard Perlu Diulang Hari Ini!`
+                    : `Semua Kartu Aman! Siap Belajar Materi Baru.`}
+                </h3>
               </div>
             </div>
 
-            <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+            <div className="flex items-center gap-2 shrink-0 w-full sm:w-auto">
+              <Link
+                to="/flashcards/all"
+                className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-white text-indigo-700 hover:bg-indigo-50 font-bold text-xs shadow-xs transition active:scale-95"
+              >
+                <PlayCircle className="w-4 h-4 text-indigo-600" />
+                <span>{metrics.dueCount > 0 ? 'Mulai Review' : 'Latihan Flashcard'}</span>
+              </Link>
+
               <button
                 onClick={() => setShareModalOpen(true)}
-                className="inline-flex items-center justify-center gap-1 px-2.5 py-2 sm:px-3.5 sm:py-2.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 text-[11px] sm:text-xs font-bold border border-amber-400/30 transition active:scale-95 cursor-pointer"
-                title="Bagikan Pencapaian Belajar"
+                className="p-2.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-400/30 transition active:scale-95 cursor-pointer shrink-0"
+                title="Bagikan Pencapaian"
               >
-                <Share2 className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">Bagikan</span>
+                <Share2 className="w-4 h-4" />
               </button>
 
               <Link
                 to="/leaderboard"
-                className="inline-flex items-center justify-center gap-1.5 px-3 py-2 sm:px-4 sm:py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-[11px] sm:text-xs font-bold border border-white/20 transition active:scale-95"
+                className="inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold border border-white/20 transition active:scale-95 shrink-0"
               >
-                <Trophy className="w-3.5 h-3.5 text-amber-400" />
-                <span>Klasemen</span>
+                <Trophy className="w-4 h-4 text-amber-400" />
+                <span className="hidden sm:inline">Klasemen</span>
               </Link>
             </div>
           </div>
         );
       })()}
 
-      {/* Spaced Repetition Call To Action Banner */}
-      <div className="relative overflow-hidden bg-gradient-to-r from-indigo-600 via-indigo-700 to-purple-700 text-white rounded-2xl sm:rounded-3xl p-4 sm:p-7 shadow-md">
-        <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-6">
-          <div className="space-y-1 sm:space-y-2 max-w-xl">
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] sm:text-xs font-bold bg-white/20 backdrop-blur-md text-white">
-              <Sparkles className="w-3 h-3 text-amber-300" />
-              <span>{metrics.dueCount > 0 ? 'Sesi Spaced Repetition Siap' : 'Flashcard Aktif'}</span>
-            </span>
-            <h2 className="text-base sm:text-2xl font-bold text-white leading-snug">
-              {metrics.dueCount > 0
-                ? `${metrics.dueCount} Flashcard Perlu Diulang Hari Ini!`
-                : `Belum Ada Review Jatuh Tempo.`}
-            </h2>
-            <p className="hidden sm:block text-sm text-indigo-100 leading-relaxed">
-              {metrics.dueCount > 0
-                ? 'Teknik active recall menguji memori Anda secara langsung. Luangkan 3–5 menit untuk menyelesaikan latihan kartu review harian.'
-                : 'Pilih modul dari tingkat Pemula atau Lanjutan di bawah untuk membaca Cheat Sheet 1 halaman, lalu uji memori Anda dengan flashcard.'}
-            </p>
+      {/* 3. Compact Metrics Overview Strip */}
+      <MetricsOverview metrics={metrics} totalModules={modules.length} />
+
+      {/* 4. LANGKAH 1: PILIH BAHASA */}
+      <section className="bg-white p-3.5 sm:p-5 rounded-2xl sm:rounded-3xl border border-slate-200/80 shadow-xs space-y-2.5">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2 text-slate-800 font-extrabold text-xs sm:text-sm">
+            <span className="w-5 h-5 rounded-full bg-indigo-600 text-white flex items-center justify-center text-[10px] font-black">1</span>
+            <span>Pilih Bahasa Pembelajaran</span>
           </div>
-
-          <Link
-            to="/flashcards/all"
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 sm:px-6 sm:py-3.5 rounded-xl sm:rounded-2xl bg-white text-indigo-700 hover:bg-indigo-50 font-bold text-xs sm:text-sm shadow-md transition active:scale-95 shrink-0"
-          >
-            <PlayCircle className="w-4 h-4 text-indigo-600" />
-            <span>{metrics.dueCount > 0 ? 'Mulai Sesi Review' : 'Latihan Flashcard'}</span>
-          </Link>
+          <span className="text-[10px] text-slate-500 font-medium">
+            Bahasa aktif: <strong>Inggris (100% Siap)</strong>
+          </span>
         </div>
-      </div>
-
-      {/* REVISI 2: Pilihan Bahasa Pembelajaran */}
-      <section className="bg-white p-3.5 sm:p-5 rounded-2xl sm:rounded-3xl border border-slate-200/80 shadow-xs">
         <LanguageSelector
           activeLanguage={selectedLanguage}
           onSelectLanguage={setSelectedLanguage}
         />
       </section>
 
-      {/* 4. Creative Banner: Placement Test (The Language Scanner) */}
-      <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-gradient-to-r from-teal-600 via-indigo-600 to-purple-600 text-white p-4 sm:p-6 shadow-md">
-        <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-5">
-          <div className="space-y-1 sm:space-y-1.5 max-w-xl">
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] sm:text-xs font-extrabold bg-white/20 backdrop-blur-md">
-              <Compass className="w-3.5 h-3.5 text-yellow-300" />
-              <span>Tes Penempatan Level CEFR</span>
-            </span>
-            <h3 className="text-sm sm:text-xl font-extrabold text-white leading-snug">
-              Bingung Mulai dari Level Mana? Scan Posisi CEFR-mu!
-            </h3>
-            <p className="hidden sm:block text-xs sm:text-sm text-teal-100 leading-relaxed">
-              Jawab pertanyaan diagnostik cepat untuk mendeteksi apakah kemampuanmu di tingkat <strong>A1 Explorer, A2 Voyager, B1 Citizen, B2 Diplomat</strong>, atau <strong>C1 Mastermind</strong>.
-            </p>
-          </div>
-
+      {/* Jika bahasa selain Inggris dipilih, tampilkan coming soon */}
+      {selectedLanguage !== 'en' ? (
+        <div className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200 p-8 sm:p-12 text-center space-y-3">
+          <span className="text-4xl">🚀</span>
+          <h3 className="text-base sm:text-lg font-extrabold text-slate-900">
+            Kurikulum Sedang Dalam Tahap Kurasi
+          </h3>
+          <p className="text-xs sm:text-sm text-slate-600 max-w-md mx-auto">
+            Bahasa ini sedang disiapkan oleh tim kurator. Saat ini kurikulum <strong>Bahasa Inggris</strong> dari level A1 hingga C1 sudah lengkap dengan 50 modul dan siap dipelajari!
+          </p>
           <button
-            onClick={() => setScannerOpen(true)}
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2 sm:px-5 sm:py-3 rounded-xl sm:rounded-2xl bg-white text-indigo-700 hover:bg-indigo-50 font-extrabold text-xs sm:text-sm shadow-md transition active:scale-95 shrink-0 cursor-pointer"
+            onClick={() => setSelectedLanguage('en')}
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs sm:text-sm shadow-xs transition cursor-pointer"
           >
-            <span>Scan Level (3 Menit) 🚀</span>
+            Kembali ke Bahasa Inggris 🇬🇧
           </button>
         </div>
-      </div>
-
-      {/* REVISI 1 & 2: Katalog Modul dengan Filter Level & Kategori */}
-      <div className="space-y-3 sm:space-y-5">
-        <div className="space-y-2.5 sm:space-y-4">
-          <div className="flex items-center justify-between gap-3">
-            <div>
-              <h2 className="text-base sm:text-xl font-extrabold text-slate-900 tracking-tight">
-                Katalog Modul Pembelajaran
-              </h2>
-              <p className="text-xs text-slate-500 mt-0.5 hidden sm:block">
-                Pilih tingkatan belajar (Pemula → Menengah → Lanjutan) dan jenis materi.
-              </p>
-            </div>
-
-            <Link
-              to="/create"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl text-xs sm:text-sm font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-xs transition active:scale-95 shrink-0"
-            >
-              <PlusCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-              <span>+ Buat Modul</span>
-            </Link>
-          </div>
-
-          {/* Dual Filtering Bar: Level Pills & Category Pills */}
-          <div className="p-2.5 sm:p-4 rounded-xl sm:rounded-2xl bg-slate-50/80 border border-slate-200/80 space-y-2 sm:space-y-3">
-            {/* 1. Filter Tingkat Kesulitan (Level) */}
-            <div className="flex items-center gap-2">
-              <span className="hidden sm:inline text-xs font-bold text-slate-500 uppercase tracking-wider min-w-[90px]">
-                Level Materi:
-              </span>
-              <LevelFilter
-                activeLevel={selectedLevel}
-                onSelectLevel={setSelectedLevel}
-                counts={levelCounts}
-              />
-            </div>
-
-            {/* 2. Filter Topik / Kategori */}
-            <div className="flex items-center gap-2 pt-1.5 sm:pt-2 border-t border-slate-200/60">
-              <span className="hidden sm:inline text-xs font-bold text-slate-500 uppercase tracking-wider min-w-[90px]">
-                Topik Materi:
-              </span>
-              <CategoryFilter
-                activeCategory={selectedCategory}
-                onSelectCategory={setSelectedCategory}
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Level Journey Progress & Exit Exam Trigger */}
-        <LevelProgressCard
-          activeLevel={selectedLevel === 'All' ? (cefrLevel || user?.cefrLevel || 'A1') : selectedLevel}
-          modules={modules}
-          onOpenExam={(lvl) => setActiveExamLevel(lvl)}
-        />
-
-        {error && (
-          <div className="p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-sm flex items-center gap-2">
-            <AlertCircle className="w-4 h-4 shrink-0" />
-            <span>{error}</span>
-          </div>
-        )}
-
-        {loading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-5 py-4">
-            {[1, 2, 3].map((n) => (
-              <div key={n} className="bg-white rounded-2xl border border-slate-200 p-5 h-48 animate-pulse space-y-4">
-                <div className="h-5 w-24 bg-slate-200 rounded-full"></div>
-                <div className="h-6 w-3/4 bg-slate-200 rounded"></div>
-                <div className="h-14 bg-slate-100 rounded"></div>
+      ) : (
+        /* Jika Bahasa Inggris dipilih: LANGKAH 2 & 3 */
+        <div className="space-y-4 sm:space-y-5">
+          {/* LANGKAH 2: PILIH LEVEL CEFR */}
+          <section className="bg-white p-3.5 sm:p-5 rounded-2xl sm:rounded-3xl border border-slate-200/80 shadow-xs space-y-2.5">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 text-slate-800 font-extrabold text-xs sm:text-sm">
+                <span className="w-5 h-5 rounded-full bg-indigo-600 text-white flex items-center justify-center text-[10px] font-black">2</span>
+                <span>Pilih Level CEFR Materi</span>
               </div>
-            ))}
-          </div>
-        ) : filteredModules.length === 0 ? (
-          <div className="bg-white rounded-2xl border border-slate-200 p-8 sm:p-12 text-center text-slate-500 space-y-3">
-            <p className="font-bold text-slate-700 text-sm sm:text-base">
-              Tidak ada modul untuk kombinasi filter ini.
-            </p>
-            <p className="text-xs text-slate-500">
-              Coba ganti pilihan Level atau Kategori di atas untuk melihat modul lainnya.
-            </p>
-            <button
-              onClick={() => {
-                setSelectedLevel('All');
-                setSelectedCategory('All');
-              }}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 transition"
-            >
-              Reset Semua Filter
-            </button>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-5">
-            {filteredModules.map((mod) => (
-              <ModuleCard
-                key={mod.id}
-                module={mod}
-                onOpenSoftLock={(m) => setSoftLockModule(m)}
-              />
-            ))}
-          </div>
-        )}
-      </div>
+              <span className="text-[10px] text-slate-500 font-medium hidden sm:inline">
+                Pilih salah satu level di bawah untuk membuka modulnya
+              </span>
+            </div>
+
+            {/* Level Selector Pills */}
+            <LevelFilter
+              activeLevel={selectedLevel}
+              onSelectLevel={setSelectedLevel}
+              counts={levelCounts}
+            />
+          </section>
+
+          {/* LANGKAH 3: AREA MODUL & PROGRESS LEVEL TERPILIH */}
+          <section className="space-y-4">
+            {/* Progress Level Card & Exit Exam */}
+            <LevelProgressCard
+              activeLevel={selectedLevel}
+              modules={modules}
+              onOpenExam={(lvl) => setActiveExamLevel(lvl)}
+            />
+
+            {/* Header Modul Level & Filter Topik */}
+            <div className="bg-white p-3.5 sm:p-5 rounded-2xl sm:rounded-3xl border border-slate-200/80 shadow-xs space-y-3">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div>
+                  <h3 className="text-sm sm:text-base font-extrabold text-slate-900">
+                    Modul Pembelajaran Level {selectedLevel}
+                  </h3>
+                  <p className="text-xs text-slate-500">
+                    Menampilkan {filteredModules.length} modul belajar ringkas 1 halaman.
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <Link
+                    to="/create"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 transition"
+                  >
+                    <PlusCircle className="w-3.5 h-3.5" />
+                    <span>+ Buat Modul</span>
+                  </Link>
+                </div>
+              </div>
+
+              {/* Filter Topik Kategori */}
+              <div className="pt-2 border-t border-slate-100 flex items-center gap-2">
+                <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider shrink-0 hidden sm:inline">
+                  Topik:
+                </span>
+                <CategoryFilter
+                  activeCategory={selectedCategory}
+                  onSelectCategory={setSelectedCategory}
+                />
+              </div>
+            </div>
+
+            {error && (
+              <div className="p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-sm flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 shrink-0" />
+                <span>{error}</span>
+              </div>
+            )}
+
+            {/* Grid of Modules */}
+            {loading ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-5 py-2">
+                {[1, 2, 3].map((n) => (
+                  <div key={n} className="bg-white rounded-2xl border border-slate-200 p-5 h-44 animate-pulse space-y-4">
+                    <div className="h-5 w-24 bg-slate-200 rounded-full"></div>
+                    <div className="h-6 w-3/4 bg-slate-200 rounded"></div>
+                    <div className="h-14 bg-slate-100 rounded"></div>
+                  </div>
+                ))}
+              </div>
+            ) : filteredModules.length === 0 ? (
+              <div className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200 p-8 text-center text-slate-500 space-y-2">
+                <p className="font-bold text-slate-700 text-sm">
+                  Tidak ada modul untuk kategori "{selectedCategory}" di Level {selectedLevel}.
+                </p>
+                <button
+                  onClick={() => setSelectedCategory('All')}
+                  className="px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 transition cursor-pointer"
+                >
+                  Tampilkan Semua Topik di Level {selectedLevel}
+                </button>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-5">
+                {filteredModules.map((mod) => (
+                  <ModuleCard
+                    key={mod.id}
+                    module={mod}
+                    onOpenSoftLock={(m) => setSoftLockModule(m)}
+                  />
+                ))}
+              </div>
+            )}
+          </section>
+        </div>
+      )}
 
       {/* Social Viral Share Card Modal */}
       <ShareCardModal

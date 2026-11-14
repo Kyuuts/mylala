@@ -6,17 +6,14 @@ export default function LevelFilter({ activeLevel = 'All', onSelectLevel, counts
   const { cefrLevel, user } = useAppStore();
   const userCefr = (cefrLevel || user?.cefrLevel || 'A1').toUpperCase();
 
-  const allLevels = [
-    { id: 'All', code: 'All', badge: '🌟', label: 'Semua Level', shortLabel: 'Semua', dot: null },
-    ...CEFR_LEVEL_LIST.map((lvl) => ({
-      id: lvl.code,
-      code: lvl.code,
-      badge: lvl.badge,
-      label: `${lvl.badge} ${lvl.code} ${lvl.title}`,
-      shortLabel: `${lvl.badge} ${lvl.code}`,
-      dot: lvl.dotClass,
-    })),
-  ];
+  const allLevels = CEFR_LEVEL_LIST.map((lvl) => ({
+    id: lvl.code,
+    code: lvl.code,
+    badge: lvl.badge,
+    label: `${lvl.badge} ${lvl.code} • ${lvl.title}`,
+    shortLabel: `${lvl.badge} ${lvl.code}`,
+    dot: lvl.dotClass,
+  }));
 
   return (
     <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto no-scrollbar py-0.5 sm:flex-wrap w-full">

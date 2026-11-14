@@ -33,6 +33,7 @@ export const useAppStore = create(
       weeklyXp: 0,
       lastWeekId: getCurrentWeekId(),
       completedModules: [], // array of read module IDs
+      rewardedModuleIds: [], // array of module IDs that have received one-time +20 XP reward
 
       // CEFR Level & Journey Progression State
       cefrLevel: 'A1', // Active level: 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2'
@@ -1016,34 +1017,52 @@ export const useAppStore = create(
         }
       },
 
-      // Action: Mark module cheat sheet as read (rewards +20 XP once per module)
+      // Action: Mark module cheat sheet as read (rewards +20 XP strictly ONCE per module)
       markModuleRead: (moduleId) => {
         const state = get();
         const readList = state.completedModules || [];
-        if (!readList.includes(moduleId)) {
+        const rewardedList = state.rewardedModuleIds || [];
+        const isRead = readList.includes(moduleId);
+        const alreadyRewarded = rewardedList.includes(moduleId);
+
+        if (!isRead) {
           set({
             completedModules: [...readList, moduleId],
+            rewardedModuleIds: alreadyRewarded ? rewardedList : [...rewardedList, moduleId],
           });
-          get().addXP(20, 'Menyelesaikan Cheat Sheet Modul');
+          if (!alreadyRewarded) {
+            get().addXP(20, 'Menyelesaikan Cheat Sheet Modul');
+            get().syncWeeklyStatsToSupabase();
+          }
         }
       },
 
-      // Action: Toggle module cheat sheet as read/unread
+      // Action: Toggle module cheat sheet as read/unread (XP awarded strictly ONCE per module)
       toggleModuleCompleted: (moduleId) => {
         const state = get();
         const readList = state.completedModules || [];
+        const rewardedList = state.rewardedModuleIds || [];
         const isRead = readList.includes(moduleId);
+
         if (isRead) {
+          // Unmark: remove from completedModules, but KEEP in rewardedModuleIds to prevent XP farming!
           set({
             completedModules: readList.filter((id) => id !== moduleId),
           });
-          return { completed: false };
+          return { completed: false, xpAwarded: 0 };
         } else {
+          // Mark: add to completedModules, award XP ONLY if never rewarded before
+          const alreadyRewarded = rewardedList.includes(moduleId);
           set({
             completedModules: [...readList, moduleId],
+            rewardedModuleIds: alreadyRewarded ? rewardedList : [...rewardedList, moduleId],
           });
-          get().addXP(20, 'Menyelesaikan Cheat Sheet Modul');
-          return { completed: true };
+          if (!alreadyRewarded) {
+            get().addXP(20, 'Menyelesaikan Cheat Sheet Modul');
+            get().syncWeeklyStatsToSupabase();
+            return { completed: true, xpAwarded: 20 };
+          }
+          return { completed: true, xpAwarded: 0 };
         }
       },
 
@@ -1421,6 +1440,9 @@ export const useAppStore = create(
         weeklyXp: state.weeklyXp,
         lastWeekId: state.lastWeekId,
         completedModules: state.completedModules,
+        rewardedModuleIds: state.rewardedModuleIds,
+        cefrLevel: state.cefrLevel,
+        passedExams: state.passedExams,
         modules: state.modules,
         flashcards: state.flashcards,
         offlineQueue: state.offlineQueue,

@@ -25,7 +25,6 @@ export default function ModuleDetailPage() {
           setError('Modul tidak ditemukan atau gagal dimuat.');
         } else {
           setModule(data);
-          markModuleRead(id);
         }
       } catch (e) {
         setError('Terjadi kendala saat memuat modul.');
@@ -167,7 +166,7 @@ export default function ModuleDetailPage() {
         </div>
         <div className="flex flex-col sm:flex-row items-center gap-2.5 shrink-0 w-full sm:w-auto">
           <button
-            onClick={() => toggleModuleCompleted(module.id)}
+            onClick={() => toggleModuleCompleted(id)}
             className={`w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl text-xs sm:text-sm font-extrabold transition shadow-xs cursor-pointer ${
               isCompleted
                 ? 'bg-emerald-600 text-white hover:bg-emerald-700'
@@ -175,7 +174,7 @@ export default function ModuleDetailPage() {
             }`}
           >
             <Check className="w-4 h-4" />
-            <span>{isCompleted ? '✓ Selesai Dibaca' : 'Tandai Selesai (+20 XP)'}</span>
+            <span>{isCompleted ? '✓ Selesai Dibaca' : 'Tandai Selesai Dibaca (+20 XP)'}</span>
           </button>
 
           <Link
