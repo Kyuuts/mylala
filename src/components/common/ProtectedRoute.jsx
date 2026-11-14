@@ -8,17 +8,18 @@ export default function ProtectedRoute({ children }) {
   const location = useLocation();
   const [isSessionValid, setIsSessionValid] = useState(true);
 
-  // VULN-07 Remediation: Guard against client-side LocalStorage tampering
+  // Guard against expired Supabase sessions only for cloud-authenticated sessions
   useEffect(() => {
     let isMounted = true;
 
     if (isAuthenticated && isOnline && isSupabaseConfigured() && supabase) {
       supabase.auth.getSession().then(({ data: { session }, error }) => {
         if (!isMounted) return;
-        // If user claims to be logged in with a cloud account but no valid Supabase session exists
-        if (error || !session) {
-          if (user?.email && !user?.isLocalOffline) {
-            console.warn('Session mismatch detected, invalidating forged or expired state.');
+        // Only invalidate if the user was explicitly authenticated via Supabase cloud auth and token expired
+        // Offline-first PWA users authenticated via local cryptographic hash MUST NOT be invalidated
+        if (user?.authProvider === 'supabase' && !user?.isLocalOffline) {
+          if (error || !session) {
+            console.warn('Cloud Supabase session expired, invalidating state.');
             setIsSessionValid(false);
             logout();
           }
@@ -29,7 +30,7 @@ export default function ProtectedRoute({ children }) {
     return () => {
       isMounted = false;
     };
-  }, [isAuthenticated, isOnline, user?.email]);
+  }, [isAuthenticated, isOnline, user?.email, user?.authProvider, user?.isLocalOffline]);
 
   if (!isAuthenticated || !isSessionValid) {
     return <Navigate to="/login" state={{ from: location }} replace />;
