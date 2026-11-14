@@ -1617,7 +1617,8 @@ export const useAppStore = create(
 
       // Action: Create and save a custom module with its paired flashcards
       createCustomModule: async ({ moduleData, flashcardsData = [] }) => {
-        const { isOnline, isSupabaseReady } = get();
+        const { isOnline, isSupabaseReady, user } = get();
+        const currentUserId = user?.id || null;
 
         const moduleId = moduleData.id || `mod-custom-${Date.now()}`;
         const newModule = {
@@ -1625,6 +1626,8 @@ export const useAppStore = create(
           category: moduleData.category || 'Vocab',
           title: moduleData.title.trim(),
           content_markdown: moduleData.content_markdown.trim(),
+          user_id: currentUserId,
+          is_custom: true,
           created_at: new Date().toISOString(),
         };
 
@@ -1634,6 +1637,8 @@ export const useAppStore = create(
           front_text: c.front_text.trim(),
           back_text: c.back_text.trim(),
           example_sentence: (c.example_sentence || '').trim(),
+          user_id: currentUserId,
+          is_custom: true,
           created_at: new Date().toISOString(),
         }));
 
@@ -1645,9 +1650,15 @@ export const useAppStore = create(
 
         if (isOnline && isSupabaseReady) {
           try {
-            await supabase.from('modules').insert([newModule]);
+            const { error: modError } = await supabase.from('modules').insert([newModule]);
+            if (modError) {
+              console.warn('Supabase sync module notice (retained locally):', modError.message);
+            }
             if (newFlashcards.length > 0) {
-              await supabase.from('flashcards').insert(newFlashcards);
+              const { error: cardError } = await supabase.from('flashcards').insert(newFlashcards);
+              if (cardError) {
+                console.warn('Supabase sync flashcards notice (retained locally):', cardError.message);
+              }
             }
           } catch (err) {
             console.warn('Supabase sync for new module failed (cached locally):', err.message);
@@ -1659,7 +1670,9 @@ export const useAppStore = create(
 
       // Action: Add single flashcard directly (used by Reading page & custom card creation - Fix BUG-01)
       addFlashcard: async (card) => {
-        const { isOnline, isSupabaseReady } = get();
+        const { isOnline, isSupabaseReady, user } = get();
+        const currentUserId = user?.id || null;
+
         const newCard = {
           id: card.id || `card-user-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
           module_id: card.module_id || 'mod-starter-conversation',
@@ -1667,6 +1680,8 @@ export const useAppStore = create(
           back_text: (card.back_text || '').trim(),
           example_sentence: (card.example_sentence || '').trim(),
           source: card.source || 'Bacaan',
+          user_id: currentUserId,
+          is_custom: true,
           created_at: new Date().toISOString(),
         };
 
@@ -1677,7 +1692,10 @@ export const useAppStore = create(
 
         if (isOnline && isSupabaseReady) {
           try {
-            await supabase.from('flashcards').insert([newCard]);
+            const { error: cardError } = await supabase.from('flashcards').insert([newCard]);
+            if (cardError) {
+              console.warn('Supabase sync single card notice (retained locally):', cardError.message);
+            }
           } catch (err) {
             console.warn('Supabase sync for single flashcard notice (cached locally):', err.message);
           }

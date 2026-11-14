@@ -1,14 +1,20 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Lock, User, Mail, ArrowRight, AlertCircle, Eye, EyeOff, Sparkles, UserPlus, LogIn, ShieldCheck } from 'lucide-react';
+import { useNavigate, useLocation, useSearchParams, Link } from 'react-router-dom';
+import { Lock, User, Mail, ArrowRight, AlertCircle, Eye, EyeOff, Sparkles, UserPlus, LogIn, ShieldCheck, ArrowLeft } from 'lucide-react';
 import { useAppStore } from '../store/useAppStore';
 import Logo from '../components/common/Logo';
 
 export default function LoginPage() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const [searchParams] = useSearchParams();
   const { login, register } = useAppStore();
 
-  const [mode, setMode] = useState('login'); // 'login' | 'register'
+  const [mode, setMode] = useState(
+    searchParams.get('mode') === 'register' || location.state?.mode === 'register'
+      ? 'register'
+      : 'login'
+  );
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
@@ -32,7 +38,8 @@ export default function LoginPage() {
       }
 
       if (result && result.success) {
-        navigate('/dashboard');
+        const destination = location.state?.from?.pathname || '/dashboard';
+        navigate(destination, { replace: true });
       } else {
         setError(result?.error || 'Gagal melakukan autentikasi. Silakan periksa kembali data Anda.');
       }
@@ -46,6 +53,15 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-slate-50 to-purple-50 flex flex-col justify-center items-center px-4 py-8">
       <div className="w-full max-w-md bg-white rounded-3xl p-6 sm:p-10 shadow-xl border border-slate-200/80 space-y-6">
+        <div className="flex justify-start">
+          <Link
+            to="/"
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-slate-800 transition"
+          >
+            <ArrowLeft className="w-3.5 h-3.5" /> Beranda MyLala
+          </Link>
+        </div>
+
         {/* Brand Header */}
         <div className="text-center space-y-3">
           <div className="flex justify-center">

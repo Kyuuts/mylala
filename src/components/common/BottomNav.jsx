@@ -1,10 +1,28 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { BookOpen, Zap, Newspaper, Trophy, PlusCircle } from 'lucide-react';
+import { BookOpen, Zap, Newspaper, Trophy, PlusCircle, ArrowRight } from 'lucide-react';
 import { useAppStore } from '../../store/useAppStore';
 
 export default function BottomNav() {
-  const { weeklyXp } = useAppStore();
+  const { isAuthenticated, weeklyXp } = useAppStore();
+
+  if (!isAuthenticated) {
+    return (
+      <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200/90 px-4 py-2.5 flex items-center justify-between shadow-lg md:hidden">
+        <div>
+          <span className="block text-xs font-bold text-slate-900">Kuasai Bahasa Lebih Cepat</span>
+          <span className="block text-[10px] text-slate-500">100% Gratis &bull; PWA Offline Ready</span>
+        </div>
+        <NavLink
+          to="/login?mode=register"
+          className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-indigo-600 active:scale-95 text-white shadow-sm"
+        >
+          <span>Mulai Gratis</span>
+          <ArrowRight className="w-3.5 h-3.5" />
+        </NavLink>
+      </nav>
+    );
+  }
 
   const navItems = [
     { to: '/dashboard', label: 'Belajar', icon: BookOpen },
