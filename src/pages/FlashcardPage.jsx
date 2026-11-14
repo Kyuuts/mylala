@@ -84,17 +84,17 @@ export default function FlashcardPage() {
         e.preventDefault();
         handleFlip();
       } else if (e.key === '1') {
-        handleRate('Hard');
+        if (isFlipped) handleRate('Hard');
       } else if (e.key === '2') {
-        handleRate('Good');
+        if (isFlipped) handleRate('Good');
       } else if (e.key === '3') {
-        handleRate('Easy');
+        if (isFlipped) handleRate('Easy');
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [handleFlip, handleRate, isFinished, loading]);
+  }, [handleFlip, handleRate, isFinished, loading, isFlipped]);
 
   if (loading) {
     return (
@@ -214,6 +214,7 @@ export default function FlashcardPage() {
         onRate={handleRate}
         disabled={submitting}
         isFlipped={isFlipped}
+        onFlip={handleFlip}
       />
     </div>
   );

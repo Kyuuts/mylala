@@ -64,8 +64,9 @@ export default function LeaderboardPage() {
     };
   }, [weeklyXp, isSupabaseReady]);
 
-  const userEntry = leaderboard.find((item) => item.isCurrentUser) || {
-    rank: 1,
+  const matchedEntry = leaderboard.find((item) => item.isCurrentUser);
+  const userEntry = matchedEntry || {
+    rank: (weeklyXp || 0) > 0 ? (leaderboard.length > 0 ? leaderboard.length + 1 : null) : null,
     weeklyXp: weeklyXp || 0,
     streak: streak || 1,
   };
@@ -129,7 +130,9 @@ export default function LeaderboardPage() {
             <div className="flex items-center justify-around w-full sm:w-auto gap-4 sm:gap-6">
               <div className="text-center">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-white/70">Peringkat</span>
-                <p className="text-2xl sm:text-3xl font-extrabold text-amber-300">#{userEntry.rank}</p>
+                <p className="text-2xl sm:text-3xl font-extrabold text-amber-300">
+                  {userEntry.rank ? `#${userEntry.rank}` : '-'}
+                </p>
               </div>
               <div className="w-px h-10 bg-white/20" />
               <div className="text-center">
@@ -355,7 +358,7 @@ export default function LeaderboardPage() {
         isOpen={shareModalOpen}
         onClose={() => setShareModalOpen(false)}
         customStats={{
-          rank: userEntry.rank,
+          rank: userEntry.rank || '-',
           weeklyXp: weeklyXp || 0,
           streak: streak || 1,
           tierName: currentTier.name,

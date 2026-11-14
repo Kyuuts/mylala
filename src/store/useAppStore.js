@@ -18,6 +18,45 @@ const generateUUID = () => {
 // Clean Initial Accounts Registry (Production Standard: All accounts managed via Supabase GoTrue Auth)
 const INITIAL_ACCOUNTS = {};
 
+// Helper: Extract snapshot of active user's progression stats
+const snapshotActiveStats = (state) => ({
+  cefrLevel: state.cefrLevel || 'A1',
+  passedExams: state.passedExams || [],
+  completedModules: state.completedModules || [],
+  rewardedModuleIds: state.rewardedModuleIds || [],
+  streak: state.streak || 1,
+  lastStudyDate: state.lastStudyDate || null,
+  xp: state.xp || 0,
+  weeklyXp: state.weeklyXp || 0,
+});
+
+// Helper: Get clean or saved stats for a specific user ID
+const resolveUserStats = (userId, userStatsByUserId) => {
+  const existing = userStatsByUserId?.[userId];
+  if (existing) {
+    return {
+      cefrLevel: existing.cefrLevel || 'A1',
+      passedExams: existing.passedExams || [],
+      completedModules: existing.completedModules || [],
+      rewardedModuleIds: existing.rewardedModuleIds || [],
+      streak: existing.streak || 1,
+      lastStudyDate: existing.lastStudyDate || null,
+      xp: existing.xp || 0,
+      weeklyXp: existing.weeklyXp || 0,
+    };
+  }
+  return {
+    cefrLevel: 'A1',
+    passedExams: [],
+    completedModules: [],
+    rewardedModuleIds: [],
+    streak: 1,
+    lastStudyDate: null,
+    xp: 0,
+    weeklyXp: 0,
+  };
+};
+
 export const useAppStore = create(
   persist(
     (set, get) => ({
@@ -51,6 +90,7 @@ export const useAppStore = create(
       flashcards: MOCK_FLASHCARDS,
       userProgress: {}, // active user's progress map: { [cardId]: { status, repetitions, ... } }
       userProgressByUserId: {}, // partitioned progress map per userId
+      userStatsByUserId: {}, // partitioned progression & CEFR level stats per userId
       offlineQueue: [], // [ { user_id, flashcard_id, status, next_review_date, updated_at } ]
 
       // Accounts Registry (Username -> Account Profile with Salt & Hash only)
@@ -169,10 +209,13 @@ export const useAppStore = create(
         // 3. Guarantee Clean Slate Isolation for new user (Fix Step 2 Bug: 0 Due Cards!)
         const prevUserId = state.userId;
         const updatedProgressByUserId = { ...(state.userProgressByUserId || {}) };
+        const updatedStatsByUserId = { ...(state.userStatsByUserId || {}) };
         if (prevUserId) {
           updatedProgressByUserId[prevUserId] = state.userProgress || {};
+          updatedStatsByUserId[prevUserId] = snapshotActiveStats(state);
         }
         updatedProgressByUserId[assignedUserId] = {}; // Brand new clean slate!
+        updatedStatsByUserId[assignedUserId] = resolveUserStats(assignedUserId, null);
 
         set({
           accounts: {
@@ -192,10 +235,16 @@ export const useAppStore = create(
           userId: assignedUserId,
           userProgress: {}, // 0 cards reviewed, 100% clean
           userProgressByUserId: updatedProgressByUserId,
+          userStatsByUserId: updatedStatsByUserId,
+          cefrLevel: 'A1',
+          passedExams: [],
+          completedModules: [],
+          rewardedModuleIds: [],
           xp: 0,
           weeklyXp: 0,
           streak: 1,
-          completedModules: [],
+          lastStudyDate: null,
+          dashboardSelectedLevel: 'A1',
           syncNotification: `Akun "${cleanUser}" berhasil dibuat! Selamat belajar, ${cleanName}.`,
         });
 
@@ -310,14 +359,17 @@ export const useAppStore = create(
                 }
               } catch (_) {}
 
-              // Isolate user progress: store previous user's progress
+              // Isolate user progress & progression stats from previous user
               const prevUserId = state.userId;
               const updatedProgressByUserId = { ...(state.userProgressByUserId || {}) };
-              if (prevUserId) {
+              const updatedStatsByUserId = { ...(state.userStatsByUserId || {}) };
+              if (prevUserId && prevUserId !== supUserId) {
                 updatedProgressByUserId[prevUserId] = state.userProgress || {};
+                updatedStatsByUserId[prevUserId] = snapshotActiveStats(state);
               }
 
               const userSavedProg = updatedProgressByUserId[supUserId] || {};
+              const userSavedStats = resolveUserStats(supUserId, updatedStatsByUserId);
 
               set({
                 isAuthenticated: true,
@@ -334,6 +386,16 @@ export const useAppStore = create(
                 userId: supUserId,
                 userProgress: userSavedProg,
                 userProgressByUserId: updatedProgressByUserId,
+                userStatsByUserId: updatedStatsByUserId,
+                cefrLevel: userSavedStats.cefrLevel,
+                passedExams: userSavedStats.passedExams,
+                completedModules: userSavedStats.completedModules,
+                rewardedModuleIds: userSavedStats.rewardedModuleIds,
+                streak: userSavedStats.streak,
+                lastStudyDate: userSavedStats.lastStudyDate,
+                xp: userSavedStats.xp,
+                weeklyXp: userSavedStats.weeklyXp,
+                dashboardSelectedLevel: userSavedStats.cefrLevel,
                 syncNotification: `Selamat datang kembali, ${userName}!`,
               });
 
@@ -374,11 +436,14 @@ export const useAppStore = create(
           if (isValid) {
             const prevUserId = state.userId;
             const updatedProgressByUserId = { ...(state.userProgressByUserId || {}) };
-            if (prevUserId) {
+            const updatedStatsByUserId = { ...(state.userStatsByUserId || {}) };
+            if (prevUserId && prevUserId !== cloudAccount.id) {
               updatedProgressByUserId[prevUserId] = state.userProgress || {};
+              updatedStatsByUserId[prevUserId] = snapshotActiveStats(state);
             }
 
             const userSavedProg = updatedProgressByUserId[cloudAccount.id] || {};
+            const userSavedStats = resolveUserStats(cloudAccount.id, updatedStatsByUserId);
 
             set({
               isAuthenticated: true,
@@ -395,6 +460,16 @@ export const useAppStore = create(
               userId: cloudAccount.id,
               userProgress: userSavedProg,
               userProgressByUserId: updatedProgressByUserId,
+              userStatsByUserId: updatedStatsByUserId,
+              cefrLevel: userSavedStats.cefrLevel,
+              passedExams: userSavedStats.passedExams,
+              completedModules: userSavedStats.completedModules,
+              rewardedModuleIds: userSavedStats.rewardedModuleIds,
+              streak: userSavedStats.streak,
+              lastStudyDate: userSavedStats.lastStudyDate,
+              xp: userSavedStats.xp,
+              weeklyXp: userSavedStats.weeklyXp,
+              dashboardSelectedLevel: userSavedStats.cefrLevel,
               syncNotification: `Selamat datang kembali, ${cloudAccount.name}!`,
             });
 
@@ -432,14 +507,17 @@ export const useAppStore = create(
 
           const isValid = await verifyPassword(cleanPass, existing.salt, existing.passwordHash);
           if (isValid) {
-            // Isolate user progress
+            // Isolate user progress & progression stats
             const prevUserId = state.userId;
             const updatedProgressByUserId = { ...(state.userProgressByUserId || {}) };
-            if (prevUserId) {
+            const updatedStatsByUserId = { ...(state.userStatsByUserId || {}) };
+            if (prevUserId && prevUserId !== existing.id) {
               updatedProgressByUserId[prevUserId] = state.userProgress || {};
+              updatedStatsByUserId[prevUserId] = snapshotActiveStats(state);
             }
 
             const userSavedProg = updatedProgressByUserId[existing.id] || {};
+            const userSavedStats = resolveUserStats(existing.id, updatedStatsByUserId);
 
             set({
               isAuthenticated: true,
@@ -456,6 +534,16 @@ export const useAppStore = create(
               userId: existing.id,
               userProgress: userSavedProg,
               userProgressByUserId: updatedProgressByUserId,
+              userStatsByUserId: updatedStatsByUserId,
+              cefrLevel: userSavedStats.cefrLevel,
+              passedExams: userSavedStats.passedExams,
+              completedModules: userSavedStats.completedModules,
+              rewardedModuleIds: userSavedStats.rewardedModuleIds,
+              streak: userSavedStats.streak,
+              lastStudyDate: userSavedStats.lastStudyDate,
+              xp: userSavedStats.xp,
+              weeklyXp: userSavedStats.weeklyXp,
+              dashboardSelectedLevel: userSavedStats.cefrLevel,
               syncNotification: `Selamat datang kembali, ${existing.name}!`,
             });
 
@@ -506,15 +594,28 @@ export const useAppStore = create(
         }
 
         const updatedByUserId = { ...(userProgressByUserId || {}) };
+        const updatedStatsByUserId = { ...(get().userStatsByUserId || {}) };
         if (userId) {
           updatedByUserId[userId] = userProgress || {};
+          updatedStatsByUserId[userId] = snapshotActiveStats(get());
         }
 
         set({
           isAuthenticated: false,
           user: null,
+          userId: null,
           userProgress: {},
           userProgressByUserId: updatedByUserId,
+          userStatsByUserId: updatedStatsByUserId,
+          cefrLevel: 'A1',
+          passedExams: [],
+          completedModules: [],
+          rewardedModuleIds: [],
+          streak: 1,
+          lastStudyDate: null,
+          xp: 0,
+          weeklyXp: 0,
+          dashboardSelectedLevel: 'A1',
           syncNotification: null,
         });
       },
@@ -561,11 +662,22 @@ export const useAppStore = create(
       // Action: Set CEFR placement test result
       setUserCefrLevel: (levelCode) => {
         const state = get();
-        const { user } = state;
+        const { user, userId } = state;
         const updatedUser = user ? { ...user, cefrLevel: levelCode } : user;
+        const updatedStats = userId
+          ? {
+              ...(state.userStatsByUserId || {}),
+              [userId]: {
+                ...((state.userStatsByUserId || {})[userId] || snapshotActiveStats(state)),
+                cefrLevel: levelCode,
+              },
+            }
+          : state.userStatsByUserId;
+
         set({
           cefrLevel: levelCode,
           user: updatedUser,
+          userStatsByUserId: updatedStats,
           dashboardSelectedLevel: levelCode,
           syncNotification: `Level belajarmu telah disetel ke ${levelCode}. Selamat belajar!`,
         });
@@ -868,20 +980,38 @@ export const useAppStore = create(
             const remoteStreak = data?.streak || 1;
             const canonicalUserId = data?.user_id || targetUserId;
 
-            set((state) => ({
-              userId: canonicalUserId,
-              weeklyXp: Math.max(state.weeklyXp || 0, remoteXp),
-              xp: Math.max(state.xp || 0, remoteXp),
-              streak: Math.max(state.streak || 1, remoteStreak),
-              user: state.user
-                ? {
-                    ...state.user,
-                    id: canonicalUserId,
-                    name: cloudName || data?.name || state.user.name,
-                    avatarUrl: cloudAvatar || state.user.avatarUrl || null,
-                  }
-                : state.user,
-            }));
+            set((state) => {
+              if (state.userId !== canonicalUserId && state.userId !== targetUserId) return {};
+              const currentXp = Math.max(state.xp || 0, remoteXp);
+              const currentWeeklyXp = Math.max(state.weeklyXp || 0, remoteXp);
+              const currentStreak = Math.max(state.streak || 1, remoteStreak);
+
+              const updatedStats = {
+                ...(state.userStatsByUserId || {}),
+                [canonicalUserId]: {
+                  ...((state.userStatsByUserId || {})[canonicalUserId] || snapshotActiveStats(state)),
+                  xp: currentXp,
+                  weeklyXp: currentWeeklyXp,
+                  streak: currentStreak,
+                },
+              };
+
+              return {
+                userId: canonicalUserId,
+                weeklyXp: currentWeeklyXp,
+                xp: currentXp,
+                streak: currentStreak,
+                userStatsByUserId: updatedStats,
+                user: state.user
+                  ? {
+                      ...state.user,
+                      id: canonicalUserId,
+                      name: cloudName || data?.name || state.user.name,
+                      avatarUrl: cloudAvatar || state.user.avatarUrl || null,
+                    }
+                  : state.user,
+              };
+            });
           }
         } catch (err) {
           console.warn('Could not fetch user stats from Supabase:', err.message);
@@ -965,11 +1095,24 @@ export const useAppStore = create(
           const baseWeekly = isNewWeek ? 0 : (state.weeklyXp || 0);
           const newWeekly = baseWeekly + amount;
           const newTotal = (state.xp || 0) + amount;
+          const userId = state.userId;
+
+          const updatedStats = userId
+            ? {
+                ...(state.userStatsByUserId || {}),
+                [userId]: {
+                  ...((state.userStatsByUserId || {})[userId] || snapshotActiveStats(state)),
+                  xp: newTotal,
+                  weeklyXp: newWeekly,
+                },
+              }
+            : state.userStatsByUserId;
 
           return {
             xp: newTotal,
             weeklyXp: newWeekly,
             lastWeekId: currentWeek,
+            userStatsByUserId: updatedStats,
             syncNotification: reason ? `+${amount} XP: ${reason}` : null,
           };
         });
@@ -1024,11 +1167,26 @@ export const useAppStore = create(
         const rewardedList = state.rewardedModuleIds || [];
         const isRead = readList.includes(moduleId);
         const alreadyRewarded = rewardedList.includes(moduleId);
+        const userId = state.userId;
 
         if (!isRead) {
+          const newCompleted = [...readList, moduleId];
+          const newRewarded = alreadyRewarded ? rewardedList : [...rewardedList, moduleId];
+          const updatedStats = userId
+            ? {
+                ...(state.userStatsByUserId || {}),
+                [userId]: {
+                  ...((state.userStatsByUserId || {})[userId] || snapshotActiveStats(state)),
+                  completedModules: newCompleted,
+                  rewardedModuleIds: newRewarded,
+                },
+              }
+            : state.userStatsByUserId;
+
           set({
-            completedModules: [...readList, moduleId],
-            rewardedModuleIds: alreadyRewarded ? rewardedList : [...rewardedList, moduleId],
+            completedModules: newCompleted,
+            rewardedModuleIds: newRewarded,
+            userStatsByUserId: updatedStats,
           });
           if (!alreadyRewarded) {
             get().addXP(20, 'Menyelesaikan Cheat Sheet Modul');
@@ -1043,19 +1201,46 @@ export const useAppStore = create(
         const readList = state.completedModules || [];
         const rewardedList = state.rewardedModuleIds || [];
         const isRead = readList.includes(moduleId);
+        const userId = state.userId;
 
         if (isRead) {
           // Unmark: remove from completedModules, but KEEP in rewardedModuleIds to prevent XP farming!
+          const newCompleted = readList.filter((id) => id !== moduleId);
+          const updatedStats = userId
+            ? {
+                ...(state.userStatsByUserId || {}),
+                [userId]: {
+                  ...((state.userStatsByUserId || {})[userId] || snapshotActiveStats(state)),
+                  completedModules: newCompleted,
+                },
+              }
+            : state.userStatsByUserId;
+
           set({
-            completedModules: readList.filter((id) => id !== moduleId),
+            completedModules: newCompleted,
+            userStatsByUserId: updatedStats,
           });
           return { completed: false, xpAwarded: 0 };
         } else {
           // Mark: add to completedModules, award XP ONLY if never rewarded before
           const alreadyRewarded = rewardedList.includes(moduleId);
+          const newCompleted = [...readList, moduleId];
+          const newRewarded = alreadyRewarded ? rewardedList : [...rewardedList, moduleId];
+          const updatedStats = userId
+            ? {
+                ...(state.userStatsByUserId || {}),
+                [userId]: {
+                  ...((state.userStatsByUserId || {})[userId] || snapshotActiveStats(state)),
+                  completedModules: newCompleted,
+                  rewardedModuleIds: newRewarded,
+                },
+              }
+            : state.userStatsByUserId;
+
           set({
-            completedModules: [...readList, moduleId],
-            rewardedModuleIds: alreadyRewarded ? rewardedList : [...rewardedList, moduleId],
+            completedModules: newCompleted,
+            rewardedModuleIds: newRewarded,
+            userStatsByUserId: updatedStats,
           });
           if (!alreadyRewarded) {
             get().addXP(20, 'Menyelesaikan Cheat Sheet Modul');
@@ -1079,11 +1264,24 @@ export const useAppStore = create(
 
         const updatedPassed = passedList.includes(levelCode) ? passedList : [...passedList, levelCode];
         const updatedUser = state.user ? { ...state.user, cefrLevel: nextLevel } : state.user;
+        const userId = state.userId;
+
+        const updatedStats = userId
+          ? {
+              ...(state.userStatsByUserId || {}),
+              [userId]: {
+                ...((state.userStatsByUserId || {})[userId] || snapshotActiveStats(state)),
+                cefrLevel: nextLevel,
+                passedExams: updatedPassed,
+              },
+            }
+          : state.userStatsByUserId;
 
         set({
           cefrLevel: nextLevel,
           passedExams: updatedPassed,
           user: updatedUser,
+          userStatsByUserId: updatedStats,
           dashboardSelectedLevel: nextLevel,
           syncNotification: `Selamat! Kamu resmi lulus Ujian ${levelCode} dan naik ke Level ${nextLevel}! 🎉`,
         });
@@ -1230,11 +1428,11 @@ export const useAppStore = create(
 
         // 3. Update Daily Streak
         const todayStr = new Date().toISOString().split('T')[0];
+        let newStreak = streak || 1;
+        let newLastStudyDate = lastStudyDate;
         if (lastStudyDate !== todayStr) {
-          set({
-            streak: (streak || 0) + 1,
-            lastStudyDate: todayStr,
-          });
+          newStreak = (streak || 0) + 1;
+          newLastStudyDate = todayStr;
         }
 
         // 4. Optimistic update to isolated local user store
@@ -1248,7 +1446,21 @@ export const useAppStore = create(
           [userId]: updatedProgMap,
         };
 
+        const updatedStats = userId
+          ? {
+              ...(get().userStatsByUserId || {}),
+              [userId]: {
+                ...((get().userStatsByUserId || {})[userId] || snapshotActiveStats(get())),
+                streak: newStreak,
+                lastStudyDate: newLastStudyDate,
+              },
+            }
+          : get().userStatsByUserId;
+
         set({
+          streak: newStreak,
+          lastStudyDate: newLastStudyDate,
+          userStatsByUserId: updatedStats,
           userProgress: updatedProgMap,
           userProgressByUserId: updatedByUserId,
         });
@@ -1407,19 +1619,66 @@ export const useAppStore = create(
         return { moduleId, success: true };
       },
 
+      // Action: Add single flashcard directly (used by Reading page & custom card creation - Fix BUG-01)
+      addFlashcard: async (card) => {
+        const { isOnline, isSupabaseReady } = get();
+        const newCard = {
+          id: card.id || `card-user-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+          module_id: card.module_id || 'mod-starter-conversation',
+          front_text: (card.front_text || '').trim(),
+          back_text: (card.back_text || '').trim(),
+          example_sentence: (card.example_sentence || '').trim(),
+          source: card.source || 'Bacaan',
+          created_at: new Date().toISOString(),
+        };
+
+        set((state) => ({
+          flashcards: [newCard, ...(state.flashcards || [])],
+          syncNotification: `Kosakata "${newCard.front_text.slice(0, 25)}..." berhasil disimpan ke kartu latihan! 🗂️`,
+        }));
+
+        if (isOnline && isSupabaseReady) {
+          try {
+            await supabase.from('flashcards').insert([newCard]);
+          } catch (err) {
+            console.warn('Supabase sync for single flashcard notice (cached locally):', err.message);
+          }
+        }
+
+        return { success: true, card: newCard };
+      },
+
       // Reset progress to clean slate (pure zero)
       resetUserProgress: () => {
-        const { userId, userProgressByUserId } = get();
+        const { userId, userProgressByUserId, userStatsByUserId } = get();
         const updatedByUserId = { ...(userProgressByUserId || {}) };
+        const updatedStatsByUserId = { ...(userStatsByUserId || {}) };
         if (userId) {
           updatedByUserId[userId] = {};
+          updatedStatsByUserId[userId] = {
+            cefrLevel: 'A1',
+            passedExams: [],
+            completedModules: [],
+            rewardedModuleIds: [],
+            streak: 1,
+            lastStudyDate: null,
+            xp: 0,
+            weeklyXp: 0,
+          };
         }
         set({
           userProgress: {},
           userProgressByUserId: updatedByUserId,
+          userStatsByUserId: updatedStatsByUserId,
           offlineQueue: [],
           xp: 0,
           weeklyXp: 0,
+          streak: 1,
+          lastStudyDate: null,
+          cefrLevel: 'A1',
+          passedExams: [],
+          completedModules: [],
+          rewardedModuleIds: [],
         });
       },
     }),
@@ -1433,6 +1692,7 @@ export const useAppStore = create(
         // Secure accounts storing ONLY salt + passwordHash - NEVER plaintext passwords
         accounts: state.accounts,
         userProgressByUserId: state.userProgressByUserId,
+        userStatsByUserId: state.userStatsByUserId,
         userProgress: state.userProgress,
         streak: state.streak,
         lastStudyDate: state.lastStudyDate,
@@ -1448,7 +1708,24 @@ export const useAppStore = create(
         offlineQueue: state.offlineQueue,
       }),
       onRehydrateStorage: () => (state) => {
-        if (state && state.accounts) {
+        if (!state) return;
+
+        // Verify active user's stats partition on reload/rehydrate
+        if (state.userId && state.userStatsByUserId) {
+          const activeUserStats = state.userStatsByUserId[state.userId];
+          if (activeUserStats) {
+            state.cefrLevel = activeUserStats.cefrLevel || 'A1';
+            state.passedExams = activeUserStats.passedExams || [];
+            state.completedModules = activeUserStats.completedModules || [];
+            state.rewardedModuleIds = activeUserStats.rewardedModuleIds || [];
+            state.streak = activeUserStats.streak || 1;
+            state.lastStudyDate = activeUserStats.lastStudyDate || null;
+            state.xp = activeUserStats.xp || 0;
+            state.weeklyXp = activeUserStats.weeklyXp || 0;
+          }
+        }
+
+        if (state.accounts) {
           // Migration safeguard: remove any legacy plaintext password in localStorage
           Object.keys(state.accounts).forEach(async (key) => {
             const acc = state.accounts[key];
