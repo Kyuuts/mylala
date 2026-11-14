@@ -15,6 +15,11 @@ export default function ModuleDetailPage() {
 
   const isCompleted = completedModules?.includes(id);
 
+  // Pastikan posisi scroll selalu berada di bagian paling atas saat membuka modul
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+  }, [id]);
+
   useEffect(() => {
     async function loadModule() {
       setLoading(true);

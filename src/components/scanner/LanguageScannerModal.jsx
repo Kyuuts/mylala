@@ -13,7 +13,7 @@ import {
   X,
   Zap,
 } from 'lucide-react';
-import { SCANNER_QUESTIONS, resolvePlacementResult } from '../../services/placementTestData';
+import { SCANNER_SETS, resolvePlacementResult } from '../../services/placementTestData';
 import { useAppStore } from '../../store/useAppStore';
 
 // Fisher-Yates shuffle algorithm for question options
@@ -30,30 +30,43 @@ export default function LanguageScannerModal({ isOpen, onClose, onSelectLevel })
   const { setUserCefrLevel } = useAppStore();
 
   const [step, setStep] = useState('intro'); // 'intro' | 'quiz' | 'result'
+  const [currentGerbongIndex, setCurrentGerbongIndex] = useState(() =>
+    Math.floor(Math.random() * SCANNER_SETS.length)
+  );
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState(null);
   const [isAnswerSubmitted, setIsAnswerSubmitted] = useState(false);
   const [correctAnswersCount, setCorrectAnswersCount] = useState(0);
   const [finalResult, setFinalResult] = useState(null);
-  const [quizQuestions, setQuizQuestions] = useState(() =>
-    SCANNER_QUESTIONS.map((q) => ({
+  const [quizQuestions, setQuizQuestions] = useState(() => {
+    const initialSet = SCANNER_SETS[0];
+    return initialSet.questions.map((q) => ({
       ...q,
       options: shuffleOptions(q.options),
-    }))
-  );
+    }));
+  });
 
   if (!isOpen) return null;
 
-  const currentQuestion = quizQuestions[currentIndex] || SCANNER_QUESTIONS[0];
+  const currentSet = SCANNER_SETS[currentGerbongIndex] || SCANNER_SETS[0];
+  const currentQuestion = quizQuestions[currentIndex] || currentSet.questions[0];
   const totalQuestions = quizQuestions.length;
   const progressPercent = Math.round(((currentIndex + 1) / totalQuestions) * 100);
 
   const handleStart = () => {
-    // Re-shuffle options dynamically whenever test starts or restarts
-    const prepared = SCANNER_QUESTIONS.map((q) => ({
+    // Pick a new random gerbong set (attempting to give a different one if possible)
+    let nextGerbongIdx = Math.floor(Math.random() * SCANNER_SETS.length);
+    if (SCANNER_SETS.length > 1 && nextGerbongIdx === currentGerbongIndex) {
+      nextGerbongIdx = (nextGerbongIdx + 1) % SCANNER_SETS.length;
+    }
+
+    const chosenSet = SCANNER_SETS[nextGerbongIdx];
+    const prepared = chosenSet.questions.map((q) => ({
       ...q,
       options: shuffleOptions(q.options),
     }));
+
+    setCurrentGerbongIndex(nextGerbongIdx);
     setQuizQuestions(prepared);
     setStep('quiz');
     setCurrentIndex(0);
@@ -132,7 +145,7 @@ export default function LanguageScannerModal({ isOpen, onClose, onSelectLevel })
                   Temukan Posisi Level Bahasa Inggrismu
                 </h2>
                 <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                  Jawab <strong>8 pertanyaan diagnostik cepat</strong> (estimasi 3 menit) untuk mendeteksi apakah kamu berada di level <strong>A1, A2, B1, B2</strong>, atau <strong>C1</strong>.
+                  Jawab <strong>8 pertanyaan diagnostik cepat</strong> (dipilih acak dari <strong>5 Gerbong Soal / total 40 soal CEFR</strong>) untuk mendeteksi apakah kamu berada di level <strong>A1, A2, B1, B2</strong>, atau <strong>C1</strong>.
                 </p>
               </div>
 
@@ -144,6 +157,7 @@ export default function LanguageScannerModal({ isOpen, onClose, onSelectLevel })
                 <ul className="space-y-1 text-slate-600 list-disc list-inside">
                   <li>Lencana resmi CEFR untuk profilmu</li>
                   <li>Rekomendasi modul &amp; artikel bacaan pertama yang paling pas</li>
+                  <li>Bank soal adaptif 5 gerbong teruji agar tiap pengujian ulang selalu segar</li>
                   <li>Bonus instan <strong>+50 XP</strong> untuk peringkat ligamu</li>
                 </ul>
               </div>
@@ -162,8 +176,13 @@ export default function LanguageScannerModal({ isOpen, onClose, onSelectLevel })
             <div className="space-y-5">
               {/* Progress Bar & Header */}
               <div className="space-y-2">
-                <div className="flex items-center justify-between text-xs font-bold text-slate-500">
-                  <span>Pertanyaan {currentIndex + 1} dari {totalQuestions}</span>
+                <div className="flex items-center justify-between text-xs font-bold text-slate-500 gap-2 flex-wrap">
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <span className="px-2 py-0.5 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-700 font-extrabold text-[10px]">
+                      Gerbong {currentGerbongIndex + 1} dari 5 • {currentSet.badge}
+                    </span>
+                    <span>Pertanyaan {currentIndex + 1} dari {totalQuestions}</span>
+                  </div>
                   <span className="text-indigo-600 font-extrabold">{currentQuestion.levelLabel}</span>
                 </div>
 
@@ -324,10 +343,11 @@ export default function LanguageScannerModal({ isOpen, onClose, onSelectLevel })
               <div className="flex gap-2.5 pt-2">
                 <button
                   onClick={handleStart}
-                  className="inline-flex items-center justify-center gap-1.5 px-4 py-3 rounded-2xl border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs font-bold transition"
+                  className="inline-flex items-center justify-center gap-1.5 px-4 py-3 rounded-2xl border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs font-bold transition cursor-pointer"
+                  title="Uji ulang kemampuan dengan paket gerbong soal baru"
                 >
                   <RotateCcw className="w-3.5 h-3.5" />
-                  <span>Ulangi</span>
+                  <span>Ulangi (Gerbong Baru)</span>
                 </button>
 
                 <button

@@ -1,10 +1,19 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
-import { BookOpen, Zap, Newspaper, Trophy, PlusCircle, ArrowRight } from 'lucide-react';
+import { BookOpen, Zap, Newspaper, Trophy, ArrowRight } from 'lucide-react';
 import { useAppStore } from '../../store/useAppStore';
 
 export default function BottomNav() {
   const { isAuthenticated, weeklyXp } = useAppStore();
+  const [showBadge, setShowBadge] = useState(true);
+
+  // Skor hanya muncul beberapa detik (4 detik) saat user pertama kali buka aplikasi, lalu hilang otomatis
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowBadge(false);
+    }, 4000);
+    return () => clearTimeout(timer);
+  }, []);
 
   if (!isAuthenticated) {
     return (
@@ -24,21 +33,21 @@ export default function BottomNav() {
     );
   }
 
+  // 4 item utama navigasi mobile (tombol + Modul dihapus agar bar bawah lebih bersih & fokus)
   const navItems = [
     { to: '/dashboard', label: 'Belajar', icon: BookOpen },
     { to: '/practice', label: 'Latihan', icon: Zap },
-    { to: '/create', label: '+ Modul', icon: PlusCircle, highlight: true },
     { to: '/reading', label: 'Bacaan', icon: Newspaper },
     {
       to: '/leaderboard',
       label: 'Liga',
       icon: Trophy,
-      badge: `${weeklyXp || 0} XP`,
+      badge: weeklyXp ? `${weeklyXp} XP` : null,
     },
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200/90 px-1 py-1 flex items-center justify-around shadow-lg md:hidden">
+    <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200/90 px-2 py-1 flex items-center justify-around shadow-lg md:hidden">
       {navItems.map((item) => {
         const Icon = item.icon;
         return (
@@ -46,13 +55,9 @@ export default function BottomNav() {
             key={item.to}
             to={item.to}
             className={({ isActive }) =>
-              `flex flex-col items-center justify-center py-1.5 px-2 rounded-xl min-w-[56px] transition-all relative cursor-pointer min-h-[44px] ${
+              `flex flex-col items-center justify-center py-1.5 px-3 rounded-xl min-w-[64px] transition-all relative cursor-pointer min-h-[44px] ${
                 isActive
-                  ? item.highlight
-                    ? 'text-indigo-600 font-extrabold'
-                    : 'text-indigo-600 font-extrabold'
-                  : item.highlight
-                  ? 'text-indigo-600/90 font-bold hover:text-indigo-800'
+                  ? 'text-indigo-600 font-extrabold'
                   : 'text-slate-600 hover:text-slate-900 font-medium'
               }`
             }
@@ -62,15 +67,11 @@ export default function BottomNav() {
                 <div className="relative">
                   <Icon
                     className={`w-5 h-5 ${
-                      isActive
-                        ? 'stroke-[2.5]'
-                        : item.highlight
-                        ? 'stroke-[2.2] text-indigo-600'
-                        : 'stroke-[1.8]'
+                      isActive ? 'stroke-[2.5]' : 'stroke-[1.8]'
                     }`}
                   />
-                  {item.badge && (
-                    <span className="absolute -top-1.5 -right-3.5 px-1.5 py-0.2 rounded-full bg-amber-600 text-white text-[9px] font-black shadow-2xs">
+                  {item.badge && showBadge && (
+                    <span className="absolute -top-1.5 -right-3.5 px-1.5 py-0.2 rounded-full bg-amber-600 text-white text-[9px] font-black shadow-2xs animate-fade-in transition-opacity duration-500">
                       {item.badge}
                     </span>
                   )}

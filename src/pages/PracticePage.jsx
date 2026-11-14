@@ -36,41 +36,75 @@ export default function PracticePage() {
   // Active Mode Modal State: null | 'detective' | 'conjunction' | 'dictation' | 'roleplay' | 'builder'
   const [activeModal, setActiveModal] = useState(null);
 
+  // Helper shuffle algorithm for questions and options
+  const shuffleArray = (array) => {
+    const arr = [...array];
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  };
+
   // ==========================================
-  // 1. GRAMMAR DETECTIVE STATE
+  // 1. GRAMMAR DETECTIVE STATE (5 Randomized Questions)
   // ==========================================
+  const [detQuestions, setDetQuestions] = useState(() =>
+    shuffleArray(GRAMMAR_DETECTIVE_QUESTIONS)
+      .slice(0, 5)
+      .map((q) => ({ ...q, options: shuffleArray(q.options) }))
+  );
   const [detIndex, setDetIndex] = useState(0);
   const [detSelected, setDetSelected] = useState(null);
   const [detSubmitted, setDetSubmitted] = useState(false);
   const [detScore, setDetScore] = useState(0);
 
   // ==========================================
-  // 2. BRIDGE BUILDER STATE
+  // 2. BRIDGE BUILDER STATE (5 Randomized Questions)
   // ==========================================
+  const [bbQuestions, setBbQuestions] = useState(() =>
+    shuffleArray(BRIDGE_BUILDER_QUESTIONS)
+      .slice(0, 5)
+      .map((q) => ({ ...q, options: shuffleArray(q.options) }))
+  );
   const [bbIndex, setBbIndex] = useState(0);
   const [bbSelected, setBbSelected] = useState(null);
   const [bbSubmitted, setBbSubmitted] = useState(false);
   const [bbScore, setBbScore] = useState(0);
 
   // ==========================================
-  // 3. DICTATION (EAR MASTER) STATE
+  // 3. DICTATION (EAR MASTER) STATE (5 Randomized Challenges)
   // ==========================================
+  const [dtQuestions, setDtQuestions] = useState(() =>
+    shuffleArray(DICTATION_CHALLENGES).slice(0, 5)
+  );
   const [dtIndex, setDtIndex] = useState(0);
   const [dtInput, setDtInput] = useState('');
   const [dtEvaluated, setDtEvaluated] = useState(false);
   const [dtAccuracy, setDtAccuracy] = useState(0);
 
   // ==========================================
-  // 4. ROLEPLAY LOUNGE STATE
+  // 4. ROLEPLAY LOUNGE STATE (Randomized Scenarios)
   // ==========================================
+  const [rpScenarios, setRpScenarios] = useState(() =>
+    shuffleArray(ROLEPLAY_SCENARIOS).map((sc) => ({
+      ...sc,
+      turns: sc.turns.map((t) => ({ ...t, options: shuffleArray(t.options) })),
+    }))
+  );
   const [rpScenarioIndex, setRpScenarioIndex] = useState(0);
   const [rpTurnIndex, setRpTurnIndex] = useState(0);
   const [rpHistory, setRpHistory] = useState([]); // [{ sender: 'npc'|'user', text, feedback }]
   const [rpCompleted, setRpCompleted] = useState(false);
 
   // ==========================================
-  // 5. SENTENCE BUILDER STATE
+  // 5. SENTENCE BUILDER STATE (5 Randomized Challenges)
   // ==========================================
+  const [sbChallenges, setSbChallenges] = useState(() =>
+    shuffleArray(SENTENCE_BUILDER_CHALLENGES)
+      .slice(0, 5)
+      .map((c) => ({ ...c, scrambled: shuffleArray(c.scrambled) }))
+  );
   const [sbIndex, setSbIndex] = useState(0);
   const [sbPlacedTokens, setSbPlacedTokens] = useState([]);
   const [sbAvailableTokens, setSbAvailableTokens] = useState([]);
@@ -96,8 +130,12 @@ export default function PracticePage() {
     setActiveModal(null);
   };
 
-  // Open & Initialize Modes
+  // Open & Initialize Modes with Fresh 5 Shuffled Questions
   const openDetective = () => {
+    const randomized = shuffleArray(GRAMMAR_DETECTIVE_QUESTIONS)
+      .slice(0, 5)
+      .map((q) => ({ ...q, options: shuffleArray(q.options) }));
+    setDetQuestions(randomized);
     setDetIndex(0);
     setDetSelected(null);
     setDetSubmitted(false);
@@ -106,6 +144,10 @@ export default function PracticePage() {
   };
 
   const openBridgeBuilder = () => {
+    const randomized = shuffleArray(BRIDGE_BUILDER_QUESTIONS)
+      .slice(0, 5)
+      .map((q) => ({ ...q, options: shuffleArray(q.options) }));
+    setBbQuestions(randomized);
     setBbIndex(0);
     setBbSelected(null);
     setBbSubmitted(false);
@@ -114,6 +156,8 @@ export default function PracticePage() {
   };
 
   const openDictation = () => {
+    const randomized = shuffleArray(DICTATION_CHALLENGES).slice(0, 5);
+    setDtQuestions(randomized);
     setDtIndex(0);
     setDtInput('');
     setDtEvaluated(false);
@@ -122,10 +166,15 @@ export default function PracticePage() {
   };
 
   const openRoleplay = () => {
+    const randomized = shuffleArray(ROLEPLAY_SCENARIOS).map((sc) => ({
+      ...sc,
+      turns: sc.turns.map((t) => ({ ...t, options: shuffleArray(t.options) })),
+    }));
+    setRpScenarios(randomized);
     setRpScenarioIndex(0);
     setRpTurnIndex(0);
     setRpCompleted(false);
-    const initialScenario = ROLEPLAY_SCENARIOS[0];
+    const initialScenario = randomized[0];
     setRpHistory([
       { sender: 'npc', text: initialScenario.turns[0].npcLine },
     ]);
@@ -133,12 +182,15 @@ export default function PracticePage() {
   };
 
   const openSentenceBuilder = () => {
+    const randomized = shuffleArray(SENTENCE_BUILDER_CHALLENGES)
+      .slice(0, 5)
+      .map((c) => ({ ...c, scrambled: shuffleArray(c.scrambled) }));
+    setSbChallenges(randomized);
     setSbIndex(0);
     setSbSubmitted(false);
     setSbIsCorrect(false);
-    const initialChallenge = SENTENCE_BUILDER_CHALLENGES[0];
     setSbPlacedTokens([]);
-    setSbAvailableTokens([...initialChallenge.scrambled]);
+    setSbAvailableTokens([...randomized[0].scrambled]);
     setActiveModal('builder');
   };
 
@@ -163,7 +215,7 @@ export default function PracticePage() {
       description: 'Temukan 1 kata perusak tata bahasa dalam kalimat. Latih kejelian dari jebakan preposisi hingga inversi!',
       icon: Search,
       color: 'amber',
-      badge: '5 Tantangan • +15 XP',
+      badge: '5 Soal Acak • +15 XP',
       badgeClass: 'bg-amber-50 text-amber-800 border-amber-200',
       actionText: 'Mainkan Game Detektif',
       onClick: openDetective,
@@ -175,7 +227,7 @@ export default function PracticePage() {
       description: 'Latih menyambungkan dua ide/klausa dengan konektor logis (However, Therefore, Although, Despite, Furthermore).',
       icon: GitCommit,
       color: 'teal',
-      badge: '5 Tantangan • +15 XP',
+      badge: '5 Soal Acak • +15 XP',
       badgeClass: 'bg-teal-50 text-teal-800 border-teal-200',
       actionText: 'Tantangan Jembatan Logika',
       onClick: openBridgeBuilder,
@@ -187,7 +239,7 @@ export default function PracticePage() {
       description: 'Dengarkan rekaman penutur asli dalam tempo normal atau santai, lalu ketik ejaannya dengan tingkat akurasi presisi.',
       icon: Headphones,
       color: 'sky',
-      badge: 'Audio Interaktif • +20 XP',
+      badge: '5 Audio Acak • +20 XP',
       badgeClass: 'bg-sky-50 text-sky-700 border-sky-200',
       actionText: 'Mulai Latihan Dikte',
       onClick: openDictation,
@@ -211,7 +263,7 @@ export default function PracticePage() {
       description: 'Susun balok-balok kata acak menjadi kalimat bahasa Inggris formal yang terstruktur rapi sesuai makna bahasa Indonesianya.',
       icon: PenTool,
       color: 'purple',
-      badge: 'Puzzle Balok Kata • +20 XP',
+      badge: '5 Soal Acak • +20 XP',
       badgeClass: 'bg-purple-50 text-purple-700 border-purple-200',
       actionText: 'Rakit Kalimat Sekarang',
       onClick: openSentenceBuilder,
@@ -319,7 +371,7 @@ export default function PracticePage() {
       {/* ======================================================== */}
 
       {/* A. GRAMMAR DETECTIVE MODAL */}
-      {activeModal === 'detective' && (
+      {activeModal === 'detective' && detQuestions[detIndex] && (
         <div role="dialog" className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/80 backdrop-blur-md animate-fade-in">
           <div className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl overflow-hidden p-6 space-y-5">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
@@ -328,7 +380,7 @@ export default function PracticePage() {
                   <Search className="w-4 h-4" />
                 </span>
                 <div>
-                  <span className="text-[10px] font-extrabold uppercase text-amber-700">Soal {detIndex + 1} dari {GRAMMAR_DETECTIVE_QUESTIONS.length}</span>
+                  <span className="text-[10px] font-extrabold uppercase text-amber-700">Soal {detIndex + 1} dari {detQuestions.length}</span>
                   <h3 className="font-extrabold text-slate-900 text-base">Grammar Detective 🕵️‍♂️</h3>
                 </div>
               </div>
@@ -342,12 +394,12 @@ export default function PracticePage() {
             </p>
 
             <div className="p-4 rounded-2xl bg-amber-50/70 border border-amber-200 text-slate-900 font-medium text-sm sm:text-base leading-relaxed">
-              "{GRAMMAR_DETECTIVE_QUESTIONS[detIndex].sentence}"
+              "{detQuestions[detIndex].sentence}"
             </div>
 
             <div className="grid grid-cols-2 gap-2.5">
-              {GRAMMAR_DETECTIVE_QUESTIONS[detIndex].options.map((opt) => {
-                const isCorrect = opt === GRAMMAR_DETECTIVE_QUESTIONS[detIndex].correct;
+              {detQuestions[detIndex].options.map((opt) => {
+                const isCorrect = opt === detQuestions[detIndex].correct;
                 let style = 'border-slate-200 hover:border-amber-400 hover:bg-amber-50 text-slate-800';
 
                 if (detSubmitted) {
@@ -380,10 +432,10 @@ export default function PracticePage() {
             {detSubmitted && (
               <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-xs space-y-1.5 animate-fade-in">
                 <span className="font-bold text-slate-800">
-                  {detSelected === GRAMMAR_DETECTIVE_QUESTIONS[detIndex].correct ? '🎉 Analisis Tepat (+15 XP)!' : '❌ Belum Tepat'}
+                  {detSelected === detQuestions[detIndex].correct ? '🎉 Analisis Tepat (+15 XP)!' : '❌ Belum Tepat'}
                 </span>
                 <p className="text-slate-600 leading-relaxed">
-                  {GRAMMAR_DETECTIVE_QUESTIONS[detIndex].explanation}
+                  {detQuestions[detIndex].explanation}
                 </p>
               </div>
             )}
@@ -393,7 +445,7 @@ export default function PracticePage() {
               {detSubmitted && (
                 <button
                   onClick={() => {
-                    if (detIndex < GRAMMAR_DETECTIVE_QUESTIONS.length - 1) {
+                    if (detIndex < detQuestions.length - 1) {
                       setDetIndex((i) => i + 1);
                       setDetSelected(null);
                       setDetSubmitted(false);
@@ -403,7 +455,7 @@ export default function PracticePage() {
                   }}
                   className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold transition cursor-pointer"
                 >
-                  {detIndex === GRAMMAR_DETECTIVE_QUESTIONS.length - 1 ? 'Selesai Tantangan' : 'Soal Berikutnya ➔'}
+                  {detIndex === detQuestions.length - 1 ? 'Selesai Tantangan' : 'Soal Berikutnya ➔'}
                 </button>
               )}
             </div>
@@ -412,7 +464,7 @@ export default function PracticePage() {
       )}
 
       {/* B. BRIDGE BUILDER (CONJUNCTION) MODAL */}
-      {activeModal === 'conjunction' && (
+      {activeModal === 'conjunction' && bbQuestions[bbIndex] && (
         <div role="dialog" className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/80 backdrop-blur-md animate-fade-in">
           <div className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl overflow-hidden p-6 space-y-5">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
@@ -421,7 +473,7 @@ export default function PracticePage() {
                   <GitCommit className="w-4 h-4" />
                 </span>
                 <div>
-                  <span className="text-[10px] font-extrabold uppercase text-teal-700">Tantangan {bbIndex + 1} dari {BRIDGE_BUILDER_QUESTIONS.length}</span>
+                  <span className="text-[10px] font-extrabold uppercase text-teal-700">Tantangan {bbIndex + 1} dari {bbQuestions.length}</span>
                   <h3 className="font-extrabold text-slate-900 text-base">Bridge Builder 🌉</h3>
                 </div>
               </div>
@@ -435,12 +487,12 @@ export default function PracticePage() {
             </p>
 
             <div className="p-4 rounded-2xl bg-teal-50/70 border border-teal-200 text-slate-900 font-medium text-sm sm:text-base leading-relaxed">
-              "{BRIDGE_BUILDER_QUESTIONS[bbIndex].context}"
+              "{bbQuestions[bbIndex].context}"
             </div>
 
             <div className="grid grid-cols-2 gap-2.5">
-              {BRIDGE_BUILDER_QUESTIONS[bbIndex].options.map((opt) => {
-                const isCorrect = opt === BRIDGE_BUILDER_QUESTIONS[bbIndex].correct;
+              {bbQuestions[bbIndex].options.map((opt) => {
+                const isCorrect = opt === bbQuestions[bbIndex].correct;
                 let style = 'border-slate-200 hover:border-teal-400 hover:bg-teal-50 text-slate-800';
 
                 if (bbSubmitted) {
@@ -473,10 +525,10 @@ export default function PracticePage() {
             {bbSubmitted && (
               <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-xs space-y-1.5 animate-fade-in">
                 <span className="font-bold text-slate-800">
-                  {bbSelected === BRIDGE_BUILDER_QUESTIONS[bbIndex].correct ? '🎉 Jembatan Logika Benar (+15 XP)!' : '❌ Belum Tepat'}
+                  {bbSelected === bbQuestions[bbIndex].correct ? '🎉 Jembatan Logika Benar (+15 XP)!' : '❌ Belum Tepat'}
                 </span>
                 <p className="text-slate-600 leading-relaxed">
-                  {BRIDGE_BUILDER_QUESTIONS[bbIndex].explanation}
+                  {bbQuestions[bbIndex].explanation}
                 </p>
               </div>
             )}
@@ -486,7 +538,7 @@ export default function PracticePage() {
               {bbSubmitted && (
                 <button
                   onClick={() => {
-                    if (bbIndex < BRIDGE_BUILDER_QUESTIONS.length - 1) {
+                    if (bbIndex < bbQuestions.length - 1) {
                       setBbIndex((i) => i + 1);
                       setBbSelected(null);
                       setBbSubmitted(false);
@@ -496,7 +548,7 @@ export default function PracticePage() {
                   }}
                   className="px-4 py-2 rounded-xl bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold transition cursor-pointer"
                 >
-                  {bbIndex === BRIDGE_BUILDER_QUESTIONS.length - 1 ? 'Selesai Tantangan' : 'Tantangan Berikutnya ➔'}
+                  {bbIndex === bbQuestions.length - 1 ? 'Selesai Tantangan' : 'Tantangan Berikutnya ➔'}
                 </button>
               )}
             </div>
@@ -505,7 +557,7 @@ export default function PracticePage() {
       )}
 
       {/* C. DICTATION (EAR MASTER) MODAL */}
-      {activeModal === 'dictation' && (
+      {activeModal === 'dictation' && dtQuestions[dtIndex] && (
         <div role="dialog" className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/80 backdrop-blur-md animate-fade-in">
           <div className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl overflow-hidden p-6 space-y-5">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
@@ -514,7 +566,7 @@ export default function PracticePage() {
                   <Headphones className="w-4 h-4" />
                 </span>
                 <div>
-                  <span className="text-[10px] font-extrabold uppercase text-sky-700">Dikte {dtIndex + 1} dari {DICTATION_CHALLENGES.length}</span>
+                  <span className="text-[10px] font-extrabold uppercase text-sky-700">Dikte {dtIndex + 1} dari {dtQuestions.length}</span>
                   <h3 className="font-extrabold text-slate-900 text-base">Ear Master (Dikte) 🎧</h3>
                 </div>
               </div>
@@ -531,7 +583,7 @@ export default function PracticePage() {
 
               <div className="flex items-center justify-center gap-3">
                 <button
-                  onClick={() => handleSpeak(DICTATION_CHALLENGES[dtIndex].targetSentence, 1.0)}
+                  onClick={() => handleSpeak(dtQuestions[dtIndex].targetSentence, 1.0)}
                   className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold shadow-xs active:scale-95 transition cursor-pointer"
                 >
                   <Volume2 className="w-4 h-4" />
@@ -539,7 +591,7 @@ export default function PracticePage() {
                 </button>
 
                 <button
-                  onClick={() => handleSpeak(DICTATION_CHALLENGES[dtIndex].targetSentence, 0.75)}
+                  onClick={() => handleSpeak(dtQuestions[dtIndex].targetSentence, 0.75)}
                   className="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-white hover:bg-sky-100 text-sky-800 text-xs font-bold border border-sky-200 active:scale-95 transition cursor-pointer"
                 >
                   <span>🐢 Santai (0.75x)</span>
@@ -547,7 +599,7 @@ export default function PracticePage() {
               </div>
 
               <p className="text-[11px] text-slate-400">
-                Petunjuk konteks: <em>{DICTATION_CHALLENGES[dtIndex].hint}</em>
+                Petunjuk konteks: <em>{dtQuestions[dtIndex].hint}</em>
               </p>
             </div>
 
@@ -576,7 +628,7 @@ export default function PracticePage() {
                 <div className="space-y-1">
                   <span className="text-slate-400 block text-[10px] uppercase font-bold">Kalimat Sasaran:</span>
                   <p className="font-bold text-slate-900 text-sm">
-                    "{DICTATION_CHALLENGES[dtIndex].targetSentence}"
+                    "{dtQuestions[dtIndex].targetSentence}"
                   </p>
                 </div>
               </div>
@@ -584,7 +636,7 @@ export default function PracticePage() {
 
             <div className="flex items-center justify-between pt-2 border-t border-slate-100">
               <button
-                onClick={() => handleSpeak(DICTATION_CHALLENGES[dtIndex].targetSentence, 1.0)}
+                onClick={() => handleSpeak(dtQuestions[dtIndex].targetSentence, 1.0)}
                 className="text-xs text-sky-700 font-bold hover:underline"
               >
                 Putar Ulang 🔊
@@ -593,7 +645,7 @@ export default function PracticePage() {
               {!dtEvaluated ? (
                 <button
                   onClick={() => {
-                    const cleanTarget = DICTATION_CHALLENGES[dtIndex].targetSentence.toLowerCase().replace(/[^a-z0-9\s]/g, '');
+                    const cleanTarget = dtQuestions[dtIndex].targetSentence.toLowerCase().replace(/[^a-z0-9\s]/g, '');
                     const cleanInput = dtInput.toLowerCase().replace(/[^a-z0-9\s]/g, '');
                     const targetWords = cleanTarget.split(/\s+/).filter(Boolean);
                     const inputWords = cleanInput.split(/\s+/).filter(Boolean);
@@ -618,7 +670,7 @@ export default function PracticePage() {
               ) : (
                 <button
                   onClick={() => {
-                    if (dtIndex < DICTATION_CHALLENGES.length - 1) {
+                    if (dtIndex < dtQuestions.length - 1) {
                       setDtIndex((i) => i + 1);
                       setDtInput('');
                       setDtEvaluated(false);
@@ -628,7 +680,7 @@ export default function PracticePage() {
                   }}
                   className="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold shadow-xs transition cursor-pointer"
                 >
-                  {dtIndex === DICTATION_CHALLENGES.length - 1 ? 'Selesai Sesi' : 'Dikte Berikutnya ➔'}
+                  {dtIndex === dtQuestions.length - 1 ? 'Selesai Sesi' : 'Dikte Berikutnya ➔'}
                 </button>
               )}
             </div>
@@ -637,18 +689,18 @@ export default function PracticePage() {
       )}
 
       {/* D. ROLEPLAY LOUNGE MODAL */}
-      {activeModal === 'roleplay' && (
+      {activeModal === 'roleplay' && rpScenarios[rpScenarioIndex] && (
         <div role="dialog" className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/80 backdrop-blur-md animate-fade-in">
           <div className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl overflow-hidden p-6 space-y-4 flex flex-col max-h-[92vh]">
             {/* Header */}
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <div className="flex items-center gap-2">
                 <span className="p-2 rounded-xl bg-emerald-100 text-emerald-700 text-lg">
-                  {ROLEPLAY_SCENARIOS[rpScenarioIndex].avatar}
+                  {rpScenarios[rpScenarioIndex].avatar}
                 </span>
                 <div>
                   <span className="text-[10px] font-extrabold uppercase text-emerald-700">Simulasi Dialog Interaktif</span>
-                  <h3 className="font-extrabold text-slate-900 text-base">{ROLEPLAY_SCENARIOS[rpScenarioIndex].title}</h3>
+                  <h3 className="font-extrabold text-slate-900 text-base">{rpScenarios[rpScenarioIndex].title}</h3>
                 </div>
               </div>
               <button onClick={handleCloseModal} className="p-1 text-slate-400 hover:text-slate-600">
@@ -697,7 +749,7 @@ export default function PracticePage() {
             {!rpCompleted ? (
               <div className="space-y-2 pt-2 border-t border-slate-100">
                 <span className="text-[11px] font-bold text-slate-500 block">Pilih respons balasan Anda:</span>
-                {ROLEPLAY_SCENARIOS[rpScenarioIndex].turns[rpTurnIndex]?.options.map((opt, oIdx) => (
+                {rpScenarios[rpScenarioIndex].turns[rpTurnIndex]?.options.map((opt, oIdx) => (
                   <button
                     key={oIdx}
                     onClick={() => {
@@ -716,7 +768,7 @@ export default function PracticePage() {
                       addXp(15, 'Roleplay Dialogue');
 
                       // 3. Check if more turns exist
-                      if (rpTurnIndex < ROLEPLAY_SCENARIOS[rpScenarioIndex].turns.length - 1) {
+                      if (rpTurnIndex < rpScenarios[rpScenarioIndex].turns.length - 1) {
                         setRpTurnIndex((t) => t + 1);
                       } else {
                         setRpCompleted(true);
@@ -748,7 +800,7 @@ export default function PracticePage() {
       )}
 
       {/* E. SENTENCE BUILDER MODAL */}
-      {activeModal === 'builder' && (
+      {activeModal === 'builder' && sbChallenges[sbIndex] && (
         <div role="dialog" className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/80 backdrop-blur-md animate-fade-in">
           <div className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl overflow-hidden p-6 space-y-5">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
@@ -757,7 +809,7 @@ export default function PracticePage() {
                   <PenTool className="w-4 h-4" />
                 </span>
                 <div>
-                  <span className="text-[10px] font-extrabold uppercase text-purple-700">Level {sbIndex + 1} dari {SENTENCE_BUILDER_CHALLENGES.length}</span>
+                  <span className="text-[10px] font-extrabold uppercase text-purple-700">Level {sbIndex + 1} dari {sbChallenges.length}</span>
                   <h3 className="font-extrabold text-slate-900 text-base">Sentence Builder ✍️</h3>
                 </div>
               </div>
@@ -772,7 +824,7 @@ export default function PracticePage() {
                 Susun ke Kalimat Bahasa Inggris:
               </span>
               <p className="font-bold text-slate-900 text-sm sm:text-base leading-snug">
-                "{SENTENCE_BUILDER_CHALLENGES[sbIndex].indonesianMeaning}"
+                "{sbChallenges[sbIndex].indonesianMeaning}"
               </p>
             </div>
 
@@ -828,7 +880,7 @@ export default function PracticePage() {
                   {sbIsCorrect ? '🎉 Susunan Sempurna (+20 XP)!' : '❌ Susunan Belum Pas'}
                 </span>
                 <p className="leading-relaxed text-slate-600">
-                  {SENTENCE_BUILDER_CHALLENGES[sbIndex].explanation}
+                  {sbChallenges[sbIndex].explanation}
                 </p>
               </div>
             )}
@@ -837,7 +889,7 @@ export default function PracticePage() {
               <button
                 onClick={() => {
                   setSbPlacedTokens([]);
-                  setSbAvailableTokens([...SENTENCE_BUILDER_CHALLENGES[sbIndex].scrambled]);
+                  setSbAvailableTokens([...sbChallenges[sbIndex].scrambled]);
                   setSbSubmitted(false);
                 }}
                 className="inline-flex items-center gap-1 text-xs font-bold text-slate-500 hover:text-slate-800"
@@ -850,7 +902,7 @@ export default function PracticePage() {
                 <button
                   onClick={() => {
                     const currentSentence = sbPlacedTokens.join(' ').trim();
-                    const targetSentence = SENTENCE_BUILDER_CHALLENGES[sbIndex].targetTokens.join(' ').trim();
+                    const targetSentence = sbChallenges[sbIndex].targetTokens.join(' ').trim();
                     const isCorrect = currentSentence.toLowerCase() === targetSentence.toLowerCase();
 
                     setSbIsCorrect(isCorrect);
@@ -867,11 +919,11 @@ export default function PracticePage() {
               ) : (
                 <button
                   onClick={() => {
-                    if (sbIndex < SENTENCE_BUILDER_CHALLENGES.length - 1) {
+                    if (sbIndex < sbChallenges.length - 1) {
                       const next = sbIndex + 1;
                       setSbIndex(next);
                       setSbPlacedTokens([]);
-                      setSbAvailableTokens([...SENTENCE_BUILDER_CHALLENGES[next].scrambled]);
+                      setSbAvailableTokens([...sbChallenges[next].scrambled]);
                       setSbSubmitted(false);
                       setSbIsCorrect(false);
                     } else {
@@ -880,7 +932,7 @@ export default function PracticePage() {
                   }}
                   className="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold shadow-xs transition cursor-pointer"
                 >
-                  {sbIndex === SENTENCE_BUILDER_CHALLENGES.length - 1 ? 'Selesai Tantangan' : 'Level Berikutnya ➔'}
+                  {sbIndex === sbChallenges.length - 1 ? 'Selesai Tantangan' : 'Level Berikutnya ➔'}
                 </button>
               )}
             </div>

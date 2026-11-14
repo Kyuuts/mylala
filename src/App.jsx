@@ -12,38 +12,42 @@ import LeaderboardPage from './pages/LeaderboardPage';
 import LoginPage from './pages/LoginPage';
 import NotFoundPage from './pages/NotFoundPage';
 import ProtectedRoute from './components/common/ProtectedRoute';
+import ScrollToTop from './components/common/ScrollToTop';
 
 export default function App() {
   return (
-    <Routes>
-      {/* Public Login Route */}
-      <Route path="/login" element={<LoginPage />} />
+    <>
+      <ScrollToTop />
+      <Routes>
+        {/* Public Login Route */}
+        <Route path="/login" element={<LoginPage />} />
 
-      {/* Main App Shell Layout */}
-      <Route element={<RootLayout />}>
-        {/* Public Landing Page */}
-        <Route index element={<HomePage />} />
+        {/* Main App Shell Layout */}
+        <Route element={<RootLayout />}>
+          {/* Public Landing Page */}
+          <Route index element={<HomePage />} />
 
-        {/* Protected Learning & Core Routes */}
-        <Route element={<ProtectedRoute />}>
-          <Route path="learn" element={<DashboardPage />} />
-          <Route path="dashboard" element={<DashboardPage />} />
-          <Route path="practice" element={<PracticePage />} />
-          <Route path="latihan" element={<PracticePage />} />
-          <Route path="reading" element={<ReadingPage />} />
-          <Route path="reading/:id" element={<ReadingPage />} />
-          <Route path="bacaan" element={<ReadingPage />} />
-          <Route path="bacaan/:id" element={<ReadingPage />} />
-          <Route path="leaderboard" element={<LeaderboardPage />} />
-          <Route path="rank" element={<LeaderboardPage />} />
-          <Route path="create" element={<CreateModulePage />} />
-          <Route path="module/:id" element={<ModuleDetailPage />} />
-          <Route path="flashcards/:module_id" element={<FlashcardPage />} />
+          {/* Protected Learning & Core Routes */}
+          <Route element={<ProtectedRoute />}>
+            <Route path="learn" element={<DashboardPage />} />
+            <Route path="dashboard" element={<DashboardPage />} />
+            <Route path="practice" element={<PracticePage />} />
+            <Route path="latihan" element={<PracticePage />} />
+            <Route path="reading" element={<ReadingPage />} />
+            <Route path="reading/:id" element={<ReadingPage />} />
+            <Route path="bacaan" element={<ReadingPage />} />
+            <Route path="bacaan/:id" element={<ReadingPage />} />
+            <Route path="leaderboard" element={<LeaderboardPage />} />
+            <Route path="rank" element={<LeaderboardPage />} />
+            <Route path="create" element={<CreateModulePage />} />
+            <Route path="module/:id" element={<ModuleDetailPage />} />
+            <Route path="flashcards/:module_id" element={<FlashcardPage />} />
+          </Route>
+
+          {/* 404 Catch All */}
+          <Route path="*" element={<NotFoundPage />} />
         </Route>
-
-        {/* 404 Catch All */}
-        <Route path="*" element={<NotFoundPage />} />
-      </Route>
-    </Routes>
+      </Routes>
+    </>
   );
 }
