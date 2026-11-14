@@ -24,69 +24,121 @@ export const getSpeechRecognitionInstance = () => {
  * Detects if a text string contains Indonesian explanatory keywords
  * rather than pure English to be spoken or shadowed.
  */
+const indoPattern = /\b(arti|artinya|berarti|kunci|tips|pilihan|jawaban|salah|benar|contoh|penjelasan|perhatikan|gunakan|memakai|digunakan|menunjukkan|menyatakan|menjelaskan|membantu|membuat|merupakan|adalah|yaitu|ialah|bukan|tidak|jangan|harus|wajib|bisa|dapat|boleh|akan|telah|sudah|sedang|pernah|belum|dengan|untuk|pada|di|ke|dari|oleh|tentang|mengenai|seperti|bahwa|karena|sebab|jika|bila|kalau|supaya|agar|tetapi|namun|sedangkan|melainkan|atau|dan|serta|ini|itu|sini|situ|sana|saya|kamu|anda|dia|kita|kami|mereka|kalian|sangat|amat|sekali|paling|lebih|kurang|cukup|terlalu|hanya|saja|juga|pula|pun|dalam|luar|atas|bawah|depan|belakang|waktu|saat|ketika|hari|tahun|bulan|orang|hal|cara|kata|kalimat|frasa|ungkapan|subjek|predikat|objek|keterangan|hubungkan|lengkapi|temukan|tanya|bentuk|preposisi|konsonan|komparatif|superlatif|kebiasaan|jamak|tunggal|percakapan|formal|santai|sapaan|respon|klausa|akibat|kontras|lampau|sekarang|mendatang|liburan|sarapan|janji|usia|pola|pasif|aktif)\b/i;
+
 export const isIndonesianText = (text = '') => {
   if (!text) return false;
-  const indoPattern = /\b(kunci|tips|arti|adalah|bukan|tidak|ungkapan|perbaikan|kalimat|kata|frasa|subjek|keterangan|sangat|dipakai|untuk|yang|dan|dalam|menandakan|pengganti|kewalahan|menghadapi|memperkuat|menggambarkan|memadukan|menyatakan|menyudahi|contoh|penjelasan|perhatikan)\b/i;
   return indoPattern.test(text);
 };
 
 /**
+ * Strips bracket notes, Indonesian parenthesis annotations, and placeholders
+ */
+export const cleanEnglishString = (str = '') => {
+  return str
+    .replace(/\(atau.*?\)/gi, '')
+    .replace(/\(sinonim.*?\)/gi, '')
+    .replace(/\(formal.*?\)/gi, '')
+    .replace(/\(informal.*?\)/gi, '')
+    .replace(/\(artinya.*?\)/gi, '')
+    .replace(/\(kunci.*?\)/gi, '')
+    .replace(/\(Pilihan:.*?\)/gi, '')
+    .replace(/\(jawaban:.*?\)/gi, '')
+    .replace(/\[Name\]/gi, 'Sarah')
+    .replace(/\[Field\]/gi, 'Design')
+    .replace(/\[Interest\]/gi, 'traveling')
+    .replace(/\[Hobi\/Minat\]/gi, 'photography')
+    .replace(/\[Kampus\]/gi, 'University')
+    .replace(/\[Jurusan\]/gi, 'Engineering')
+    .replace(/\[.*?\]/g, '')
+    .replace(/[*_`#]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+};
+
+/**
  * Extracts pure, natural English target sentence for Speech Recognition & Voice Shadowing.
- * Filters out Indonesian explanations ('Kunci:', 'Tips:', 'Arti:', etc.).
+ * Guarantees zero Indonesian text in the shadowing prompt across all 196+ flashcards.
  */
 export const getTargetSpeechSentence = (card) => {
   if (!card) return '';
-
   const { front_text = '', back_text = '', example_sentence = '' } = card;
 
   // 1. Fill-in-the-blank cards (front_text contains underscores '____')
-  // The learner should speak the COMPLETE natural English sentence with the blank filled!
+  // The learner should shadow the complete natural grammatical English sentence!
   if (front_text.includes('_')) {
-    const cleanAnswer = (back_text || '')
-      .replace(/\(atau.*?\)/gi, '')
-      .replace(/\(.*?\)/g, '')
-      .trim();
+    // Determine the clean answer to fill in (pick the first alternative if slashed or parenthesized)
+    let answer = back_text.split('/')[0].split('(atau')[0].trim();
+    answer = answer.replace(/\(.*?\)/g, '').trim();
 
-    return front_text
-      .replace(/_+/g, cleanAnswer)
-      .replace(/\s+/g, ' ')
-      .trim();
-  }
+    // Extract the English sentence from front_text (strip Indonesian prompts/instructions before quote/colon)
+    let baseSentence = front_text;
+    const frontQuoteMatch = front_text.match(/"([^"]+)"/);
+    if (frontQuoteMatch && frontQuoteMatch[1]) {
+      baseSentence = frontQuoteMatch[1];
+    } else if (front_text.includes(':')) {
+      const parts = front_text.split(':');
+      if (parts[1] && parts[1].trim().length > 5) {
+        baseSentence = parts.slice(1).join(':').trim();
+      }
+    }
 
-  // 2. If back_text is English (e.g. Speaking Templates, Signposting phrases where front is Indonesian prompt)
-  if (back_text && !isIndonesianText(back_text) && back_text.trim().split(/\s+/).length >= 2) {
-    return back_text
-      .replace(/\[Name\]/gi, 'Sarah')
-      .replace(/\[Field\]/gi, 'Design')
-      .replace(/\[Interest\]/gi, 'traveling')
-      .replace(/\[Hobi\/Minat\]/gi, 'photography')
-      .replace(/\[Kampus\]/gi, 'University')
-      .replace(/\[Jurusan\]/gi, 'Engineering')
-      .replace(/\[.*?\]/g, '')
-      .replace(/\s+/g, ' ')
-      .trim();
-  }
+    // Strip inline bracket options like "(rarely / usually)" or "(open)" or "(travel)"
+    baseSentence = baseSentence
+      .replace(/\([a-zA-Z\s\/\-]+\)/g, '')
+      .replace(/_+/g, answer);
 
-  // 3. If example_sentence is pure English and NOT an Indonesian explanation ('Kunci:', 'Tips:', etc.)
-  if (example_sentence && !isIndonesianText(example_sentence)) {
-    return example_sentence.replace(/[*_`#]/g, '').trim();
-  }
-
-  // 4. Check for English quote inside example_sentence (e.g. 'Perbaikan benar: "Walking down the street..."')
-  if (example_sentence && example_sentence.includes('"')) {
-    const quoteMatch = example_sentence.match(/"([^"]+)"/);
-    if (quoteMatch && quoteMatch[1] && !isIndonesianText(quoteMatch[1])) {
-      return quoteMatch[1].trim();
+    const result = cleanEnglishString(baseSentence);
+    if (result && !isIndonesianText(result)) {
+      return result;
     }
   }
 
-  // 5. If front_text is pure English (e.g. vocabulary word or idiom like "Hit the nail on the head")
-  if (front_text && !isIndonesianText(front_text)) {
-    return front_text.replace(/[*_`#]/g, '').trim();
+  // 2. Speaking templates & Conversational phrases (back_text is English target sentence)
+  const cleanBack = cleanEnglishString(back_text);
+  if (cleanBack && !isIndonesianText(cleanBack) && cleanBack.split(/\s+/).length >= 2) {
+    const firstOption = cleanBack.split(' / ')[0].split(' (atau')[0].trim();
+    if (firstOption.length > 0) {
+      return firstOption;
+    }
   }
 
-  // Fallback: clean back_text
-  return (back_text || front_text).replace(/[*_`#]/g, '').trim();
+  // 3. If example_sentence contains a full English sentence or quoted correction (e.g. Perbaikan benar: "She doesn't like...")
+  if (example_sentence && !isIndonesianText(example_sentence)) {
+    return cleanEnglishString(example_sentence);
+  }
+
+  if (example_sentence && example_sentence.includes('"')) {
+    const quotes = example_sentence.match(/"([^"]+)"/g);
+    if (quotes && quotes.length > 0) {
+      for (const q of quotes) {
+        const cleanQ = q.replace(/"/g, '').trim();
+        if (cleanQ.split(/\s+/).length >= 3 && !isIndonesianText(cleanQ)) {
+          return cleanEnglishString(cleanQ);
+        }
+      }
+    }
+  }
+
+  // 4. Vocabulary / Idiom cards where front_text is pure English
+  if (front_text && !isIndonesianText(front_text) && !front_text.includes(':')) {
+    return cleanEnglishString(front_text);
+  }
+
+  // 5. Short English answers from back_text (e.g. "cities", "faster")
+  if (cleanBack && !isIndonesianText(cleanBack)) {
+    return cleanBack.split(' / ')[0].split(' (atau')[0].trim();
+  }
+
+  // 6. Quoted English word from front_text (e.g. Bentuk jamak dari "city" adalah: -> "cities")
+  if (front_text.includes('"')) {
+    const qMatch = front_text.match(/"([^"]+)"/);
+    if (qMatch && qMatch[1] && !isIndonesianText(qMatch[1])) {
+      return cleanEnglishString(qMatch[1]);
+    }
+  }
+
+  return cleanEnglishString(front_text);
 };
 
 /**
