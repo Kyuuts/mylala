@@ -1,12 +1,23 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, RefreshCw, AlertCircle, BookOpen, Mic } from 'lucide-react';
+import { ArrowLeft, RefreshCw, AlertCircle, BookOpen, Mic, Shuffle } from 'lucide-react';
 import { useAppStore } from '../store/useAppStore';
 import Flashcard from '../components/flashcards/Flashcard';
 import Controls from '../components/flashcards/Controls';
 import SessionSummary from '../components/flashcards/SessionSummary';
 import VoiceShadowingWidget from '../components/flashcards/VoiceShadowingWidget';
 import { getTargetSpeechSentence } from '../utils/speechRecognition';
+
+// Algoritma Fisher-Yates Shuffle untuk pengacakan kartu yang merata dan adil
+function shuffleArray(array) {
+  if (!array || array.length <= 1) return array ? [...array] : [];
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+}
 
 export default function FlashcardPage() {
   const { module_id } = useParams();
@@ -19,6 +30,7 @@ export default function FlashcardPage() {
   const [submitting, setSubmitting] = useState(false);
   const [isFinished, setIsFinished] = useState(false);
   const [sessionStats, setSessionStats] = useState({ hard: 0, good: 0, easy: 0 });
+  const [shuffleToast, setShuffleToast] = useState(false);
 
   const loadCards = useCallback(async () => {
     setLoading(true);
@@ -29,7 +41,9 @@ export default function FlashcardPage() {
 
     try {
       const { data } = await fetchFlashcards(module_id);
-      setCards(data || []);
+      const rawList = data || [];
+      // Otomatis acak urutan kartu saat sesi dibuka agar tidak monoton
+      setCards(shuffleArray(rawList));
     } catch (err) {
       console.error('Failed to load flashcards:', err);
     } finally {
@@ -44,6 +58,16 @@ export default function FlashcardPage() {
   const handleFlip = useCallback(() => {
     setIsFlipped((prev) => !prev);
   }, []);
+
+  // Fitur acak manual bila user ingin kocok kartu di tengah sesi
+  const handleShuffle = useCallback(() => {
+    if (cards.length <= 1) return;
+    setCards((prev) => shuffleArray(prev));
+    setCurrentIndex(0);
+    setIsFlipped(false);
+    setShuffleToast(true);
+    setTimeout(() => setShuffleToast(false), 2200);
+  }, [cards.length]);
 
   const handleRate = useCallback(
     async (rating) => {
@@ -89,12 +113,14 @@ export default function FlashcardPage() {
         if (isFlipped) handleRate('Good');
       } else if (e.key === '3') {
         if (isFlipped) handleRate('Easy');
+      } else if (e.key === 's' || e.key === 'S') {
+        handleShuffle();
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [handleFlip, handleRate, isFinished, loading, isFlipped]);
+  }, [handleFlip, handleRate, handleShuffle, isFinished, loading, isFlipped]);
 
   if (loading) {
     return (
@@ -155,16 +181,36 @@ export default function FlashcardPage() {
           {module_id !== 'all' && (
             <Link
               to={`/module/${module_id}`}
-              className="text-xs font-semibold text-indigo-600 hover:text-indigo-800 flex items-center gap-1"
+              className="text-xs font-semibold text-indigo-600 hover:text-indigo-800 flex items-center gap-1 mr-1"
             >
               <BookOpen className="w-3.5 h-3.5" /> Cheat Sheet
             </Link>
           )}
-          <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-indigo-50 text-indigo-700">
+
+          <button
+            type="button"
+            onClick={handleShuffle}
+            title="Kocok ulang susunan kartu (Shortcut: S)"
+            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-bold transition active:scale-95 cursor-pointer border border-indigo-200/80 shadow-2xs"
+          >
+            <Shuffle className="w-3.5 h-3.5 text-indigo-600" />
+            <span>Acak Kartu</span>
+          </button>
+
+          <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 border border-slate-200/80">
             {currentIndex + 1} / {cards.length}
           </span>
         </div>
       </div>
+
+      {/* Visual Feedback Toast when Shuffled */}
+      {shuffleToast && (
+        <div className="flex justify-center -my-2 animate-fade-in">
+          <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-indigo-600 text-white text-xs font-bold shadow-md">
+            <Shuffle className="w-3 h-3 text-indigo-200" /> Urutan kartu berhasil diacak! 🔀
+          </span>
+        </div>
+      )}
 
       {/* Progress Bar */}
       <div className="space-y-1.5">

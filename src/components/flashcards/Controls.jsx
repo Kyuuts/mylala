@@ -26,7 +26,7 @@ export default function Controls({ onRate, disabled, isFlipped, onFlip }) {
     <div className="w-full max-w-lg mx-auto space-y-3 animate-fade-in">
       <div className="flex items-center justify-between text-xs text-slate-500 px-1">
         <span>Tingkat Kemudahan Mengingat:</span>
-        <span className="hidden sm:inline text-slate-400">Shortcuts: [1] [2] [3]</span>
+        <span className="hidden sm:inline text-slate-400">Shortcuts: [1] [2] [3] • [S] Acak</span>
       </div>
 
       <div className="grid grid-cols-3 gap-3">
