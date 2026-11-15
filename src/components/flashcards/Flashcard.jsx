@@ -1,5 +1,5 @@
 import React from 'react';
-import { RotateCw, Volume2, Mic } from 'lucide-react';
+import { RotateCw, Volume2, Mic, Sparkles } from 'lucide-react';
 import { getTargetSpeechSentence } from '../../utils/speechRecognition';
 
 /**
@@ -24,7 +24,15 @@ export const getCleanSpeechText = (card, isFlipped) => {
     .trim();
 };
 
-export default function Flashcard({ card, isFlipped, onFlip, onToggleShadowing, isShadowingActive }) {
+export default function Flashcard({
+  card,
+  isFlipped,
+  onFlip,
+  onToggleShadowing,
+  isShadowingActive,
+  onToggleAiExplainer,
+  isAiExplainerActive,
+}) {
   if (!card) return null;
 
   const playPronunciation = (e) => {
@@ -76,6 +84,22 @@ export default function Flashcard({ card, isFlipped, onFlip, onToggleShadowing, 
                 type="button"
                 onClick={(e) => {
                   e.stopPropagation();
+                  if (onToggleAiExplainer) onToggleAiExplainer();
+                }}
+                title="Tanya Lala AI tentang kartu ini"
+                aria-label="Tanya Lala AI tentang kartu ini"
+                className={`p-2 min-w-[36px] min-h-[36px] flex items-center justify-center rounded-full transition cursor-pointer ${
+                  isAiExplainerActive
+                    ? 'bg-amber-100 text-amber-800'
+                    : 'hover:bg-amber-50 text-amber-600 hover:text-amber-700'
+                }`}
+              >
+                <Sparkles className="w-4 h-4 fill-amber-400 text-amber-500" />
+              </button>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
                   if (onToggleShadowing) onToggleShadowing();
                 }}
                 title="Latih pengucapan suara (Voice Shadowing)"
@@ -118,6 +142,22 @@ export default function Flashcard({ card, isFlipped, onFlip, onToggleShadowing, 
               Arti &amp; Kunci Jawaban
             </span>
             <div className="flex items-center gap-1">
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (onToggleAiExplainer) onToggleAiExplainer();
+                }}
+                title="Tanya Lala AI tentang kartu ini"
+                aria-label="Tanya Lala AI tentang kartu ini"
+                className={`p-2 min-w-[36px] min-h-[36px] flex items-center justify-center rounded-full transition cursor-pointer ${
+                  isAiExplainerActive
+                    ? 'bg-amber-100 text-amber-800'
+                    : 'hover:bg-amber-50 text-amber-600 hover:text-amber-700'
+                }`}
+              >
+                <Sparkles className="w-4 h-4 fill-amber-400 text-amber-500" />
+              </button>
               <button
                 type="button"
                 onClick={(e) => {

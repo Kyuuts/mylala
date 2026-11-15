@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { X, Camera, Check, User, AtSign, AlertCircle, RefreshCw, Upload, RotateCcw } from 'lucide-react';
+import { X, Camera, Check, User, AtSign, AlertCircle, RefreshCw, Upload, RotateCcw, Sparkles } from 'lucide-react';
 import { useAppStore } from '../../store/useAppStore';
 import { PRESET_AVATARS, compressImageFile } from '../../utils/avatars';
+import AiSettingsModal from '../ai/AiSettingsModal';
 
 export default function EditProfileModal({ isOpen, onClose }) {
-  const { user, updateProfile } = useAppStore();
+  const { user, updateProfile, aiConfig } = useAppStore();
 
   const [name, setName] = useState('');
   const [username, setUsername] = useState('');
@@ -14,6 +15,7 @@ export default function EditProfileModal({ isOpen, onClose }) {
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState(null);
   const [successMsg, setSuccessMsg] = useState(null);
+  const [aiModalOpen, setAiModalOpen] = useState(false);
 
   const fileInputRef = useRef(null);
 
@@ -319,6 +321,33 @@ export default function EditProfileModal({ isOpen, onClose }) {
                 />
               </div>
             </div>
+
+            {/* AI Assistant Quick Config */}
+            <div className="p-2.5 rounded-xl bg-gradient-to-r from-indigo-50/70 to-purple-50/70 border border-indigo-100 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="w-7 h-7 rounded-lg bg-indigo-600 text-white flex items-center justify-center shrink-0">
+                  <Sparkles className="w-3.5 h-3.5" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[11px] font-extrabold text-slate-800">Asisten Lala AI</span>
+                    <span className="text-[9px] font-bold px-1.5 py-0.2 rounded-full bg-indigo-100 text-indigo-700">
+                      {aiConfig?.provider ? aiConfig.provider.toUpperCase() : 'GROQ'}
+                    </span>
+                  </div>
+                  <span className="text-[10px] text-slate-500">
+                    {aiConfig?.status === 'ready' ? '🟢 Terhubung & Siap' : '⚡ Kelola API Key gratis'}
+                  </span>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setAiModalOpen(true)}
+                className="px-2.5 py-1 rounded-lg bg-white hover:bg-slate-50 active:scale-95 text-indigo-700 text-[11px] font-bold border border-indigo-200 transition shadow-2xs cursor-pointer"
+              >
+                Konfigurasi
+              </button>
+            </div>
           </div>
 
           {/* Minimalist Bottom Actions */}
@@ -352,6 +381,12 @@ export default function EditProfileModal({ isOpen, onClose }) {
         </form>
 
       </div>
+
+      {/* Lala AI Settings Sub-Modal */}
+      <AiSettingsModal
+        isOpen={aiModalOpen}
+        onClose={() => setAiModalOpen(false)}
+      />
     </div>,
     document.body
   );

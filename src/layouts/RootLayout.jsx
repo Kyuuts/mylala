@@ -11,6 +11,14 @@ export default function RootLayout() {
   const user = useAppStore((state) => state.user);
   const fetchUserStatsFromSupabase = useAppStore((state) => state.fetchUserStatsFromSupabase);
   const fetchUserProgressFromSupabase = useAppStore((state) => state.fetchUserProgressFromSupabase);
+  const fetchAiConfigFromSupabase = useAppStore((state) => state.fetchAiConfigFromSupabase);
+
+  // Sync global AI config from Supabase Cloud on initial mount
+  useEffect(() => {
+    if (fetchAiConfigFromSupabase) {
+      fetchAiConfigFromSupabase();
+    }
+  }, [fetchAiConfigFromSupabase]);
 
   // Sync cloud stats and progress from Supabase on mount and tab focus/visibility
   useEffect(() => {

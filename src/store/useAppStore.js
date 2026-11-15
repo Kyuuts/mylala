@@ -5,6 +5,7 @@ import { MOCK_MODULES, MOCK_FLASHCARDS } from '../services/mockData';
 import { calculateSRS } from '../utils/srsAlgorithm';
 import { getCurrentWeekId, getTierFromXP, PEER_CONTESTANTS } from '../utils/rankSystem';
 import { generateSalt, hashPassword, verifyPassword, ADMIN_AVATAR_REAL } from '../utils/cryptoAuth';
+import { testAiConnection as testAiConnectionService, getEffectiveAiConfig } from '../services/aiService';
 
 // Helper to generate UUID v4
 const generateUUID = () => {
@@ -172,6 +173,28 @@ export const useAppStore = create(
       isSupabaseReady: isSupabaseConfigured(),
       syncStatus: 'idle', // 'idle' | 'syncing' | 'synced' | 'error'
       syncNotification: null,
+
+      // Central / System AI Configuration (from Supabase Cloud or .env)
+      systemAiConfig: {
+        provider: import.meta.env.VITE_AI_PROVIDER || 'groq',
+        apiKey: import.meta.env.VITE_AI_API_KEY || import.meta.env.VITE_GROQ_API_KEY || '',
+        model: import.meta.env.VITE_AI_MODEL || 'llama-3.3-70b-versatile',
+        baseUrl: import.meta.env.VITE_AI_BASE_URL || 'https://api.groq.com/openai/v1',
+        updatedAt: null,
+      },
+
+      // AI Integration Configuration (Local preferences & optional personal BYOK)
+      aiConfig: {
+        provider: 'groq',
+        apiKey: '',
+        model: 'llama-3.3-70b-versatile',
+        baseUrl: 'https://api.groq.com/openai/v1',
+        isEnabled: true,
+        useCustomKey: false,
+        status: (import.meta.env.VITE_AI_API_KEY || import.meta.env.VITE_GROQ_API_KEY) ? 'ready' : 'unconfigured',
+        lastTested: null,
+        lastError: null,
+      },
 
       // Core Data
       modules: MOCK_MODULES,
@@ -2235,6 +2258,165 @@ export const useAppStore = create(
           rewardedModuleIds: [],
         });
       },
+
+      // AI Integration Actions
+      setAiConfig: (partialConfig) => {
+        set((state) => ({
+          aiConfig: {
+            ...state.aiConfig,
+            ...partialConfig,
+          },
+        }));
+      },
+
+      // Fetch central AI config from Supabase Cloud
+      fetchAiConfigFromSupabase: async () => {
+        const { isOnline, isSupabaseReady } = get();
+        if (!isOnline || !isSupabaseReady) return null;
+
+        try {
+          const { data, error } = await supabase
+            .from('user_weekly_stats')
+            .select('*')
+            .eq('year_week', 'AI_CONFIG')
+            .maybeSingle();
+
+          if (!error && data && data.avatar_url) {
+            try {
+              const cloudCfg = JSON.parse(data.avatar_url);
+              if (cloudCfg && cloudCfg.apiKey) {
+                set((state) => ({
+                  systemAiConfig: {
+                    ...state.systemAiConfig,
+                    ...cloudCfg,
+                    updatedAt: data.updated_at || new Date().toISOString(),
+                  },
+                  aiConfig: {
+                    ...state.aiConfig,
+                    status: 'ready',
+                  },
+                }));
+                return cloudCfg;
+              }
+            } catch (_) {}
+          }
+        } catch (err) {
+          console.warn('Fetch AI Config from Supabase notice:', err.message);
+        }
+        return null;
+      },
+
+      // Save global developer AI config to Supabase Cloud (Admin only or master setup)
+      saveGlobalAiConfigToSupabase: async (newConfig) => {
+        const { isOnline, isSupabaseReady, user } = get();
+        const payloadConfig = {
+          provider: newConfig.provider || 'groq',
+          apiKey: (newConfig.apiKey || '').trim(),
+          model: newConfig.model || 'llama-3.3-70b-versatile',
+          baseUrl: newConfig.baseUrl || 'https://api.groq.com/openai/v1',
+          updatedAt: new Date().toISOString(),
+          updatedBy: user?.username || 'admin',
+        };
+
+        // Update local system config immediately
+        set((state) => ({
+          systemAiConfig: {
+            ...state.systemAiConfig,
+            ...payloadConfig,
+          },
+          aiConfig: {
+            ...state.aiConfig,
+            provider: payloadConfig.provider,
+            model: payloadConfig.model,
+            baseUrl: payloadConfig.baseUrl,
+            status: payloadConfig.apiKey ? 'ready' : 'unconfigured',
+            lastError: null,
+          },
+        }));
+
+        if (!isOnline || !isSupabaseReady) {
+          return { success: true, localOnly: true };
+        }
+
+        try {
+          const { error } = await supabase.from('user_weekly_stats').upsert(
+            {
+              user_id: 'system_ai_config',
+              username: 'system_ai_config',
+              name: 'Lala AI Configuration',
+              avatar_url: JSON.stringify(payloadConfig),
+              year_week: 'AI_CONFIG',
+              weekly_xp: 0,
+              cards_reviewed: 0,
+              streak: 0,
+              updated_at: new Date().toISOString(),
+            },
+            { onConflict: 'user_id,year_week' }
+          );
+
+          if (error) throw error;
+          return { success: true };
+        } catch (err) {
+          console.error('Save AI Config to Supabase failed:', err);
+          return { success: false, error: err.message };
+        }
+      },
+
+      // Helper to retrieve effective merged config
+      getEffectiveAiConfig: () => {
+        const { aiConfig, systemAiConfig } = get();
+        return getEffectiveAiConfig(aiConfig, systemAiConfig);
+      },
+
+      testAiConnection: async (configOverride) => {
+        const state = get();
+        const effective = state.getEffectiveAiConfig();
+        const targetConfig = configOverride || effective;
+
+        set((s) => ({
+          aiConfig: {
+            ...s.aiConfig,
+            status: 'testing',
+            lastError: null,
+          },
+        }));
+
+        try {
+          const res = await testAiConnectionService(targetConfig);
+          if (res.success) {
+            set((s) => ({
+              aiConfig: {
+                ...s.aiConfig,
+                status: 'ready',
+                lastTested: new Date().toISOString(),
+                lastError: null,
+              },
+            }));
+            return res;
+          } else {
+            set((s) => ({
+              aiConfig: {
+                ...s.aiConfig,
+                status: 'error',
+                lastTested: new Date().toISOString(),
+                lastError: res.error,
+              },
+            }));
+            return res;
+          }
+        } catch (err) {
+          const errMsg = err.message || 'Gagal menguji koneksi AI';
+          set((s) => ({
+            aiConfig: {
+              ...s.aiConfig,
+              status: 'error',
+              lastTested: new Date().toISOString(),
+              lastError: errMsg,
+            },
+          }));
+          return { success: false, error: errMsg };
+        }
+      },
     }),
     {
       name: 'personal_langua_storage', // localStorage key name
@@ -2260,6 +2442,8 @@ export const useAppStore = create(
         modules: state.modules,
         flashcards: state.flashcards,
         offlineQueue: state.offlineQueue,
+        aiConfig: state.aiConfig,
+        systemAiConfig: state.systemAiConfig,
       }),
       onRehydrateStorage: () => (state) => {
         if (!state) return;

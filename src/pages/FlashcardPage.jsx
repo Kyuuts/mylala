@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, RefreshCw, AlertCircle, BookOpen, Mic, Shuffle } from 'lucide-react';
+import { ArrowLeft, RefreshCw, AlertCircle, BookOpen, Mic, Shuffle, Sparkles } from 'lucide-react';
 import { useAppStore } from '../store/useAppStore';
 import Flashcard from '../components/flashcards/Flashcard';
 import Controls from '../components/flashcards/Controls';
 import SessionSummary from '../components/flashcards/SessionSummary';
 import VoiceShadowingWidget from '../components/flashcards/VoiceShadowingWidget';
+import FlashcardAiExplainer from '../components/flashcards/FlashcardAiExplainer';
 import { getTargetSpeechSentence } from '../utils/speechRecognition';
 
 // Algoritma Fisher-Yates Shuffle untuk pengacakan kartu yang merata dan adil
@@ -26,6 +27,7 @@ export default function FlashcardPage() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
   const [showVoiceShadowing, setShowVoiceShadowing] = useState(false);
+  const [showAiExplainer, setShowAiExplainer] = useState(false);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [isFinished, setIsFinished] = useState(false);
@@ -227,24 +229,62 @@ export default function FlashcardPage() {
         card={currentCard}
         isFlipped={isFlipped}
         onFlip={handleFlip}
-        onToggleShadowing={() => setShowVoiceShadowing((prev) => !prev)}
+        onToggleShadowing={() => {
+          setShowVoiceShadowing((prev) => !prev);
+          if (!showVoiceShadowing) setShowAiExplainer(false);
+        }}
         isShadowingActive={showVoiceShadowing}
+        onToggleAiExplainer={() => {
+          setShowAiExplainer((prev) => !prev);
+          if (!showAiExplainer) setShowVoiceShadowing(false);
+        }}
+        isAiExplainerActive={showAiExplainer}
       />
 
-      {/* Voice Shadowing Quick Bar */}
-      <div className="flex justify-center">
+      {/* Quick Action Bar: Lala AI Assistant & Voice Shadowing */}
+      <div className="flex flex-wrap items-center justify-center gap-2">
         <button
-          onClick={() => setShowVoiceShadowing((prev) => !prev)}
-          className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer ${
-            showVoiceShadowing
-              ? 'bg-indigo-600 text-white shadow-md'
+          type="button"
+          onClick={() => {
+            setShowAiExplainer((prev) => !prev);
+            if (!showAiExplainer) setShowVoiceShadowing(false);
+          }}
+          className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-black transition-all shadow-xs cursor-pointer active:scale-95 ${
+            showAiExplainer
+              ? 'bg-gradient-to-r from-indigo-600 via-indigo-700 to-purple-600 text-white shadow-md'
               : 'bg-white hover:bg-indigo-50 text-indigo-700 border border-indigo-200'
           }`}
         >
+          <Sparkles className={`w-3.5 h-3.5 ${showAiExplainer ? 'text-amber-300 fill-amber-300' : 'text-amber-500 fill-amber-400'}`} />
+          <span>{showAiExplainer ? 'Sembunyikan Lala AI' : '💡 Tanya Lala AI'}</span>
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => {
+            setShowVoiceShadowing((prev) => !prev);
+            if (!showVoiceShadowing) setShowAiExplainer(false);
+          }}
+          className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer active:scale-95 ${
+            showVoiceShadowing
+              ? 'bg-indigo-600 text-white shadow-md'
+              : 'bg-white hover:bg-slate-50 text-slate-700 border border-slate-200'
+          }`}
+        >
           <Mic className={`w-3.5 h-3.5 ${showVoiceShadowing ? 'text-white' : 'text-indigo-600'}`} />
-          <span>{showVoiceShadowing ? 'Sembunyikan Latihan Pelafalan' : '🎙️ Latih Pelafalan (Voice Shadowing)'}</span>
+          <span>{showVoiceShadowing ? 'Sembunyikan Pelafalan' : '🎙️ Latih Pelafalan'}</span>
         </button>
       </div>
+
+      {/* Lala AI Explainer Drawer */}
+      {showAiExplainer && (
+        <FlashcardAiExplainer
+          card={currentCard}
+          isFlipped={isFlipped}
+          onClose={() => setShowAiExplainer(false)}
+        />
+      )}
 
       {/* Voice Shadowing Assessment Engine */}
       {showVoiceShadowing && (

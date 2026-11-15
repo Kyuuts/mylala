@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
 import { NavLink, Link, useNavigate } from 'react-router-dom';
-import { BookOpen, Zap, Newspaper, PlusCircle, WifiOff, Cloud, RefreshCw, LogOut, User, Trophy, Settings } from 'lucide-react';
+import { BookOpen, Zap, Newspaper, PlusCircle, WifiOff, Cloud, RefreshCw, LogOut, User, Trophy, Settings, Sparkles } from 'lucide-react';
 import { useAppStore } from '../../store/useAppStore';
 import Logo from './Logo';
 import EditProfileModal from '../profile/EditProfileModal';
+import AiSettingsModal from '../ai/AiSettingsModal';
 
 export default function Navbar() {
   const navigate = useNavigate();
-  const { isOnline, isSupabaseReady, syncStatus, offlineQueue, user, logout, weeklyXp, isAuthenticated } = useAppStore();
+  const { isOnline, isSupabaseReady, syncStatus, offlineQueue, user, logout, weeklyXp, isAuthenticated, aiConfig } = useAppStore();
   const [editProfileOpen, setEditProfileOpen] = useState(false);
+  const [aiSettingsOpen, setAiSettingsOpen] = useState(false);
 
   const handleLogout = () => {
     logout();
@@ -145,6 +147,18 @@ export default function Navbar() {
             </NavLink>
           )}
 
+          {/* Lala AI Quick Settings Button */}
+          <button
+            type="button"
+            onClick={() => setAiSettingsOpen(true)}
+            title="Pengaturan Lala AI (Model LLM Gratis)"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-black transition cursor-pointer min-h-[38px] active:scale-95 bg-gradient-to-r from-indigo-50 to-purple-50 hover:from-indigo-100 hover:to-purple-100 text-indigo-700 border border-indigo-200/90 shadow-2xs"
+          >
+            <Sparkles className="w-3.5 h-3.5 text-amber-500 fill-amber-400 shrink-0" />
+            <span className="inline font-extrabold tracking-tight">Lala AI</span>
+            <span className="w-2 h-2 rounded-full bg-emerald-500 ring-2 ring-white shrink-0 animate-pulse"></span>
+          </button>
+
           {/* User Profile & Auth Trigger */}
           {isAuthenticated && user ? (
             <div className="flex items-center gap-1.5 sm:gap-2 pl-2 border-l border-slate-200">
@@ -199,6 +213,12 @@ export default function Navbar() {
       <EditProfileModal
         isOpen={editProfileOpen}
         onClose={() => setEditProfileOpen(false)}
+      />
+
+      {/* Lala AI Settings Modal */}
+      <AiSettingsModal
+        isOpen={aiSettingsOpen}
+        onClose={() => setAiSettingsOpen(false)}
       />
     </header>
   );
