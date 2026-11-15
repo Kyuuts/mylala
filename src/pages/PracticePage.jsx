@@ -29,9 +29,11 @@ import {
   SENTENCE_BUILDER_CHALLENGES,
 } from '../services/practiceModesData';
 import { useAppStore } from '../store/useAppStore';
+import LalaAiRoleplayModal from '../components/ai/LalaAiRoleplayModal';
 
 export default function PracticePage() {
   const { flashcards, userProgress, streak, weeklyXp, addXp } = useAppStore();
+  const [isAiRoleplayOpen, setIsAiRoleplayOpen] = useState(false);
 
   // Active Mode Modal State: null | 'detective' | 'conjunction' | 'dictation' | 'roleplay' | 'builder'
   const [activeModal, setActiveModal] = useState(null);
@@ -246,15 +248,15 @@ export default function PracticePage() {
     },
     {
       id: 'roleplay',
-      title: 'Dialog (Roleplay Lounge)',
-      tagline: 'Real-Life Situational Chat Simulation',
-      description: 'Simulasi percakapan interaktif seperti memesan kopi di London atau wawancara kerja profesional dengan feedback kesantunan.',
+      title: 'Dialog AI (Roleplay Lounge) ⚡',
+      tagline: 'Percakapan Interaktif Nyata Bersama Lala AI',
+      description: 'Latih kemampuan berbicara & mengobrol dalam situasi nyata (Kafe London, Wawancara Kerja, Hotel, dll.) dengan koreksi tata bahasa instan dan audio suara.',
       icon: MessageSquare,
       color: 'emerald',
-      badge: 'Simulasi Chat • +25 XP',
-      badgeClass: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-      actionText: 'Masuk Lounge Dialog',
-      onClick: openRoleplay,
+      badge: 'Lala AI Cerdas • +30 XP',
+      badgeClass: 'bg-emerald-50 text-emerald-800 border-emerald-200 font-extrabold',
+      actionText: 'Mulai Obrolan AI ➔',
+      onClick: () => setIsAiRoleplayOpen(true),
     },
     {
       id: 'builder',
@@ -939,6 +941,12 @@ export default function PracticePage() {
           </div>
         </div>
       )}
+
+      {/* Lala AI Interactive Roleplay Modal */}
+      <LalaAiRoleplayModal
+        isOpen={isAiRoleplayOpen}
+        onClose={() => setIsAiRoleplayOpen(false)}
+      />
     </div>
   );
 }
