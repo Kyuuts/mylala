@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import {
   Sparkles,
   Lightbulb,
@@ -43,29 +45,60 @@ export default function FlashcardAiExplainer({ card, isFlipped, onClose }) {
   const getPromptForTab = (tab) => {
     switch (tab) {
       case 'nuance':
-        return `Tolong bedah dan jelaskan kartu kosakata/tata bahasa ini secara padat, edukatif, dan ramah:
-- Materi / Pertanyaan: "${frontText}"
-- Arti / Jawaban: "${backText}"
-${exampleSentence ? `- Kalimat Contoh: "${exampleSentence}"` : ''}
+        return `Instruksi Khusus:
+- DILARANG menulis salam pembuka, perkenalan diri, atau kalimat basa-basi (JANGAN tulis "Hai! Aku Lala", "Mari kita bedah", dll).
+- Langsung sajikan penjelasan dalam format Markdown yang rapi, elegan, dan profesional.
+- Sesuaikan kosakata agar cocok untuk tingkat pemahaman CEFR ${cefrLevel}.
 
-Tolong jelaskan:
-1. Makna inti dan bagaimana cara menggunakannya dalam situasi nyata.
-2. Nuansa atau perbedaan dengan kata/frasa yang mirip (jika ada).
-3. Aturan tata bahasa penting yang perlu diingat oleh pembelajar level ${cefrLevel}.`;
+Materi Kartu: "${frontText}"
+Kunci/Arti: "${backText}"
+${exampleSentence ? `Kalimat Contoh: "${exampleSentence}"` : ''}
+
+Format wajib:
+### 📌 1. Aturan & Makna Utama
+(Jelaskan fungsi gramatika atau makna kata secara tegas, padat, dan jelas. Sertakan rumus/pola kalimat jika materi tata bahasa).
+
+### 🔍 2. Nuansa & Perbandingan
+(Tampilkan tabel Markdown atau poin perbandingan dengan kata/struktur yang sering tertukar atau membingungkan pembelajar).
+
+### 💡 3. Contoh Penggunaan Nyata
+(Berikan 2 contoh kalimat bahasa Inggris sehari-hari yang natural beserta terjemahan bahasa Indonesianya).`;
 
       case 'dialogue':
-        return `Tolong buatkan 2 dialog percakapan pendek (masing-masing 2-3 baris pertukaran) yang natural dan relevan dalam kehidupan sehari-hari menggunakan materi ini:
-- Materi: "${frontText}"
-- Arti: "${backText}"
+        return `Instruksi Khusus:
+- DILARANG menulis salam pembuka atau basa-basi.
+- Langsung sajikan 2 skenario dialog percakapan pendek yang natural dalam kehidupan nyata untuk level ${cefrLevel}.
 
-Sertakan terjemahan bahasa Indonesia di setiap baris percakapan dan pastikan kosakatanya cocok untuk tingkat CEFR ${cefrLevel}.`;
+Materi: "${frontText}" (Arti: "${backText}")
+
+Format wajib:
+### 💬 Situasi 1: [Nama Situasi Sehari-hari]
+- **A**: "[Kalimat percakapan bahasa Inggris]" (*[Arti bahasa Indonesia]*)
+- **B**: "[Kalimat balasan bahasa Inggris]" (*[Arti bahasa Indonesia]*)
+
+### 💬 Situasi 2: [Nama Situasi Lainnya]
+- **A**: "[Kalimat percakapan bahasa Inggris]" (*[Arti bahasa Indonesia]*)
+- **B**: "[Kalimat balasan bahasa Inggris]" (*[Arti bahasa Indonesia]*)
+
+> 💡 **Poin Praktik:** (Berikan 1 tips singkat cara mengucapkan atau intonasi yang pas).`;
 
       case 'mnemonic':
-        return `Berikan tips cara mudah dan cepat mengingat (mnemonik / jembatan keledai / asosiasi visual unik atau lucu) untuk materi ini:
-- Kata / Frasa: "${frontText}"
-- Arti: "${backText}"
+        return `Instruksi Khusus:
+- DILARANG menulis salam pembuka atau basa-basi.
+- Langsung berikan trik mengingat yang kreatif, ringkas, dan melekat di ingatan untuk level ${cefrLevel}.
 
-Tuliskan tips ingatan yang kreatif dan mudah terngiang di kepala agar tidak pernah lupa lagi!`;
+Materi: "${frontText}" (Arti: "${backText}")
+
+Format wajib:
+### 🧠 Jembatan Keledai (Mnemonik Cerdas)
+(Trik kata kunci, rima, atau asosiasi visual unik agar langsung terngiang di otak).
+
+### ⚡ Pola Cepat Ingat
+(Rumus 1 baris yang mudah dihafal).
+
+### ⚠️ Kesalahan Umum (Common Mistake)
+- ❌ **Salah:** [Contoh kalimat salah yang sering dibuat orang]
+- ✅ **Benar:** [Kalimat yang benar beserta penjelasannya]`;
 
       default:
         return '';
@@ -95,8 +128,8 @@ Tuliskan tips ingatan yang kreatif dan mudah terngiang di kepala agar tidak pern
         prompt: promptText,
         userCefrLevel: cefrLevel,
         config,
-        temperature: 0.6,
-        maxTokens: 600,
+        temperature: 0.5,
+        maxTokens: 1200,
       });
 
       const cleanText = (res.content || '').trim();
@@ -123,13 +156,12 @@ Tuliskan tips ingatan yang kreatif dan mudah terngiang di kepala agar tidak pern
     const query = customQuestion.trim();
     if (!query || isLoading) return;
 
-    const fullCustomPrompt = `Terkait materi kartu ini:
-- Kartu: "${frontText}" (Arti: "${backText}")
+    const fullCustomPrompt = `Instruksi Khusus: DILARANG membuat salam pembuka atau basa-basi. Langsung jawab secara profesional dan to-the-point dalam Bahasa Indonesia yang ramah sesuai tingkat CEFR ${cefrLevel}.
+
+Materi kartu: "${frontText}" (Arti: "${backText}")
 
 Pertanyaan pengguna:
-"${query}"
-
-Jawablah dengan ramah, jelas, dan edukatif dalam Bahasa Indonesia yang santai sesuai level CEFR ${cefrLevel}.`;
+"${query}"`;
 
     fetchExplanation('custom', fullCustomPrompt);
     setCustomQuestion('');
@@ -137,11 +169,13 @@ Jawablah dengan ramah, jelas, dan edukatif dalam Bahasa Indonesia yang santai se
 
   // Speech synthesis for English quotes/sentences inside response
   const playSpeech = (text) => {
-    if ('speechSynthesis' in window) {
+    if ('speechSynthesis' in window && text) {
       window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(text);
+      // Remove markdown chars
+      const clean = text.replace(/[*_#`]/g, '').trim();
+      const utterance = new SpeechSynthesisUtterance(clean);
       utterance.lang = 'en-US';
-      utterance.rate = 0.9;
+      utterance.rate = 0.88;
       window.speechSynthesis.speak(utterance);
     }
   };
@@ -171,11 +205,11 @@ Jawablah dengan ramah, jelas, dan edukatif dalam Bahasa Indonesia yang santai se
             <div className="flex items-center gap-1.5">
               <span className="font-extrabold text-sm tracking-tight">Asisten Lala AI</span>
               <span className="text-[10px] font-black px-1.5 py-0.2 rounded-full bg-amber-400 text-slate-900 shadow-2xs">
-                Level {cefrLevel}
+                CEFR {cefrLevel}
               </span>
             </div>
-            <p className="text-[10px] text-indigo-100">
-              Bedah tuntas kartu: <strong className="text-white font-semibold">{frontText}</strong>
+            <p className="text-[10px] text-indigo-100 truncate max-w-[240px] sm:max-w-md">
+              Materi: <strong className="text-white font-semibold">{frontText}</strong>
             </p>
           </div>
         </div>
@@ -202,7 +236,7 @@ Jawablah dengan ramah, jelas, dan edukatif dalam Bahasa Indonesia yang santai se
       </div>
 
       {/* Preset Action Tabs */}
-      <div className="p-2 sm:p-3 border-b border-indigo-100/80 bg-white flex items-center gap-1.5 overflow-x-auto scrollbar-none text-xs">
+      <div className="p-2 sm:p-2.5 border-b border-indigo-100 bg-white flex items-center gap-1.5 overflow-x-auto scrollbar-none text-xs">
         <button
           type="button"
           onClick={() => setActiveTab('nuance')}
@@ -257,21 +291,23 @@ Jawablah dengan ramah, jelas, dan edukatif dalam Bahasa Indonesia yang santai se
       </div>
 
       {/* Main Content Area */}
-      <div className="p-4 sm:p-5 space-y-3">
+      <div className="p-3.5 sm:p-5 space-y-3">
         {/* Loading Spinner */}
         {isLoading && (
-          <div className="py-8 flex flex-col items-center justify-center space-y-2 text-indigo-600">
+          <div className="py-10 flex flex-col items-center justify-center space-y-2.5 text-indigo-600">
             <div className="relative">
-              <RefreshCw className="w-6 h-6 animate-spin text-indigo-600" />
-              <Sparkles className="w-3 h-3 text-amber-500 absolute -top-1 -right-1 animate-pulse" />
+              <RefreshCw className="w-7 h-7 animate-spin text-indigo-600" />
+              <Sparkles className="w-3.5 h-3.5 text-amber-500 absolute -top-1 -right-1 animate-pulse" />
             </div>
-            <p className="text-xs font-bold text-slate-600">Lala sedang menyusun penjelasan terbaik...</p>
+            <p className="text-xs font-bold text-slate-600 tracking-tight">
+              Lala sedang merancang penjelasan terbaik...
+            </p>
           </div>
         )}
 
         {/* Error Alert */}
         {!isLoading && errorMsg && (
-          <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-start gap-2">
+          <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-start gap-2.5">
             <X className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
             <div className="space-y-1">
               <p className="font-bold">Gagal Menghubungi Lala AI</p>
@@ -279,7 +315,7 @@ Jawablah dengan ramah, jelas, dan edukatif dalam Bahasa Indonesia yang santai se
               <button
                 type="button"
                 onClick={() => fetchExplanation(activeTab)}
-                className="mt-1 inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-rose-600 text-white font-bold text-[10px] hover:bg-rose-700"
+                className="mt-1.5 inline-flex items-center gap-1 px-3 py-1 rounded-lg bg-rose-600 text-white font-bold text-[11px] hover:bg-rose-700"
               >
                 <RotateCcw className="w-3 h-3" /> Coba Lagi
               </button>
@@ -287,30 +323,101 @@ Jawablah dengan ramah, jelas, dan edukatif dalam Bahasa Indonesia yang santai se
           </div>
         )}
 
-        {/* Response Markdown-style Presentation */}
+        {/* Fully Rendered Professional Markdown Presentation */}
         {!isLoading && !errorMsg && responseContent && (
-          <div className="relative group">
-            <div className="prose prose-sm max-w-none text-slate-800 text-xs sm:text-[13px] leading-relaxed space-y-2.5 bg-white p-3.5 sm:p-4 rounded-xl border border-indigo-100/80 shadow-2xs whitespace-pre-line">
-              {responseContent}
+          <div className="space-y-3">
+            <div className="bg-white p-4 sm:p-5 rounded-2xl border border-indigo-100/90 shadow-2xs">
+              <ReactMarkdown
+                remarkPlugins={[remarkGfm]}
+                components={{
+                  h2: ({ node, ...props }) => (
+                    <h2
+                      className="text-sm font-black text-indigo-950 mt-4 mb-2 flex items-center gap-1.5 border-b border-slate-100 pb-1.5"
+                      {...props}
+                    />
+                  ),
+                  h3: ({ node, ...props }) => (
+                    <h3
+                      className="text-xs sm:text-sm font-extrabold text-indigo-900 mt-3.5 mb-1.5 flex items-center gap-1"
+                      {...props}
+                    />
+                  ),
+                  p: ({ node, ...props }) => (
+                    <p
+                      className="text-xs sm:text-[13px] text-slate-700 leading-relaxed my-1.5"
+                      {...props}
+                    />
+                  ),
+                  ul: ({ node, ...props }) => (
+                    <ul
+                      className="list-disc list-inside space-y-1.5 my-2 text-xs sm:text-[13px] text-slate-700 pl-1"
+                      {...props}
+                    />
+                  ),
+                  ol: ({ node, ...props }) => (
+                    <ol
+                      className="list-decimal list-inside space-y-1.5 my-2 text-xs sm:text-[13px] text-slate-700 pl-1"
+                      {...props}
+                    />
+                  ),
+                  li: ({ node, ...props }) => (
+                    <li className="leading-relaxed" {...props} />
+                  ),
+                  blockquote: ({ node, ...props }) => (
+                    <blockquote
+                      className="border-l-4 border-indigo-500 pl-3.5 py-2 my-2.5 bg-indigo-50/70 rounded-r-xl italic text-xs sm:text-[13px] text-indigo-950 font-medium"
+                      {...props}
+                    />
+                  ),
+                  strong: ({ node, ...props }) => (
+                    <strong className="font-extrabold text-slate-900" {...props} />
+                  ),
+                  code: ({ node, ...props }) => (
+                    <code
+                      className="px-1.5 py-0.5 rounded-md bg-indigo-50 text-indigo-700 font-mono text-[11px] font-bold border border-indigo-100"
+                      {...props}
+                    />
+                  ),
+                  table: ({ node, ...props }) => (
+                    <div className="overflow-x-auto my-3 rounded-xl border border-slate-200 shadow-2xs">
+                      <table className="w-full text-xs text-left border-collapse" {...props} />
+                    </div>
+                  ),
+                  thead: ({ node, ...props }) => (
+                    <thead className="bg-indigo-50/90 text-indigo-950 font-extrabold border-b border-indigo-100" {...props} />
+                  ),
+                  th: ({ node, ...props }) => (
+                    <th className="py-2.5 px-3 font-extrabold text-slate-800" {...props} />
+                  ),
+                  td: ({ node, ...props }) => (
+                    <td className="py-2.5 px-3 border-t border-slate-100 text-slate-700 bg-white" {...props} />
+                  ),
+                  hr: ({ node, ...props }) => (
+                    <hr className="my-3.5 border-slate-200" {...props} />
+                  ),
+                }}
+              >
+                {responseContent}
+              </ReactMarkdown>
             </div>
 
             {/* Quick Actions Footer inside response */}
-            <div className="mt-2 flex items-center justify-between text-[11px] text-slate-500 pt-1">
+            <div className="flex items-center justify-between text-[11px] text-slate-500 px-1">
               <span className="flex items-center gap-1 text-slate-400">
                 <Zap className="w-3 h-3 text-amber-500" />
-                Dihasilkan instan &bull; Disesuaikan untuk {cefrLevel}
+                Respon cerdas disesuaikan untuk level CEFR {cefrLevel}
               </span>
 
               <div className="flex items-center gap-1.5">
                 <button
                   type="button"
                   onClick={handleCopy}
-                  className="inline-flex items-center gap-1 px-2 py-1 rounded-md hover:bg-slate-200 text-slate-600 font-medium transition cursor-pointer"
+                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg hover:bg-slate-200 text-slate-700 font-semibold transition cursor-pointer border border-slate-200 bg-white"
                 >
                   {copied ? (
                     <>
                       <Check className="w-3 h-3 text-emerald-600" />
-                      <span className="text-emerald-700 font-bold">Disalin</span>
+                      <span className="text-emerald-700 font-bold">Tersalin!</span>
                     </>
                   ) : (
                     <>
@@ -328,7 +435,7 @@ Jawablah dengan ramah, jelas, dan edukatif dalam Bahasa Indonesia yang santai se
         {activeTab === 'custom' && (
           <form onSubmit={handleCustomSubmit} className="pt-2">
             <label className="block text-[11px] font-bold text-slate-700 mb-1">
-              Ajukan pertanyaan khusus seputar kata ini:
+              Ajukan pertanyaan khusus seputar materi kartu ini:
             </label>
             <div className="flex items-center gap-2">
               <input
@@ -337,12 +444,12 @@ Jawablah dengan ramah, jelas, dan edukatif dalam Bahasa Indonesia yang santai se
                 onChange={(e) => setCustomQuestion(e.target.value)}
                 placeholder="Contoh: Apa bedanya dengan kata 'happen'?"
                 disabled={isLoading}
-                className="flex-1 px-3 py-2 text-xs rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white"
+                className="flex-1 px-3 py-2 text-xs rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white text-slate-900"
               />
               <button
                 type="submit"
                 disabled={isLoading || !customQuestion.trim()}
-                className="px-3 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-bold text-xs transition flex items-center gap-1 cursor-pointer disabled:opacity-50 shrink-0"
+                className="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-bold text-xs transition flex items-center gap-1 cursor-pointer disabled:opacity-50 shrink-0 shadow-xs"
               >
                 <Send className="w-3.5 h-3.5" />
                 <span>Kirim</span>

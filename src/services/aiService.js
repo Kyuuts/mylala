@@ -283,7 +283,7 @@ export async function askLalaAI({
   userCefrLevel = 'A1',
   config,
   temperature = 0.7,
-  maxTokens = 800,
+  maxTokens = 1200,
   jsonMode = false,
 }) {
   const effective = getEffectiveAiConfig(config, config?._systemConfig);
@@ -302,9 +302,12 @@ export async function askLalaAI({
   }
 
   // Construct CEFR-aware system instructions
-  const defaultSystem = `Kamu adalah Lala, tutor kecerdasan buatan (AI) yang ramah, interaktif, dan penuh motivasi di aplikasi MyLala.
-Tugas utamamu adalah membantu pengguna belajar bahasa Inggris dengan jelas, padat, dan menyenangkan.
-Gunakan Bahasa Indonesia yang hangat untuk penjelasan, dan berikan contoh kalimat bahasa Inggris yang natural beserta artinya.`;
+  const defaultSystem = `Kamu adalah Lala, asisten tutor bahasa Inggris profesional, cerdas, dan interaktif di aplikasi MyLala.
+Prinsip utamamu:
+1. Sangat to-the-point, padat, ringkas, dan terstruktur rapi.
+2. DILARANG membuat salam pembuka atau basa-basi berulang (seperti "Hai aku Lala", "Mari kita bedah kartu ini"). Langsung mulai penjelasan dari materi.
+3. Selalu format menggunakan Markdown standar (gunakan heading ###, bullet point teratur, atau tabel perbandingan bersih jika relevan).
+4. Gunakan Bahasa Indonesia yang luwes, edukatif, serta contoh kalimat bahasa Inggris yang natural beserta artinya.`;
 
   const cefrGuideline = userCefrLevel
     ? `\n\n[PANDUAN TINGKAT CEFR: ${userCefrLevel.toUpperCase()}]
