@@ -26,8 +26,13 @@ export default function DashboardPage() {
     dashboardSelectedLevel,
     setDashboardSelectedLevel,
     cefrLevel,
+    checkWeeklyReset,
   } = useAppStore();
   const [shareModalOpen, setShareModalOpen] = useState(false);
+
+  useEffect(() => {
+    if (checkWeeklyReset) checkWeeklyReset();
+  }, [checkWeeklyReset]);
   const [modules, setModules] = useState([]);
   const [metrics, setMetrics] = useState({
     learningCount: 0,

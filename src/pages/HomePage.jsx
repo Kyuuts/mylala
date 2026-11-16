@@ -20,7 +20,13 @@ import Logo from '../components/common/Logo';
 import { useAppStore } from '../store/useAppStore';
 
 export default function HomePage() {
-  const { isAuthenticated, user, streak, weeklyXp } = useAppStore();
+  const { isAuthenticated, user, streak, weeklyXp, checkWeeklyReset } = useAppStore();
+
+  React.useEffect(() => {
+    if (checkWeeklyReset) {
+      checkWeeklyReset();
+    }
+  }, [checkWeeklyReset]);
 
   return (
     <div className="space-y-12 py-2 sm:py-4">

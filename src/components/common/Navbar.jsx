@@ -18,10 +18,10 @@ export default function Navbar() {
   };
 
   return (
-    <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200">
-      <div className="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <Link to="/" className="flex items-center gap-2.5 font-extrabold text-xl text-slate-900 hover:opacity-90 transition">
+    <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200 w-full max-w-full overflow-hidden">
+      <div className="max-w-5xl mx-auto px-2.5 sm:px-4 h-14 sm:h-16 flex items-center justify-between gap-1.5 sm:gap-2">
+        <div className="flex items-center gap-2 shrink-0 min-w-0">
+          <Link to="/" className="flex items-center gap-1.5 sm:gap-2 font-extrabold text-lg sm:text-xl text-slate-900 hover:opacity-90 transition shrink-0">
             <Logo size="sm" />
             <span className="tracking-tight bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
               MyLala
@@ -48,7 +48,7 @@ export default function Navbar() {
           )}
         </div>
 
-        <div className="flex items-center gap-2 sm:gap-3">
+        <div className="flex items-center gap-1 sm:gap-2 shrink-0">
           {/* Desktop Navigation for Logged In Users */}
           {isAuthenticated ? (
             <nav className="hidden md:flex items-center gap-1 sm:gap-2">
@@ -141,7 +141,7 @@ export default function Navbar() {
             <NavLink
               to="/create"
               title="Buat Modul Baru"
-              className="md:hidden flex items-center justify-center p-2 rounded-xl bg-indigo-50 hover:bg-indigo-100 active:scale-95 text-indigo-700 transition min-w-[38px] min-h-[38px] cursor-pointer"
+              className="md:hidden flex items-center justify-center p-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 active:scale-95 text-indigo-700 transition w-8 h-8 shrink-0 cursor-pointer"
             >
               <PlusCircle className="w-4 h-4 text-indigo-600" />
             </NavLink>
@@ -152,21 +152,21 @@ export default function Navbar() {
             type="button"
             onClick={() => setAiSettingsOpen(true)}
             title="Pengaturan Lala AI (Model LLM Gratis)"
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-black transition cursor-pointer min-h-[38px] active:scale-95 bg-gradient-to-r from-indigo-50 to-purple-50 hover:from-indigo-100 hover:to-purple-100 text-indigo-700 border border-indigo-200/90 shadow-2xs"
+            className="inline-flex items-center gap-1 px-2 sm:px-3 py-1.5 rounded-xl text-xs font-black transition cursor-pointer h-8 sm:min-h-[38px] active:scale-95 bg-gradient-to-r from-indigo-50 to-purple-50 hover:from-indigo-100 hover:to-purple-100 text-indigo-700 border border-indigo-200/90 shadow-2xs shrink-0"
           >
             <Sparkles className="w-3.5 h-3.5 text-amber-500 fill-amber-400 shrink-0" />
-            <span className="inline font-extrabold tracking-tight">Lala AI</span>
+            <span className="hidden sm:inline font-extrabold tracking-tight">Lala AI</span>
             <span className="w-2 h-2 rounded-full bg-emerald-500 ring-2 ring-white shrink-0 animate-pulse"></span>
           </button>
 
           {/* User Profile & Auth Trigger */}
           {isAuthenticated && user ? (
-            <div className="flex items-center gap-1.5 sm:gap-2 pl-2 border-l border-slate-200">
+            <div className="flex items-center gap-1 sm:gap-2 pl-1 sm:pl-2 border-l border-slate-200 shrink-0">
               <button
                 type="button"
                 onClick={() => setEditProfileOpen(true)}
                 title="Edit Profil & Avatar"
-                className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-800 bg-slate-100 hover:bg-slate-200 active:scale-95 px-3 py-1.5 min-h-[38px] rounded-full transition cursor-pointer"
+                className="inline-flex items-center gap-1 sm:gap-1.5 text-xs font-bold text-slate-800 bg-slate-100 hover:bg-slate-200 active:scale-95 px-2 sm:px-3 py-1 h-8 sm:min-h-[38px] rounded-full transition cursor-pointer max-w-[95px] sm:max-w-none shrink-0"
               >
                 <div className="w-4 h-4 rounded-full overflow-hidden shrink-0 flex items-center justify-center bg-indigo-100">
                   {user?.avatarUrl ? (
@@ -179,9 +179,9 @@ export default function Navbar() {
                     <User className="w-2.5 h-2.5 text-indigo-600" />
                   )}
                 </div>
-                <span className="max-w-[80px] sm:max-w-none truncate">{user?.name || user?.username || 'Siswa'}</span>
+                <span className="max-w-[42px] sm:max-w-[80px] md:max-w-none truncate">{user?.name || user?.username || 'Siswa'}</span>
                 {user?.cefrLevel && (
-                  <span className="px-2 py-0.5 rounded-full bg-indigo-600 text-white text-[10px] font-black">
+                  <span className="px-1.5 py-0.2 rounded-full bg-indigo-600 text-white text-[9px] font-black shrink-0">
                     {user.cefrLevel}
                   </span>
                 )}
@@ -190,19 +190,19 @@ export default function Navbar() {
               <button
                 onClick={handleLogout}
                 title="Keluar dari Akun"
-                className="p-2 min-h-[38px] min-w-[38px] rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition cursor-pointer flex items-center justify-center"
+                className="p-1 sm:p-2 h-8 w-8 sm:min-h-[38px] sm:min-w-[38px] rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition cursor-pointer flex items-center justify-center shrink-0"
               >
-                <LogOut className="w-4 h-4" />
+                <LogOut className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </button>
             </div>
           ) : (
-            <div className="flex items-center gap-2 pl-2">
+            <div className="flex items-center gap-1.5 sm:gap-2 pl-1 sm:pl-2">
               <Link
                 to="/login"
-                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-bold bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white transition shadow-2xs"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs sm:text-sm font-bold bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white transition shadow-2xs h-8 sm:min-h-[38px]"
               >
                 <User className="w-3.5 h-3.5" />
-                <span>Masuk / Daftar</span>
+                <span>Masuk</span>
               </Link>
             </div>
           )}

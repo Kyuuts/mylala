@@ -1446,8 +1446,9 @@ export const useAppStore = create(
               );
 
               const currentXp = Math.max(state.xp || 0, remoteXp);
-              const localWeekly = state.lastWeekId === currentWeek ? (state.weeklyXp || 0) : 0;
-              const currentWeeklyXp = Math.max(localWeekly, remoteWeeklyXp);
+              const currentWeeklyXp = data
+                ? (data.weekly_xp || 0)
+                : (state.lastWeekId === currentWeek ? (state.weeklyXp || 0) : 0);
               const currentStreak = Math.max(state.streak || 1, remoteStreak);
 
               const updatedStats = {
@@ -1477,6 +1478,7 @@ export const useAppStore = create(
                 completedModules: mergedCompleted,
                 rewardedModuleIds: mergedRewarded,
                 weeklyXp: currentWeeklyXp,
+                lastWeekId: currentWeek,
                 xp: currentXp,
                 streak: currentStreak,
                 userStatsByUserId: updatedStats,
