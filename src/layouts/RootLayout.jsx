@@ -12,6 +12,14 @@ export default function RootLayout() {
   const fetchUserStatsFromSupabase = useAppStore((state) => state.fetchUserStatsFromSupabase);
   const fetchUserProgressFromSupabase = useAppStore((state) => state.fetchUserProgressFromSupabase);
   const fetchAiConfigFromSupabase = useAppStore((state) => state.fetchAiConfigFromSupabase);
+  const checkWeeklyReset = useAppStore((state) => state.checkWeeklyReset);
+
+  // Check and enforce weekly league reset on startup
+  useEffect(() => {
+    if (checkWeeklyReset) {
+      checkWeeklyReset();
+    }
+  }, [checkWeeklyReset]);
 
   // Sync global AI config from Supabase Cloud on initial mount
   useEffect(() => {

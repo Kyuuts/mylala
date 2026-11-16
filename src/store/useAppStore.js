@@ -114,7 +114,7 @@ const resolveUserStats = (userId, userStatsByUserId) => {
       streak: existing.streak !== undefined ? existing.streak : (isSpecialAdmin ? 3 : 0),
       lastStudyDate: existing.lastStudyDate || (isSpecialAdmin ? new Date().toISOString().split('T')[0] : null),
       xp: Math.max(existing.xp || 0, isSpecialAdmin ? 1130 : 0),
-      weeklyXp: Math.max(existing.weeklyXp || 0, isSpecialAdmin ? 1130 : 0),
+      weeklyXp: existing.weeklyXp || 0,
       hasClaimedScannerXP: existing.hasClaimedScannerXP || isSpecialAdmin,
     };
   }
@@ -128,7 +128,7 @@ const resolveUserStats = (userId, userStatsByUserId) => {
       streak: 3,
       lastStudyDate: new Date().toISOString().split('T')[0],
       xp: 1130,
-      weeklyXp: 1130,
+      weeklyXp: 0,
       hasClaimedScannerXP: true,
     };
   }
@@ -698,7 +698,7 @@ export const useAppStore = create(
               new Set([...(userSavedStats.rewardedModuleIds || []), ...(cloudSyncData?.rewardedModuleIds || []), ...(isSpecialAdmin ? ['mod-starter-svo', 'mod-starter-tenses'] : [])])
             );
             const effectiveXp = Math.max(userSavedStats.xp || 0, cloudSyncData?.xp || 0, isSpecialAdmin ? 1130 : 0);
-            const effectiveWeeklyXp = Math.max(userSavedStats.weeklyXp || 0, cloudSyncData?.weeklyXp || 0, isSpecialAdmin ? 1130 : 0);
+            const effectiveWeeklyXp = userSavedStats.weeklyXp || 0;
             const effectiveStreak = Math.max(userSavedStats.streak || 1, cloudSyncData?.streak || 1, isSpecialAdmin ? 3 : 1);
             const resolvedAvatar = (cloudAccount.avatar_url && cloudAccount.avatar_url.length < 10000)
               ? cloudAccount.avatar_url
@@ -961,7 +961,7 @@ export const useAppStore = create(
               completedModules: isSpecialAdmin ? ['mod-starter-svo', 'mod-starter-tenses'] : (stats.completedModules || []),
               rewardedModuleIds: isSpecialAdmin ? ['mod-starter-svo', 'mod-starter-tenses'] : (stats.rewardedModuleIds || []),
               xp: Math.max(stats.xp || 0, isSpecialAdmin ? 1130 : 0),
-              weeklyXp: Math.max(stats.weeklyXp || 0, isSpecialAdmin ? 1130 : 0),
+              weeklyXp: stats.weeklyXp || 0,
               streak: Math.max(stats.streak || 1, isSpecialAdmin ? 3 : 1),
               lastStudyDate: stats.lastStudyDate || (isSpecialAdmin ? new Date().toISOString().split('T')[0] : null),
               updatedAt: new Date().toISOString(),
@@ -1416,8 +1416,8 @@ export const useAppStore = create(
           } catch (_) {}
 
           if (data || cloudAvatar || syncData || isSpecialAdmin) {
-            const remoteXp = Math.max(data?.weekly_xp || 0, syncData?.xp || 0, isSpecialAdmin ? 1130 : 0);
-            const remoteWeeklyXp = Math.max(data?.weekly_xp || 0, syncData?.weeklyXp || 0, isSpecialAdmin ? 1130 : 0);
+            const remoteXp = Math.max(syncData?.xp || 0, isSpecialAdmin ? 1130 : 0);
+            const remoteWeeklyXp = data ? (data.weekly_xp || 0) : 0;
             const remoteStreak = Math.max(data?.streak || 1, syncData?.streak || 1, isSpecialAdmin ? 3 : 1);
             const canonicalUserId = isSpecialAdmin ? 'admin-imam-001' : (data?.user_id || syncData?.id || targetUserId);
 
@@ -1446,7 +1446,8 @@ export const useAppStore = create(
               );
 
               const currentXp = Math.max(state.xp || 0, remoteXp);
-              const currentWeeklyXp = Math.max(state.weeklyXp || 0, remoteWeeklyXp);
+              const localWeekly = state.lastWeekId === currentWeek ? (state.weeklyXp || 0) : 0;
+              const currentWeeklyXp = Math.max(localWeekly, remoteWeeklyXp);
               const currentStreak = Math.max(state.streak || 1, remoteStreak);
 
               const updatedStats = {
@@ -1574,6 +1575,39 @@ export const useAppStore = create(
         return { data: enriched, error: null };
       },
 
+      // Action: Check and enforce weekly league score reset every Monday 00:00 WIB
+      checkWeeklyReset: () => {
+        const currentWeek = getCurrentWeekId();
+        const state = get();
+        if (state.lastWeekId !== currentWeek) {
+          console.info(`[League Reset] New week detected (${state.lastWeekId} -> ${currentWeek}). Resetting weekly XP to 0.`);
+
+          set((prev) => {
+            const userId = prev.userId;
+            const updatedStats = userId
+              ? {
+                  ...(prev.userStatsByUserId || {}),
+                  [userId]: {
+                    ...((prev.userStatsByUserId || {})[userId] || snapshotActiveStats(prev)),
+                    weeklyXp: 0,
+                  },
+                }
+              : prev.userStatsByUserId;
+
+            return {
+              weeklyXp: 0,
+              lastWeekId: currentWeek,
+              userStatsByUserId: updatedStats,
+            };
+          });
+
+          // Sync clean 0 XP row for new week to Supabase
+          get().syncWeeklyStatsToSupabase();
+          return true;
+        }
+        return false;
+      },
+
       // Action: Add XP and update weekly rank progress
       addXP: (amount, reason = '') => {
         const currentWeek = getCurrentWeekId();
@@ -1680,7 +1714,7 @@ export const useAppStore = create(
               : (isSpecialAdmin ? ADMIN_AVATAR_REAL : null);
 
           const effectiveXp = Math.max(state.xp || 0, isSpecialAdmin ? 1130 : 0);
-          const effectiveWeeklyXp = Math.max(state.weeklyXp || 0, isSpecialAdmin ? 1130 : 0);
+          const effectiveWeeklyXp = state.weeklyXp || 0;
           const effectiveStreak = Math.max(state.streak || 1, isSpecialAdmin ? 3 : 1);
 
           const syncMeta = {
@@ -1856,6 +1890,7 @@ export const useAppStore = create(
 
       // Action: Compute live weekly leaderboard from Supabase with user position
       fetchLeaderboard: async () => {
+        get().checkWeeklyReset();
         const { isOnline, isSupabaseReady, user, userId, weeklyXp, streak, userProgress } = get();
         const currentWeek = getCurrentWeekId();
 
@@ -2448,6 +2483,17 @@ export const useAppStore = create(
       onRehydrateStorage: () => (state) => {
         if (!state) return;
 
+        // League Weekly Reset Verification on startup / rehydrate
+        const currentWeek = getCurrentWeekId();
+        const isNewWeek = state.lastWeekId !== currentWeek;
+        if (isNewWeek) {
+          state.weeklyXp = 0;
+          state.lastWeekId = currentWeek;
+          if (state.userId && state.userStatsByUserId?.[state.userId]) {
+            state.userStatsByUserId[state.userId].weeklyXp = 0;
+          }
+        }
+
         // Verify active user's stats partition on reload/rehydrate
         const isSpecialAdmin =
           state.userId === 'admin-imam-001' ||
@@ -2464,7 +2510,7 @@ export const useAppStore = create(
             state.completedModules = activeUserStats.completedModules || (isSpecialAdmin ? ['mod-starter-svo', 'mod-starter-tenses'] : []);
             state.rewardedModuleIds = activeUserStats.rewardedModuleIds || (isSpecialAdmin ? ['mod-starter-svo', 'mod-starter-tenses'] : []);
             state.xp = Math.max(activeUserStats.xp || 0, isSpecialAdmin ? 1130 : 0);
-            state.weeklyXp = Math.max(activeUserStats.weeklyXp || 0, isSpecialAdmin ? 1130 : 0);
+            state.weeklyXp = isNewWeek ? 0 : (activeUserStats.weeklyXp || 0);
             state.lastStudyDate = activeUserStats.lastStudyDate || null;
 
             // Check if streak was broken due to inactivity (>1 day missed)

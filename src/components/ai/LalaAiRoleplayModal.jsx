@@ -255,26 +255,30 @@ export default function LalaAiRoleplayModal({ isOpen, onClose }) {
   };
 
   return createPortal(
-    <div className="fixed inset-0 z-50 flex items-center justify-center sm:p-4 p-0 bg-slate-950/80 backdrop-blur-md animate-in fade-in duration-150 overflow-hidden w-screen max-w-full touch-manipulation">
+    <div
+      role="dialog"
+      aria-modal="true"
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/80 backdrop-blur-md animate-fade-in"
+    >
       <div
-        className="w-full h-[100dvh] sm:h-[90vh] sm:max-h-[92vh] sm:max-w-xl bg-white sm:rounded-3xl rounded-none shadow-2xl border-0 sm:border border-slate-200 overflow-hidden flex flex-col max-w-full text-slate-800"
+        className="relative w-full max-w-xl bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col h-[88vh] sm:h-[92vh] max-h-[92vh] sm:max-h-[94vh] border border-slate-200 text-slate-800"
         onClick={(e) => e.stopPropagation()}
       >
         {/* ============================================================ */}
         {/* SCREEN 1: SCENARIO SELECTOR */}
         {/* ============================================================ */}
         {viewMode === 'select' && (
-          <div className="flex flex-col h-full overflow-hidden w-full max-w-full">
+          <div className="flex flex-col h-full overflow-hidden w-full">
             <div className="px-5 py-4 bg-gradient-to-r from-emerald-600 via-teal-600 to-indigo-700 text-white flex items-center justify-between shrink-0">
-              <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-2xl bg-white/20 backdrop-blur-xs flex items-center justify-center text-lg">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="w-9 h-9 rounded-2xl bg-white/20 backdrop-blur-xs flex items-center justify-center text-lg shrink-0">
                   💬
                 </div>
-                <div>
-                  <h3 className="font-extrabold text-base leading-tight">
+                <div className="min-w-0">
+                  <h3 className="font-extrabold text-base leading-tight truncate">
                     Lala AI Roleplay Lounge 🎭
                   </h3>
-                  <p className="text-xs text-emerald-100">
+                  <p className="text-xs text-emerald-100 truncate">
                     Pilih skenario percakapan nyata dengan suara natural
                   </p>
                 </div>
@@ -282,13 +286,13 @@ export default function LalaAiRoleplayModal({ isOpen, onClose }) {
               <button
                 type="button"
                 onClick={onClose}
-                className="p-1.5 rounded-xl text-white/80 hover:text-white hover:bg-white/10 transition cursor-pointer"
+                className="p-1.5 rounded-xl text-white/80 hover:text-white hover:bg-white/10 transition cursor-pointer shrink-0"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <div className="p-4 sm:p-5 overflow-y-auto space-y-3 flex-1 text-xs max-w-full">
+            <div className="p-4 sm:p-5 overflow-y-auto space-y-3 flex-1 text-xs w-full">
               <div className="flex items-center justify-between px-1">
                 <span className="font-extrabold text-slate-700">Pilih Topik Latihan:</span>
                 <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-700">
@@ -296,7 +300,7 @@ export default function LalaAiRoleplayModal({ isOpen, onClose }) {
                 </span>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-full">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full">
                 {ROLEPLAY_AI_PRESETS.map((sc) => (
                   <button
                     key={sc.id}
@@ -336,37 +340,37 @@ export default function LalaAiRoleplayModal({ isOpen, onClose }) {
         {/* SCREEN 2: INTERACTIVE CHAT ROOM */}
         {/* ============================================================ */}
         {viewMode === 'chat' && selectedScenario && (
-          <div className="flex flex-col h-full overflow-hidden w-full max-w-full">
+          <div className="flex flex-col h-full overflow-hidden w-full">
             {/* Header */}
-            <div className="px-4 py-3 bg-gradient-to-r from-emerald-600 via-teal-600 to-indigo-700 text-white flex items-center justify-between shrink-0 shadow-sm">
-              <div className="flex items-center gap-2.5 overflow-hidden">
-                <span className="text-2xl p-1 rounded-xl bg-white/20 backdrop-blur-xs shrink-0">
+            <div className="px-3 sm:px-4 py-2.5 sm:py-3 bg-gradient-to-r from-emerald-600 via-teal-600 to-indigo-700 text-white flex items-center justify-between shrink-0 shadow-sm w-full min-w-0 gap-2">
+              <div className="flex items-center gap-2 min-w-0 flex-1 overflow-hidden">
+                <span className="text-xl sm:text-2xl p-1 rounded-xl bg-white/20 backdrop-blur-xs shrink-0">
                   {selectedScenario.avatar}
                 </span>
-                <div className="overflow-hidden">
-                  <h4 className="font-extrabold text-sm leading-tight flex items-center gap-1.5 truncate">
+                <div className="min-w-0 flex-1 overflow-hidden">
+                  <h4 className="font-extrabold text-xs sm:text-sm leading-tight flex items-center gap-1.5 truncate">
                     <span className="truncate">{selectedScenario.title}</span>
                     <span className="text-[10px] font-black px-1.5 py-0.2 rounded-full bg-amber-400 text-slate-900 shrink-0">
                       {activeCefr}
                     </span>
                   </h4>
-                  <p className="text-[11px] text-emerald-100 truncate">
+                  <p className="text-[10px] sm:text-[11px] text-emerald-100 truncate">
                     Bicara dengan <strong>{selectedScenario.partnerName}</strong>
                   </p>
                 </div>
               </div>
 
-              <div className="flex items-center gap-1.5 shrink-0">
+              <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
                 {/* Voice Preset Dropdown (Mobile & Desktop) */}
                 <div className="flex items-center gap-1 bg-white/15 px-1.5 sm:px-2 py-1 rounded-xl text-[10px] font-bold text-white border border-white/20 shrink-0">
                   <Volume2 className="w-3 h-3 text-amber-300 shrink-0" />
                   <select
                     value={voiceMode}
                     onChange={(e) => setVoiceMode(e.target.value)}
-                    className="bg-transparent text-white font-extrabold text-[10px] focus:outline-none cursor-pointer max-w-[58px] sm:max-w-none truncate"
+                    className="bg-transparent text-white font-extrabold text-[10px] focus:outline-none cursor-pointer max-w-[55px] sm:max-w-none truncate"
                     title="Pilih Karakter & Aksen Suara"
                   >
-                    <option value="auto" className="text-slate-900">Auto Suara 🎭</option>
+                    <option value="auto" className="text-slate-900">Auto 🎭</option>
                     <option value="british" className="text-slate-900">British 🇬🇧</option>
                     <option value="us_female" className="text-slate-900">US Wanita 🇺🇸</option>
                     <option value="us_male" className="text-slate-900">US Pria 🇺🇸</option>
@@ -482,7 +486,7 @@ export default function LalaAiRoleplayModal({ isOpen, onClose }) {
 
             {/* Suggestions Chips Bar WITH DESKTOP & MOBILE SCROLL ARROWS */}
             {suggestions.length > 0 && !isLoading && (
-              <div className="bg-white border-t border-slate-100 flex items-center px-1.5 py-1.5 shrink-0 max-w-full overflow-hidden">
+              <div className="bg-white border-t border-slate-100 flex items-center px-1 py-1.5 shrink-0 w-full min-w-0 overflow-hidden">
                 <button
                   type="button"
                   onClick={() => chipsScrollRef.current?.scrollBy({ left: -160, behavior: 'smooth' })}
@@ -494,7 +498,7 @@ export default function LalaAiRoleplayModal({ isOpen, onClose }) {
 
                 <div
                   ref={chipsScrollRef}
-                  className="flex-1 flex items-center gap-1.5 overflow-x-auto scrollbar-none px-1 scroll-smooth"
+                  className="flex-1 min-w-0 flex items-center gap-1.5 overflow-x-auto scrollbar-none px-1 scroll-smooth"
                 >
                   <span className="text-[10px] font-black text-slate-400 shrink-0 uppercase tracking-wider pl-1">
                     Inspirasi:
@@ -504,7 +508,7 @@ export default function LalaAiRoleplayModal({ isOpen, onClose }) {
                       key={sIdx}
                       type="button"
                       onClick={() => handleSendMessage(sug)}
-                      className="px-3 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-bold shrink-0 transition active:scale-95 cursor-pointer border border-indigo-100 max-w-[280px] truncate"
+                      className="px-2.5 sm:px-3 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-bold shrink-0 transition active:scale-95 cursor-pointer border border-indigo-100 max-w-[180px] sm:max-w-[280px] truncate"
                       title={sug}
                     >
                       "{sug}"
@@ -529,7 +533,7 @@ export default function LalaAiRoleplayModal({ isOpen, onClose }) {
                 e.preventDefault();
                 handleSendMessage();
               }}
-              className="p-2.5 sm:p-3 bg-white border-t border-slate-200 flex items-center gap-2 shrink-0 max-w-full overflow-hidden"
+              className="p-2 sm:p-3 bg-white border-t border-slate-200 flex items-center gap-1.5 sm:gap-2 shrink-0 w-full min-w-0 overflow-hidden"
             >
               <button
                 type="button"

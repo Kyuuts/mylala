@@ -442,6 +442,7 @@ Pertanyaan pengguna:
                 type="text"
                 value={customQuestion}
                 onChange={(e) => setCustomQuestion(e.target.value)}
+                onKeyDown={(e) => e.stopPropagation()}
                 placeholder="Contoh: Apa bedanya dengan kata 'happen'?"
                 disabled={isLoading}
                 className="flex-1 px-3 py-2 text-xs rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white text-slate-900"

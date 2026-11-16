@@ -106,6 +106,15 @@ export default function FlashcardPage() {
     const handleKeyDown = (e) => {
       if (isFinished || loading) return;
 
+      // Do not intercept hotkeys if user is actively typing in an input/textarea or if AI explainer is open
+      const activeTag = document.activeElement?.tagName?.toLowerCase();
+      const isTyping =
+        activeTag === 'input' ||
+        activeTag === 'textarea' ||
+        document.activeElement?.isContentEditable;
+
+      if (isTyping || showAiExplainer) return;
+
       if (e.code === 'Space') {
         e.preventDefault();
         handleFlip();
@@ -122,7 +131,7 @@ export default function FlashcardPage() {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [handleFlip, handleRate, handleShuffle, isFinished, loading, isFlipped]);
+  }, [handleFlip, handleRate, handleShuffle, isFinished, loading, isFlipped, showAiExplainer]);
 
   if (loading) {
     return (
