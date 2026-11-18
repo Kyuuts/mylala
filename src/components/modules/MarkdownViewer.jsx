@@ -61,11 +61,11 @@ export default function MarkdownViewer({ content }) {
           ),
           code: ({ inline, children }) =>
             inline ? (
-              <code className="bg-slate-100 text-indigo-700 px-1.5 py-0.5 rounded font-mono text-xs sm:text-sm font-semibold">
+              <code className="bg-slate-100 text-indigo-700 px-1.5 py-0.5 rounded font-mono text-xs sm:text-sm font-semibold break-words [overflow-wrap:anywhere] inline-block max-w-full align-middle">
                 {children}
               </code>
             ) : (
-              <pre className="bg-slate-900 text-slate-100 p-4 rounded-xl overflow-x-auto text-xs sm:text-sm font-mono my-3 shadow-inner">
+              <pre className="bg-slate-900 text-slate-100 p-4 rounded-xl overflow-x-auto text-xs sm:text-sm font-mono my-3 shadow-inner max-w-full whitespace-pre-wrap break-words [overflow-wrap:anywhere]">
                 <code>{children}</code>
               </pre>
             ),

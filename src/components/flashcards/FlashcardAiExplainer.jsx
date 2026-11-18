@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { askLalaAI } from '../../services/aiService';
 import { useAppStore } from '../../store/useAppStore';
+import { parseFrontCardText } from './Flashcard';
 
 // In-memory response cache per card ID + query to save tokens & prevent duplicate queries
 const EXPLANATION_CACHE = new Map();
@@ -56,7 +57,7 @@ ${exampleSentence ? `Kalimat Contoh: "${exampleSentence}"` : ''}
 
 Format wajib:
 ### 📌 1. Aturan & Makna Utama
-(Jelaskan fungsi gramatika atau makna kata secara tegas, padat, dan jelas. Sertakan rumus/pola kalimat jika materi tata bahasa).
+(Jelaskan fungsi gramatika atau makna kata secara tegas, padat, dan jelas. Jika menyajikan rumus tata bahasa, buat ringkas dan bersahabat untuk layar HP, hindari satu baris kode yang terlalu panjang).
 
 ### 🔍 2. Nuansa & Perbandingan
 (Tampilkan tabel Markdown atau poin perbandingan dengan kata/struktur yang sering tertukar atau membingungkan pembelajar).
@@ -208,8 +209,16 @@ Pertanyaan pengguna:
                 CEFR {cefrLevel}
               </span>
             </div>
-            <p className="text-[10px] text-indigo-100 truncate max-w-[240px] sm:max-w-md">
-              Materi: <strong className="text-white font-semibold">{frontText}</strong>
+            <p className="text-[10px] text-indigo-100 truncate max-w-[240px] sm:max-w-md flex items-center gap-1">
+              <span>Materi:</span>
+              {parseFrontCardText(frontText).categoryHint && (
+                <span className="px-1.5 py-0.2 rounded-full bg-white/20 text-[9px] font-bold text-white shrink-0">
+                  {parseFrontCardText(frontText).categoryHint}
+                </span>
+              )}
+              <strong className="text-white font-semibold truncate">
+                {parseFrontCardText(frontText).mainText}
+              </strong>
             </p>
           </div>
         </div>
@@ -326,71 +335,92 @@ Pertanyaan pengguna:
         {/* Fully Rendered Professional Markdown Presentation */}
         {!isLoading && !errorMsg && responseContent && (
           <div className="space-y-3">
-            <div className="bg-white p-4 sm:p-5 rounded-2xl border border-indigo-100/90 shadow-2xs">
+            <div className="bg-white p-4 sm:p-5 rounded-2xl border border-indigo-100/90 shadow-2xs max-w-full overflow-hidden break-words">
               <ReactMarkdown
                 remarkPlugins={[remarkGfm]}
                 components={{
                   h2: ({ node, ...props }) => (
                     <h2
-                      className="text-sm font-black text-indigo-950 mt-4 mb-2 flex items-center gap-1.5 border-b border-slate-100 pb-1.5"
+                      className="text-sm font-black text-indigo-950 mt-4 mb-2 flex items-center gap-1.5 border-b border-slate-100 pb-1.5 break-words [overflow-wrap:anywhere]"
                       {...props}
                     />
                   ),
                   h3: ({ node, ...props }) => (
                     <h3
-                      className="text-xs sm:text-sm font-extrabold text-indigo-900 mt-3.5 mb-1.5 flex items-center gap-1"
+                      className="text-xs sm:text-sm font-extrabold text-indigo-900 mt-3.5 mb-1.5 flex items-center gap-1 break-words [overflow-wrap:anywhere]"
                       {...props}
                     />
                   ),
                   p: ({ node, ...props }) => (
                     <p
-                      className="text-xs sm:text-[13px] text-slate-700 leading-relaxed my-1.5"
+                      className="text-xs sm:text-[13px] text-slate-700 leading-relaxed my-1.5 break-words [overflow-wrap:anywhere]"
                       {...props}
                     />
                   ),
                   ul: ({ node, ...props }) => (
                     <ul
-                      className="list-disc list-inside space-y-1.5 my-2 text-xs sm:text-[13px] text-slate-700 pl-1"
+                      className="list-disc list-inside space-y-1.5 my-2 text-xs sm:text-[13px] text-slate-700 pl-1 break-words"
                       {...props}
                     />
                   ),
                   ol: ({ node, ...props }) => (
                     <ol
-                      className="list-decimal list-inside space-y-1.5 my-2 text-xs sm:text-[13px] text-slate-700 pl-1"
+                      className="list-decimal list-inside space-y-1.5 my-2 text-xs sm:text-[13px] text-slate-700 pl-1 break-words"
                       {...props}
                     />
                   ),
                   li: ({ node, ...props }) => (
-                    <li className="leading-relaxed" {...props} />
+                    <li className="leading-relaxed break-words [overflow-wrap:anywhere]" {...props} />
                   ),
                   blockquote: ({ node, ...props }) => (
                     <blockquote
-                      className="border-l-4 border-indigo-500 pl-3.5 py-2 my-2.5 bg-indigo-50/70 rounded-r-xl italic text-xs sm:text-[13px] text-indigo-950 font-medium"
+                      className="border-l-4 border-indigo-500 pl-3.5 py-2 my-2.5 bg-indigo-50/70 rounded-r-xl italic text-xs sm:text-[13px] text-indigo-950 font-medium break-words [overflow-wrap:anywhere]"
                       {...props}
                     />
                   ),
                   strong: ({ node, ...props }) => (
                     <strong className="font-extrabold text-slate-900" {...props} />
                   ),
-                  code: ({ node, ...props }) => (
-                    <code
-                      className="px-1.5 py-0.5 rounded-md bg-indigo-50 text-indigo-700 font-mono text-[11px] font-bold border border-indigo-100"
-                      {...props}
-                    />
+                  pre: ({ node, children, ...props }) => (
+                    <div className="overflow-x-auto my-2.5 max-w-full rounded-xl bg-slate-900 p-3 text-slate-100 border border-slate-800 shadow-inner">
+                      <pre className="font-mono text-xs leading-relaxed whitespace-pre-wrap break-words [overflow-wrap:anywhere]" {...props}>
+                        {children}
+                      </pre>
+                    </div>
                   ),
+                  code: ({ node, inline, className, children, ...props }) => {
+                    const isInline = !node || node?.position?.start?.line === node?.position?.end?.line;
+                    if (!inline && !isInline) {
+                      return (
+                        <div className="overflow-x-auto my-2 max-w-full rounded-xl bg-slate-900 p-3 text-slate-100 border border-slate-800 shadow-inner">
+                          <code className="font-mono text-xs leading-relaxed whitespace-pre-wrap break-words [overflow-wrap:anywhere]" {...props}>
+                            {children}
+                          </code>
+                        </div>
+                      );
+                    }
+                    return (
+                      <code
+                        className="px-1.5 py-0.5 rounded-md bg-indigo-50 text-indigo-700 font-mono text-[11px] font-bold border border-indigo-100 break-words [overflow-wrap:anywhere] inline-block max-w-full align-middle whitespace-normal"
+                        {...props}
+                      >
+                        {children}
+                      </code>
+                    );
+                  },
                   table: ({ node, ...props }) => (
-                    <div className="overflow-x-auto my-3 rounded-xl border border-slate-200 shadow-2xs">
-                      <table className="w-full text-xs text-left border-collapse" {...props} />
+                    <div className="overflow-x-auto my-3 rounded-xl border border-slate-200 shadow-2xs max-w-full">
+                      <table className="min-w-full text-xs text-left border-collapse" {...props} />
                     </div>
                   ),
                   thead: ({ node, ...props }) => (
                     <thead className="bg-indigo-50/90 text-indigo-950 font-extrabold border-b border-indigo-100" {...props} />
                   ),
                   th: ({ node, ...props }) => (
-                    <th className="py-2.5 px-3 font-extrabold text-slate-800" {...props} />
+                    <th className="py-2.5 px-3 font-extrabold text-slate-800 bg-indigo-50/90 whitespace-nowrap" {...props} />
                   ),
                   td: ({ node, ...props }) => (
-                    <td className="py-2.5 px-3 border-t border-slate-100 text-slate-700 bg-white" {...props} />
+                    <td className="py-2.5 px-3 border-t border-slate-100 text-slate-700 bg-white leading-relaxed break-words [overflow-wrap:anywhere]" {...props} />
                   ),
                   hr: ({ node, ...props }) => (
                     <hr className="my-3.5 border-slate-200" {...props} />

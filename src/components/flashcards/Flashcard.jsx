@@ -1,9 +1,43 @@
 import React from 'react';
 import { RotateCw, Volume2, Mic, Sparkles } from 'lucide-react';
-import { getTargetSpeechSentence } from '../../utils/speechRecognition';
+import { getTargetSpeechSentence, isIndonesianText } from '../../utils/speechRecognition';
+
+/**
+ * Parses front card text into categoryHint and mainText so that Indonesian prefixes
+ * like "Subjek jamak:" or "Pasif masa lampau:" appear as elegant pill badges rather than
+ * cluttering the English question text or being read aloud by TTS.
+ */
+export const parseFrontCardText = (frontText = '') => {
+  if (!frontText) return { categoryHint: null, mainText: '' };
+
+  // Pattern 1: [Category]: "[Quoted Sentence]"
+  const colonQuoteMatch = frontText.match(/^([^:]+):\s*"([^"]+)"$/);
+  if (colonQuoteMatch) {
+    return {
+      categoryHint: colonQuoteMatch[1].trim(),
+      mainText: colonQuoteMatch[2].trim(),
+    };
+  }
+
+  // Pattern 2: [Category]: [English Sentence starting with capital letter or blank]
+  const colonSimpleMatch = frontText.match(/^([^:]+):\s*([A-Z0-9_].*)$/);
+  if (colonSimpleMatch && colonSimpleMatch[2].length > 5 && !isIndonesianText(colonSimpleMatch[2])) {
+    return {
+      categoryHint: colonSimpleMatch[1].trim(),
+      mainText: colonSimpleMatch[2].trim(),
+    };
+  }
+
+  return {
+    categoryHint: null,
+    mainText: frontText,
+  };
+};
 
 /**
  * Prepares clean speech text for Web Speech Synthesis.
+ * - ZERO Indonesian words: Automatically strips Indonesian prefixes like "Subjek jamak:" or "Pasif:".
+ * - If the front text is an Indonesian prompt (e.g. translation exercises), falls back to speaking the English target sentence.
  * - Replaces fill-in-the-blank underscores (____) with a natural silent breathing pause on the front.
  * - On the flipped back side, plays the completed pure English sentence (never Indonesian explanation).
  */
@@ -14,14 +48,51 @@ export const getCleanSpeechText = (card, isFlipped) => {
     return getTargetSpeechSentence(card);
   }
 
-  // Front card: pause on blanks
-  return (card.front_text || '')
-    .replace(/_+/g, ' ... ')
-    .replace(/\(Pilihan:.*?\)/gi, '')
-    .replace(/[*_`#]/g, '')
-    .replace(/\[.*?\]/g, '')
-    .replace(/\s+/g, ' ')
-    .trim();
+  const { front_text = '' } = card;
+
+  // 1. If front_text has quoted English sentence (e.g. Subjek jamak: "My colleague and ______ attended...")
+  const quoteMatch = front_text.match(/"([^"]+)"/);
+  if (quoteMatch && quoteMatch[1]) {
+    const candidate = quoteMatch[1];
+    if (!isIndonesianText(candidate)) {
+      return candidate
+        .replace(/_+/g, ' ... ')
+        .replace(/\(Pilihan:.*?\)/gi, '')
+        .replace(/[*_`#]/g, '')
+        .replace(/\[.*?\]/g, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+    }
+  }
+
+  // 2. If front_text has colon (e.g. "Possessive pronoun: That blue umbrella...")
+  if (front_text.includes(':')) {
+    const afterColon = front_text.split(':').slice(1).join(':').trim().replace(/^["']|["']$/g, '');
+    if (afterColon && !isIndonesianText(afterColon)) {
+      return afterColon
+        .replace(/_+/g, ' ... ')
+        .replace(/\(Pilihan:.*?\)/gi, '')
+        .replace(/[*_`#]/g, '')
+        .replace(/\[.*?\]/g, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+    }
+  }
+
+  // 3. If front_text itself is primarily English (not an Indonesian prompt)
+  if (!isIndonesianText(front_text)) {
+    return front_text
+      .replace(/_+/g, ' ... ')
+      .replace(/\(Pilihan:.*?\)/gi, '')
+      .replace(/[*_`#]/g, '')
+      .replace(/\[.*?\]/g, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
+  // 4. Fallback for Indonesian prompts (e.g. "Template perkenalan diri...", "Ungkapan sopan: 'Saya paham...'"):
+  // Speaks the English target sentence from the card so the learner hears native English, NEVER Indonesian!
+  return getTargetSpeechSentence(card);
 };
 
 export default function Flashcard({
@@ -34,6 +105,8 @@ export default function Flashcard({
   isAiExplainerActive,
 }) {
   if (!card) return null;
+
+  const { categoryHint, mainText } = parseFrontCardText(card.front_text);
 
   const playPronunciation = (e) => {
     e.stopPropagation();
@@ -122,9 +195,16 @@ export default function Flashcard({
             </div>
           </div>
 
-          <div className="my-auto px-4 space-y-3">
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 leading-snug">
-              {card.front_text}
+          <div className="my-auto px-4 space-y-2">
+            {categoryHint && (
+              <div className="flex justify-center">
+                <span className="inline-flex items-center gap-1 text-[11px] sm:text-xs font-bold px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-100 shadow-2xs">
+                  📌 {categoryHint}
+                </span>
+              </div>
+            )}
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-slate-900 leading-snug break-words">
+              {mainText}
             </h2>
             <p className="text-xs text-slate-600 font-medium">Tebak arti &amp; jawabannya sebelum membalik kartu</p>
           </div>
