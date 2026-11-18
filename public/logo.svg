@@ -1,17 +1,80 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
   <defs>
-    <linearGradient id="appBg" x1="0%" y1="0%" x2="100%" y2="100%">
+    <!-- Modern Tech & Learning Royal Indigo Gradient -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#4F46E5" />
-      <stop offset="100%" stop-color="#3730A3" />
+      <stop offset="50%" stop-color="#4338CA" />
+      <stop offset="100%" stop-color="#312E81" />
     </linearGradient>
+
+    <!-- Ambient Upper Glow -->
+    <radialGradient id="topGlow" cx="28%" cy="18%" r="72%">
+      <stop offset="0%" stop-color="#818CF8" stop-opacity="0.45" />
+      <stop offset="60%" stop-color="#4F46E5" stop-opacity="0.1" />
+      <stop offset="100%" stop-color="#312E81" stop-opacity="0" />
+    </radialGradient>
+
+    <!-- Pure Crisp White Monogram Gradient -->
+    <linearGradient id="monogramGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF" />
+      <stop offset="100%" stop-color="#F1F5F9" />
+    </linearGradient>
+
+    <!-- Golden Lala AI Star Gradient -->
+    <linearGradient id="starGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FDE047" />
+      <stop offset="100%" stop-color="#F59E0B" />
+    </linearGradient>
+
+    <!-- Subtle Premium Shadow -->
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="16" stdDeviation="16" flood-color="#0F172A" flood-opacity="0.32" />
+    </filter>
   </defs>
 
-  <!-- iOS / Android Style Modern App Squircle -->
-  <rect x="32" y="32" width="448" height="448" rx="108" fill="url(#appBg)" />
+  <!-- Modern App Squircle -->
+  <rect width="512" height="512" rx="124" fill="url(#bgGrad)" />
+  <rect width="512" height="512" rx="124" fill="url(#topGlow)" />
 
-  <!-- Iconic Clean White "M" Monogram & Dual Conversation Arches -->
-  <path
-    d="M144 344 V236 C144 196 176 164 216 164 C234 164 250 171 262 183 C274 171 290 164 308 164 C348 164 380 196 380 236 V344 C380 355 371 364 360 364 C349 364 340 355 340 344 V236 C340 218 326 204 308 204 C290 204 276 218 276 236 V336 C276 347 267 356 256 356 C245 356 236 347 236 336 V236 C236 218 222 204 204 204 C186 204 172 218 172 236 V344 C172 355 163 364 152 364 C141 364 132 355 132 344 Z"
-    fill="#FFFFFF"
-  />
+  <g filter="url(#softShadow)">
+    <!-- 
+      Mathematically Symmetrical "m" Monogram (Dual Speech Arches & Flashcard Pillars)
+      Centered exactly at x = 256. Outer pillars: x = 150 & x = 362. Center pillar: x = 256.
+      Pillar width = 44px uniform. Gap = 40px uniform. Arch thickness = 44px uniform.
+    -->
+    <path
+      d="M 150 214
+         C 150 178 178 150 214 150
+         C 235 150 252 161 256 174
+         C 260 161 277 150 298 150
+         C 334 150 362 178 362 214
+         V 354
+         C 362 366 352 376 340 376
+         C 328 376 318 366 318 354
+         V 214
+         C 318 203 309 194 298 194
+         C 287 194 278 203 278 214
+         V 354
+         C 278 366 268 376 256 376
+         C 244 376 234 366 234 354
+         V 214
+         C 234 203 225 194 214 194
+         C 203 194 194 203 194 214
+         V 354
+         C 194 366 184 376 172 376
+         C 160 376 150 366 150 354
+         Z"
+      fill="url(#monogramGrad)"
+    />
+
+    <!-- Lala AI Sparkle Star (Top Right) -->
+    <path
+      d="M 378 142
+         C 378 128 389 117 403 117
+         C 389 117 378 106 378 92
+         C 378 106 367 117 353 117
+         C 367 117 378 128 378 142 Z"
+      fill="url(#starGrad)"
+    />
+  </g>
 </svg>

@@ -2,49 +2,111 @@ import fs from 'fs';
 import path from 'path';
 import sharp from 'sharp';
 
-const svgPath = path.resolve('public/logo.svg');
-const svgBuffer = fs.readFileSync(svgPath);
+// 1. Standard Squircle SVG Buffer for normal app icons & apple touch
+const squircleSvgPath = path.resolve('public/logo.svg');
+const squircleSvgBuffer = fs.readFileSync(squircleSvgPath);
+
+// 2. Full-Bleed SVG for Android Adaptive / Maskable Icon (Zero letterboxing, fills entire squircle seamlessly)
+const maskableSvg = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4F46E5" />
+      <stop offset="50%" stop-color="#4338CA" />
+      <stop offset="100%" stop-color="#312E81" />
+    </linearGradient>
+    <radialGradient id="topGlow" cx="28%" cy="18%" r="72%">
+      <stop offset="0%" stop-color="#818CF8" stop-opacity="0.45" />
+      <stop offset="60%" stop-color="#4F46E5" stop-opacity="0.1" />
+      <stop offset="100%" stop-color="#312E81" stop-opacity="0" />
+    </radialGradient>
+    <linearGradient id="monogramGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF" />
+      <stop offset="100%" stop-color="#F1F5F9" />
+    </linearGradient>
+    <linearGradient id="starGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FDE047" />
+      <stop offset="100%" stop-color="#F59E0B" />
+    </linearGradient>
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="16" stdDeviation="16" flood-color="#0F172A" flood-opacity="0.32" />
+    </filter>
+  </defs>
+
+  <!-- Full Bleed Background Canvas: Edge-to-Edge with NO rounded corners -->
+  <rect width="512" height="512" fill="url(#bgGrad)" />
+  <rect width="512" height="512" fill="url(#topGlow)" />
+
+  <g filter="url(#softShadow)">
+    <path
+      d="M 150 214
+         C 150 178 178 150 214 150
+         C 235 150 252 161 256 174
+         C 260 161 277 150 298 150
+         C 334 150 362 178 362 214
+         V 354
+         C 362 366 352 376 340 376
+         C 328 376 318 366 318 354
+         V 214
+         C 318 203 309 194 298 194
+         C 287 194 278 203 278 214
+         V 354
+         C 278 366 268 376 256 376
+         C 244 376 234 366 234 354
+         V 214
+         C 234 203 225 194 214 194
+         C 203 194 194 203 194 214
+         V 354
+         C 194 366 184 376 172 376
+         C 160 376 150 366 150 354
+         Z"
+      fill="url(#monogramGrad)"
+    />
+
+    <path
+      d="M 378 142
+         C 378 128 389 117 403 117
+         C 389 117 378 106 378 92
+         C 378 106 367 117 353 117
+         C 367 117 378 128 378 142 Z"
+      fill="url(#starGrad)"
+    />
+  </g>
+</svg>
+`;
 
 async function generate() {
-  console.log('Generating PWA icons from logo.svg...');
+  console.log('Generating PWA icons from new elegant logo...');
 
-  // 192x192
-  await sharp(svgBuffer)
+  // 1. Standard 192x192
+  await sharp(squircleSvgBuffer)
     .resize(192, 192)
     .png()
     .toFile(path.resolve('public/pwa-192x192.png'));
   console.log('✓ public/pwa-192x192.png');
 
-  // 512x512
-  await sharp(svgBuffer)
+  // 2. Standard 512x512
+  await sharp(squircleSvgBuffer)
     .resize(512, 512)
     .png()
     .toFile(path.resolve('public/pwa-512x512.png'));
   console.log('✓ public/pwa-512x512.png');
 
-  // Apple Touch Icon (180x180)
-  await sharp(svgBuffer)
+  // 3. Apple Touch Icon (180x180)
+  await sharp(squircleSvgBuffer)
     .resize(180, 180)
     .png()
     .toFile(path.resolve('public/apple-touch-icon.png'));
   console.log('✓ public/apple-touch-icon.png');
 
-  // Maskable 512x512 (with safe padding for Android/Chrome adaptive icons)
-  await sharp(svgBuffer)
-    .resize(410, 410)
-    .extend({
-      top: 51,
-      bottom: 51,
-      left: 51,
-      right: 51,
-      background: '#4F46E5',
-    })
+  // 4. Maskable 512x512 (FULL BLEED edge-to-edge background for seamless Android adaptive icon clipping)
+  await sharp(Buffer.from(maskableSvg))
+    .resize(512, 512)
     .png()
     .toFile(path.resolve('public/maskable-icon-512x512.png'));
-  console.log('✓ public/maskable-icon-512x512.png');
+  console.log('✓ public/maskable-icon-512x512.png (Full Bleed Adaptive)');
 
   console.log('All icons generated successfully!');
 }
 
 generate().catch(console.error);
-
