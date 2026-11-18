@@ -41,9 +41,18 @@ export default function HomePage() {
               <span>Sesi Belajar Aktif</span>
             </div>
 
-            <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight">
-              Halo, <span className="text-amber-300">{user.name || user.username || 'Siswa'}</span>! 👋
-            </h1>
+            <div className="flex items-center gap-3.5">
+              {user.avatarUrl && (
+                <img
+                  src={user.avatarUrl}
+                  alt={user.name || user.username || 'User'}
+                  className="w-12 h-12 sm:w-14 sm:h-14 rounded-full object-cover ring-2 ring-white/30 shadow-lg shrink-0"
+                />
+              )}
+              <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight">
+                Halo, <span className="text-amber-300">{user.name || user.username || 'Siswa'}</span>! 👋
+              </h1>
+            </div>
 
             <p className="text-indigo-100 text-sm sm:text-base leading-relaxed">
               Siap melanjutkan target belajarmu hari ini? Pertahankan ritme latihan dan capai level CEFR berikutnya!

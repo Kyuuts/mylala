@@ -65,8 +65,8 @@ export default function EditProfileModal({ isOpen, onClose }) {
     setIsUploading(true);
 
     try {
-      // Compress to compact WebP (max 256x256, ~15-25KB)
-      const compressedDataUrl = await compressImageFile(file, 256, 256);
+      // Compress to compact WebP/JPEG (192x192 square crop, ~8-16KB)
+      const compressedDataUrl = await compressImageFile(file, 192, 192);
       setSelectedAvatarUrl(compressedDataUrl);
     } catch (err) {
       console.error('Compress image failed:', err);
@@ -172,10 +172,12 @@ export default function EditProfileModal({ isOpen, onClose }) {
           {/* 1. COMPACT AVATAR PREVIEW + CAMERA BUTTON */}
           <div className="flex flex-col items-center justify-center">
             <div className="relative">
-              <div 
-                onClick={() => fileInputRef.current?.click()}
-                className="w-14 h-14 rounded-full overflow-hidden border-2 border-indigo-600 shadow-sm bg-slate-100 flex items-center justify-center cursor-pointer hover:opacity-90 transition group"
-                title="Klik untuk upload foto"
+              <label 
+                htmlFor="profile-avatar-file-input"
+                className={`relative w-14 h-14 rounded-full overflow-hidden border-2 border-indigo-600 shadow-sm bg-slate-100 flex items-center justify-center cursor-pointer hover:opacity-90 transition group ${
+                  isUploading ? 'pointer-events-none opacity-60' : ''
+                }`}
+                title="Pilih foto profil dari galeri atau kamera"
               >
                 {selectedAvatarUrl ? (
                   <img
@@ -191,43 +193,46 @@ export default function EditProfileModal({ isOpen, onClose }) {
                 <div className="absolute inset-0 bg-black/30 rounded-full opacity-0 group-hover:opacity-100 flex items-center justify-center transition">
                   <Camera className="w-4 h-4 text-white" />
                 </div>
-              </div>
+              </label>
 
-              {/* Camera Badge Button */}
-              <button
-                type="button"
-                onClick={() => fileInputRef.current?.click()}
-                disabled={isUploading}
+              {/* Camera Badge Trigger */}
+              <label
+                htmlFor="profile-avatar-file-input"
                 title="Pilih foto dari galeri"
-                className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white shadow-xs border border-white flex items-center justify-center transition cursor-pointer"
+                className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white shadow-xs border border-white flex items-center justify-center transition cursor-pointer ${
+                  isUploading ? 'pointer-events-none opacity-60' : ''
+                }`}
               >
                 {isUploading ? (
                   <RefreshCw className="w-2.5 h-2.5 animate-spin" />
                 ) : (
                   <Camera className="w-2.5 h-2.5" />
                 )}
-              </button>
+              </label>
             </div>
 
+            {/* Native Mobile & Desktop Accessible File Input */}
             <input
+              id="profile-avatar-file-input"
               ref={fileInputRef}
               type="file"
-              accept="image/png,image/jpeg,image/webp,image/gif"
-              className="hidden"
+              accept="image/*"
+              className="sr-only"
               onChange={handleFileChange}
+              disabled={isUploading || isSaving}
             />
 
             {/* Upload / Reset Quick Actions */}
             <div className="flex items-center gap-2 mt-1 text-[11px]">
-              <button
-                type="button"
-                onClick={() => fileInputRef.current?.click()}
-                disabled={isUploading}
-                className="inline-flex items-center gap-1 font-bold text-indigo-600 hover:text-indigo-800 transition cursor-pointer"
+              <label
+                htmlFor="profile-avatar-file-input"
+                className={`inline-flex items-center gap-1 font-bold text-indigo-600 hover:text-indigo-800 transition cursor-pointer ${
+                  isUploading ? 'pointer-events-none opacity-60' : ''
+                }`}
               >
                 <Upload className="w-3 h-3" />
                 <span>{isUploading ? 'Mengompres...' : 'Upload Foto'}</span>
-              </button>
+              </label>
 
               {selectedAvatarUrl && (
                 <>
@@ -235,6 +240,7 @@ export default function EditProfileModal({ isOpen, onClose }) {
                   <button
                     type="button"
                     onClick={() => setSelectedAvatarUrl('')}
+                    disabled={isUploading || isSaving}
                     className="inline-flex items-center gap-1 text-slate-500 hover:text-rose-600 transition cursor-pointer"
                   >
                     <RotateCcw className="w-2.5 h-2.5" />

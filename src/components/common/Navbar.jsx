@@ -168,7 +168,7 @@ export default function Navbar() {
                 title="Edit Profil & Avatar"
                 className="inline-flex items-center gap-1 sm:gap-1.5 text-xs font-bold text-slate-800 bg-slate-100 hover:bg-slate-200 active:scale-95 px-2 sm:px-3 py-1 h-8 sm:min-h-[38px] rounded-full transition cursor-pointer max-w-[95px] sm:max-w-none shrink-0"
               >
-                <div className="w-4 h-4 rounded-full overflow-hidden shrink-0 flex items-center justify-center bg-indigo-100">
+                <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full overflow-hidden shrink-0 flex items-center justify-center bg-indigo-100 ring-1 ring-slate-300/80">
                   {user?.avatarUrl ? (
                     <img
                       src={user.avatarUrl}
@@ -176,7 +176,7 @@ export default function Navbar() {
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <User className="w-2.5 h-2.5 text-indigo-600" />
+                    <User className="w-3 h-3 text-indigo-600" />
                   )}
                 </div>
                 <span className="max-w-[42px] sm:max-w-[80px] md:max-w-none truncate">{user?.name || user?.username || 'Siswa'}</span>

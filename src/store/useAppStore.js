@@ -5,6 +5,7 @@ import { MOCK_MODULES, MOCK_FLASHCARDS } from '../services/mockData';
 import { calculateSRS } from '../utils/srsAlgorithm';
 import { getCurrentWeekId, getTierFromXP, PEER_CONTESTANTS } from '../utils/rankSystem';
 import { generateSalt, hashPassword, verifyPassword, ADMIN_AVATAR_REAL } from '../utils/cryptoAuth';
+import { isValidAvatarUrl } from '../utils/avatars';
 import { testAiConnection as testAiConnectionService, getEffectiveAiConfig } from '../services/aiService';
 
 // Helper to generate UUID v4
@@ -627,7 +628,7 @@ export const useAppStore = create(
                 };
 
                 const resolvedAvatar =
-                  (cloudSyncData.avatarUrl && cloudSyncData.avatarUrl.length < 10000)
+                  (cloudSyncData.avatarUrl && isValidAvatarUrl(cloudSyncData.avatarUrl))
                     ? cloudSyncData.avatarUrl
                     : (isSpecialAdmin ? ADMIN_AVATAR_REAL : null);
 
@@ -700,7 +701,7 @@ export const useAppStore = create(
             const effectiveXp = Math.max(userSavedStats.xp || 0, cloudSyncData?.xp || 0, isSpecialAdmin ? 1130 : 0);
             const effectiveWeeklyXp = userSavedStats.weeklyXp || 0;
             const effectiveStreak = Math.max(userSavedStats.streak || 1, cloudSyncData?.streak || 1, isSpecialAdmin ? 3 : 1);
-            const resolvedAvatar = (cloudAccount.avatar_url && cloudAccount.avatar_url.length < 10000)
+            const resolvedAvatar = (cloudAccount.avatar_url && isValidAvatarUrl(cloudAccount.avatar_url))
               ? cloudAccount.avatar_url
               : (isSpecialAdmin ? ADMIN_AVATAR_REAL : null);
 
@@ -941,7 +942,7 @@ export const useAppStore = create(
             const canonicalId = isSpecialAdmin ? 'admin-imam-001' : (acc.id || `usr-${cleanUser}`);
 
             const stats = resolveUserStats(canonicalId, get().userStatsByUserId || {});
-            const resolvedAvatar = (acc.avatarUrl && acc.avatarUrl.length < 10000)
+            const resolvedAvatar = (acc.avatarUrl && isValidAvatarUrl(acc.avatarUrl))
               ? acc.avatarUrl
               : (isSpecialAdmin ? ADMIN_AVATAR_REAL : null);
 
@@ -991,7 +992,7 @@ export const useAppStore = create(
               username: isSpecialAdmin ? 'kyuut' : cleanUser,
               email: isSpecialAdmin ? 'kyuut@mylala.app' : (acc.email || `${cleanUser}@mylala.app`),
               name: isSpecialAdmin ? 'kyuut' : (acc.name || acc.username),
-              avatar_url: (acc.avatarUrl && acc.avatarUrl.length < 10000) ? acc.avatarUrl : (isSpecialAdmin ? ADMIN_AVATAR_REAL : null),
+              avatar_url: (acc.avatarUrl && isValidAvatarUrl(acc.avatarUrl)) ? acc.avatarUrl : (isSpecialAdmin ? ADMIN_AVATAR_REAL : null),
               salt: acc.salt || ADMIN_SALT,
               password_hash: acc.passwordHash || '',
               role: isSpecialAdmin ? 'admin' : (acc.role || 'member'),
@@ -1373,7 +1374,7 @@ export const useAppStore = create(
           }
 
           if (isSpecialAdmin) {
-            if (!cloudAvatar || cloudAvatar.length > 10000) {
+            if (!cloudAvatar || !isValidAvatarUrl(cloudAvatar)) {
               cloudAvatar = ADMIN_AVATAR_REAL;
             }
             if (!cloudName) {
@@ -1394,7 +1395,7 @@ export const useAppStore = create(
                 .maybeSingle();
 
               if (profData) {
-                if (profData.avatar_url && (!isSpecialAdmin || profData.avatar_url.length < 10000)) {
+                if (profData.avatar_url && isValidAvatarUrl(profData.avatar_url)) {
                   cloudAvatar = profData.avatar_url;
                 }
                 if (profData.name && !cloudName) cloudName = profData.name;
@@ -1406,7 +1407,7 @@ export const useAppStore = create(
                   .maybeSingle();
 
                 if (accData) {
-                  if (accData.avatar_url && (!isSpecialAdmin || accData.avatar_url.length < 10000)) {
+                  if (accData.avatar_url && isValidAvatarUrl(accData.avatar_url)) {
                     cloudAvatar = accData.avatar_url;
                   }
                   if (accData.name && !cloudName) cloudName = accData.name;
@@ -1466,7 +1467,7 @@ export const useAppStore = create(
                 },
               };
 
-              const finalAvatar = (cloudAvatar && cloudAvatar.length < 10000)
+              const finalAvatar = (cloudAvatar && isValidAvatarUrl(cloudAvatar))
                 ? cloudAvatar
                 : (isSpecialAdmin ? ADMIN_AVATAR_REAL : (state.user?.avatarUrl || null));
 
@@ -1659,7 +1660,7 @@ export const useAppStore = create(
           user_id: userId,
           username: (user?.username || 'user').toLowerCase(),
           name: user?.name || 'Pembelajar MyLala',
-          avatar_url: user?.avatarUrl && !user.avatarUrl.startsWith('{') ? user.avatarUrl : null,
+          avatar_url: user?.avatarUrl && isValidAvatarUrl(user.avatarUrl) ? user.avatarUrl : null,
           year_week: currentWeek,
           weekly_xp: weeklyXp || 0,
           cards_reviewed: cardsReviewed,
@@ -1711,7 +1712,7 @@ export const useAppStore = create(
             : (state.rewardedModuleIds || []);
 
           const effectiveAvatar =
-            user?.avatarUrl && user.avatarUrl.length < 10000 && !user.avatarUrl.startsWith('{')
+            user?.avatarUrl && isValidAvatarUrl(user.avatarUrl)
               ? user.avatarUrl
               : (isSpecialAdmin ? ADMIN_AVATAR_REAL : null);
 
@@ -1989,7 +1990,8 @@ export const useAppStore = create(
             item.user_id === userId ||
             (user?.username && item.username?.toLowerCase() === user.username.toLowerCase())
           );
-          const avatarUrl = isUser ? (user?.avatarUrl || null) : (item.avatar_url || item.avatarUrl || null);
+          const rawAvatarUrl = isUser ? (user?.avatarUrl || null) : (item.avatar_url || item.avatarUrl || null);
+          const avatarUrl = isValidAvatarUrl(rawAvatarUrl) ? rawAvatarUrl : null;
           return {
             id: item.id || item.user_id,
             name: isUser ? (user?.name ? `${user.name} (Kamu)` : 'Kamu') : (item.name || item.username),
@@ -2539,7 +2541,7 @@ export const useAppStore = create(
           }
           if (state.user) {
             state.user.cefrLevel = 'A2';
-            if (!state.user.avatarUrl || state.user.avatarUrl.length > 10000) {
+            if (!state.user.avatarUrl || !isValidAvatarUrl(state.user.avatarUrl)) {
               state.user.avatarUrl = ADMIN_AVATAR_REAL;
             }
           }

@@ -131,18 +131,27 @@ export default function DashboardPage() {
     <div className="space-y-4 sm:space-y-6">
       {/* 1. Header & Greeting Bar with Placement Test Trigger */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-white p-4 sm:p-5 rounded-2xl sm:rounded-3xl border border-slate-200/80 shadow-xs">
-        <div className="space-y-0.5">
-          <div className="flex items-center gap-2 flex-wrap">
-            <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
-              Dashboard Belajar
-            </h1>
-            <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-[10px] font-extrabold uppercase tracking-wider">
-              🟢 Level Aktif: {cefrLevel || 'A1'}
-            </span>
+        <div className="flex items-center gap-3">
+          {user?.avatarUrl && (
+            <img
+              src={user.avatarUrl}
+              alt={user.name || user.username || 'User'}
+              className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover ring-2 ring-indigo-500/30 shadow-xs shrink-0"
+            />
+          )}
+          <div className="space-y-0.5">
+            <div className="flex items-center gap-2 flex-wrap">
+              <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+                Dashboard Belajar
+              </h1>
+              <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-[10px] font-extrabold uppercase tracking-wider">
+                🟢 Level Aktif: {cefrLevel || 'A1'}
+              </span>
+            </div>
+            <p className="text-xs text-slate-500">
+              Halo, <strong className="text-indigo-600 font-bold">{user?.name || user?.username || 'Siswa'}</strong>! Kuasai bahasa secara bertahap &amp; terstruktur.
+            </p>
           </div>
-          <p className="text-xs text-slate-500">
-            Halo, <strong className="text-indigo-600 font-bold">{user?.name || 'Imam'}</strong>! Kuasai bahasa secara bertahap &amp; terstruktur.
-          </p>
         </div>
 
         <div className="flex items-center gap-2 self-start sm:self-auto shrink-0">

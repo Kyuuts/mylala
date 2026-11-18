@@ -168,14 +168,48 @@ export const PRESET_AVATARS = [
 ];
 
 /**
+ * Validates whether a given string is a legitimate image URL or data URI.
+ * Rejects JSON sync strings (starting with '{' or '['), null, undefined, or empty values.
+ * Allows valid image Data URIs (up to 500KB) and remote HTTP/HTTPS image URLs.
+ */
+export const isValidAvatarUrl = (url) => {
+  if (!url || typeof url !== 'string') return false;
+  const trimmed = url.trim();
+  if (
+    trimmed.startsWith('{') ||
+    trimmed.startsWith('[') ||
+    trimmed === 'null' ||
+    trimmed === 'undefined'
+  ) {
+    return false;
+  }
+  return (
+    (trimmed.startsWith('data:image/') ||
+      trimmed.startsWith('http://') ||
+      trimmed.startsWith('https://') ||
+      trimmed.startsWith('blob:')) &&
+    trimmed.length < 500000 // 500KB safety ceiling
+  );
+};
+
+/**
  * Compresses an uploaded image File using client-side HTML5 Canvas.
- * Outputs a compact Base64 Data URL (max 256x256, ~15-25KB)
+ * Outputs a compact, square center-cropped Base64 Data URL (192x192, ~8-16KB).
  * Safe for offline localStorage and instant Supabase syncing.
  */
-export function compressImageFile(file, maxWidth = 256, maxHeight = 256) {
+export function compressImageFile(file, maxWidth = 192, maxHeight = 192) {
   return new Promise((resolve, reject) => {
-    if (!file || !file.type.startsWith('image/')) {
-      reject(new Error('File yang dipilih bukan gambar yang valid.'));
+    if (!file) {
+      reject(new Error('Tidak ada file yang dipilih.'));
+      return;
+    }
+
+    const isImage =
+      (file.type && file.type.startsWith('image/')) ||
+      /\.(jpe?g|png|webp|gif|bmp|heic|svg)$/i.test(file.name || '');
+
+    if (!isImage) {
+      reject(new Error('File yang dipilih bukan gambar yang valid (gunakan JPG, PNG, atau WebP).'));
       return;
     }
 
@@ -183,28 +217,19 @@ export function compressImageFile(file, maxWidth = 256, maxHeight = 256) {
     reader.onload = (readerEvent) => {
       const img = new Image();
       img.onload = () => {
-        let width = img.width;
-        let height = img.height;
-
-        // Calculate aspect-ratio scaling
-        if (width > height) {
-          if (width > maxWidth) {
-            height = Math.round((height * maxWidth) / width);
-            width = maxWidth;
-          }
-        } else {
-          if (height > maxHeight) {
-            width = Math.round((width * maxHeight) / height);
-            height = maxHeight;
-          }
-        }
+        const targetSize = Math.min(maxWidth || 192, 192);
+        const minDim = Math.min(img.width, img.height);
+        const sx = (img.width - minDim) / 2;
+        const sy = (img.height - minDim) / 2;
 
         const canvas = document.createElement('canvas');
-        canvas.width = width;
-        canvas.height = height;
+        canvas.width = targetSize;
+        canvas.height = targetSize;
 
         const ctx = canvas.getContext('2d');
-        ctx.drawImage(img, 0, 0, width, height);
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+        ctx.drawImage(img, sx, sy, minDim, minDim, 0, 0, targetSize, targetSize);
 
         // Convert to compact WebP (or JPEG fallback)
         try {
@@ -216,11 +241,11 @@ export function compressImageFile(file, maxWidth = 256, maxHeight = 256) {
         }
       };
 
-      img.onerror = () => reject(new Error('Gagal memproses file gambar.'));
+      img.onerror = () => reject(new Error('Gagal memproses file gambar. Pastikan format file didukung browser.'));
       img.src = readerEvent.target.result;
     };
 
-    reader.onerror = () => reject(new Error('Gagal membaca file gambar.'));
+    reader.onerror = () => reject(new Error('Gagal membaca file gambar dari perangkat Anda.'));
     reader.readAsDataURL(file);
   });
 }
