@@ -204,49 +204,104 @@ export function compressImageFile(file, maxWidth = 192, maxHeight = 192) {
       return;
     }
 
-    const isImage =
-      (file.type && file.type.startsWith('image/')) ||
-      /\.(jpe?g|png|webp|gif|bmp|heic|svg)$/i.test(file.name || '');
+    const hasImageMime = file.type && file.type.startsWith('image/');
+    const hasImageExt = /\.(jpe?g|png|webp|gif|bmp|heic|heif|svg)$/i.test(file.name || '');
 
-    if (!isImage) {
+    // Allow if mime indicates image, extension indicates image, or mime is empty (e.g. mobile camera files)
+    if (!hasImageMime && !hasImageExt && file.type !== '') {
       reject(new Error('File yang dipilih bukan gambar yang valid (gunakan JPG, PNG, atau WebP).'));
       return;
     }
 
-    const reader = new FileReader();
-    reader.onload = (readerEvent) => {
-      const img = new Image();
-      img.onload = () => {
+    const processLoadedImage = (img, cleanup = () => {}) => {
+      try {
         const targetSize = Math.min(maxWidth || 192, 192);
-        const minDim = Math.min(img.width, img.height);
-        const sx = (img.width - minDim) / 2;
-        const sy = (img.height - minDim) / 2;
+        const minDim = Math.min(img.naturalWidth || img.width, img.naturalHeight || img.height);
+        if (!minDim || minDim <= 0) {
+          cleanup();
+          reject(new Error('Dimensi gambar tidak valid.'));
+          return;
+        }
+
+        const sx = ((img.naturalWidth || img.width) - minDim) / 2;
+        const sy = ((img.naturalHeight || img.height) - minDim) / 2;
 
         const canvas = document.createElement('canvas');
         canvas.width = targetSize;
         canvas.height = targetSize;
 
         const ctx = canvas.getContext('2d');
+        if (!ctx) {
+          cleanup();
+          reject(new Error('Browser tidak mendukung canvas rendering.'));
+          return;
+        }
+
         ctx.imageSmoothingEnabled = true;
         ctx.imageSmoothingQuality = 'high';
         ctx.drawImage(img, sx, sy, minDim, minDim, 0, 0, targetSize, targetSize);
 
-        // Convert to compact WebP (or JPEG fallback)
-        try {
-          const compressedDataUrl = canvas.toDataURL('image/webp', 0.82);
-          resolve(compressedDataUrl);
-        } catch {
-          const fallbackDataUrl = canvas.toDataURL('image/jpeg', 0.82);
-          resolve(fallbackDataUrl);
-        }
-      };
+        cleanup();
 
-      img.onerror = () => reject(new Error('Gagal memproses file gambar. Pastikan format file didukung browser.'));
-      img.src = readerEvent.target.result;
+        // Convert to compact universal JPEG (quality 0.82, ~8-15KB)
+        try {
+          const compressed = canvas.toDataURL('image/jpeg', 0.82);
+          resolve(compressed);
+        } catch (_) {
+          const fallback = canvas.toDataURL();
+          resolve(fallback);
+        }
+      } catch (err) {
+        cleanup();
+        reject(new Error('Gagal mengompres gambar: ' + (err.message || 'Unknown error')));
+      }
     };
 
-    reader.onerror = () => reject(new Error('Gagal membaca file gambar dari perangkat Anda.'));
-    reader.readAsDataURL(file);
+    // Fast-path: URL.createObjectURL (handles high-res camera photos without consuming browser memory)
+    let blobUrl = null;
+    try {
+      if (typeof URL !== 'undefined' && typeof URL.createObjectURL === 'function') {
+        blobUrl = URL.createObjectURL(file);
+      }
+    } catch (_) {}
+
+    if (blobUrl) {
+      const img = new Image();
+      img.onload = () => {
+        processLoadedImage(img, () => {
+          try {
+            URL.revokeObjectURL(blobUrl);
+          } catch (_) {}
+        });
+      };
+      img.onerror = () => {
+        try {
+          URL.revokeObjectURL(blobUrl);
+        } catch (_) {}
+        // Fallback to FileReader if ObjectURL failed
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const fallbackImg = new Image();
+          fallbackImg.onload = () => processLoadedImage(fallbackImg);
+          fallbackImg.onerror = () => reject(new Error('Gagal memproses file foto. Pastikan format foto didukung.'));
+          fallbackImg.src = e.target.result;
+        };
+        reader.onerror = () => reject(new Error('Gagal membaca file foto dari perangkat Anda.'));
+        reader.readAsDataURL(file);
+      };
+      img.src = blobUrl;
+    } else {
+      // Fallback: FileReader
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => processLoadedImage(img);
+        img.onerror = () => reject(new Error('Gagal memproses file foto. Pastikan format foto didukung.'));
+        img.src = e.target.result;
+      };
+      reader.onerror = () => reject(new Error('Gagal membaca file foto dari perangkat Anda.'));
+      reader.readAsDataURL(file);
+    }
   });
 }
 

@@ -62,17 +62,35 @@ export default function EditProfileModal({ isOpen, onClose }) {
     if (!file) return;
 
     setError(null);
+    setSuccessMsg(null);
     setIsUploading(true);
 
     try {
-      // Compress to compact WebP/JPEG (192x192 square crop, ~8-16KB)
+      // Compress to compact universal JPEG (192x192 square crop, ~8-15KB)
       const compressedDataUrl = await compressImageFile(file, 192, 192);
       setSelectedAvatarUrl(compressedDataUrl);
+
+      // Instant auto-save so user doesn't have to guess or manually click Save
+      const cleanName = (name || user?.name || '').trim();
+      const cleanUser = (username || user?.username || '').trim().toLowerCase().replace(/[^a-z0-9_]/g, '');
+      if (cleanName && cleanUser) {
+        const res = await updateProfile({
+          name: cleanName,
+          username: cleanUser,
+          avatarUrl: compressedDataUrl,
+        });
+        if (res.success) {
+          setSuccessMsg('Foto profil berhasil di-upload & disimpan!');
+        }
+      }
     } catch (err) {
       console.error('Compress image failed:', err);
       setError(err.message || 'Gagal memproses gambar. Gunakan file JPG, PNG, atau WebP.');
     } finally {
       setIsUploading(false);
+      if (e.target) {
+        e.target.value = '';
+      }
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
       }
@@ -169,15 +187,12 @@ export default function EditProfileModal({ isOpen, onClose }) {
             </div>
           )}
 
-          {/* 1. COMPACT AVATAR PREVIEW + CAMERA BUTTON */}
+          {/* 1. COMPACT AVATAR PREVIEW + DIRECT NATIVE FILE INPUT */}
           <div className="flex flex-col items-center justify-center">
-            <div className="relative">
-              <label 
-                htmlFor="profile-avatar-file-input"
-                className={`relative w-14 h-14 rounded-full overflow-hidden border-2 border-indigo-600 shadow-sm bg-slate-100 flex items-center justify-center cursor-pointer hover:opacity-90 transition group ${
-                  isUploading ? 'pointer-events-none opacity-60' : ''
-                }`}
-                title="Pilih foto profil dari galeri atau kamera"
+            <div className="relative group cursor-pointer">
+              {/* Visual Avatar */}
+              <div 
+                className="w-16 h-16 rounded-full overflow-hidden border-2 border-indigo-600 shadow-sm bg-slate-100 flex items-center justify-center hover:opacity-90 transition"
               >
                 {selectedAvatarUrl ? (
                   <img
@@ -186,65 +201,74 @@ export default function EditProfileModal({ isOpen, onClose }) {
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <User className="w-7 h-7 text-slate-400" />
+                  <User className="w-8 h-8 text-slate-400" />
                 )}
 
                 {/* Hover overlay hint */}
                 <div className="absolute inset-0 bg-black/30 rounded-full opacity-0 group-hover:opacity-100 flex items-center justify-center transition">
-                  <Camera className="w-4 h-4 text-white" />
+                  <Camera className="w-5 h-5 text-white" />
                 </div>
-              </label>
+              </div>
 
               {/* Camera Badge Trigger */}
-              <label
-                htmlFor="profile-avatar-file-input"
-                title="Pilih foto dari galeri"
-                className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white shadow-xs border border-white flex items-center justify-center transition cursor-pointer ${
-                  isUploading ? 'pointer-events-none opacity-60' : ''
-                }`}
+              <div
+                className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-indigo-600 text-white shadow-xs border-2 border-white flex items-center justify-center pointer-events-none"
               >
                 {isUploading ? (
-                  <RefreshCw className="w-2.5 h-2.5 animate-spin" />
+                  <RefreshCw className="w-3 h-3 animate-spin" />
                 ) : (
-                  <Camera className="w-2.5 h-2.5" />
+                  <Camera className="w-3 h-3" />
                 )}
-              </label>
+              </div>
+
+              {/* Unclipped native input directly covering the entire 64x64 circle */}
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                aria-label="Pilih foto profil"
+                onChange={handleFileChange}
+                disabled={isUploading || isSaving}
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-30"
+              />
             </div>
 
-            {/* Native Mobile & Desktop Accessible File Input */}
-            <input
-              id="profile-avatar-file-input"
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              className="sr-only"
-              onChange={handleFileChange}
-              disabled={isUploading || isSaving}
-            />
-
             {/* Upload / Reset Quick Actions */}
-            <div className="flex items-center gap-2 mt-1 text-[11px]">
-              <label
-                htmlFor="profile-avatar-file-input"
-                className={`inline-flex items-center gap-1 font-bold text-indigo-600 hover:text-indigo-800 transition cursor-pointer ${
-                  isUploading ? 'pointer-events-none opacity-60' : ''
-                }`}
-              >
-                <Upload className="w-3 h-3" />
-                <span>{isUploading ? 'Mengompres...' : 'Upload Foto'}</span>
-              </label>
+            <div className="flex items-center gap-2 mt-2 text-[11px]">
+              <div className="relative inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 active:scale-95 text-indigo-700 font-bold border border-indigo-200 transition cursor-pointer">
+                <Upload className="w-3.5 h-3.5" />
+                <span>{isUploading ? 'Mengompres...' : 'Pilih Foto dari HP'}</span>
+                <input
+                  type="file"
+                  accept="image/*"
+                  aria-label="Upload Foto"
+                  onChange={handleFileChange}
+                  disabled={isUploading || isSaving}
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-30"
+                />
+              </div>
 
               {selectedAvatarUrl && (
                 <>
                   <span className="text-slate-300">•</span>
                   <button
                     type="button"
-                    onClick={() => setSelectedAvatarUrl('')}
+                    onClick={async () => {
+                      setSelectedAvatarUrl('');
+                      if (user) {
+                        await updateProfile({
+                          name: user.name,
+                          username: user.username,
+                          avatarUrl: null,
+                        });
+                        setSuccessMsg('Foto profil dihapus.');
+                      }
+                    }}
                     disabled={isUploading || isSaving}
-                    className="inline-flex items-center gap-1 text-slate-500 hover:text-rose-600 transition cursor-pointer"
+                    className="inline-flex items-center gap-1 text-slate-500 hover:text-rose-600 transition cursor-pointer px-1.5 py-1"
                   >
                     <RotateCcw className="w-2.5 h-2.5" />
-                    <span>Reset</span>
+                    <span>Hapus</span>
                   </button>
                 </>
               )}

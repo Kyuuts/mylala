@@ -1467,9 +1467,14 @@ export const useAppStore = create(
                 },
               };
 
-              const finalAvatar = (cloudAvatar && isValidAvatarUrl(cloudAvatar))
-                ? cloudAvatar
-                : (isSpecialAdmin ? ADMIN_AVATAR_REAL : (state.user?.avatarUrl || null));
+              // Respect active user avatar if valid to prevent stale cloud rows from overwriting local photo
+              const localAvatar = state.user?.avatarUrl;
+              const hasLocal = localAvatar && isValidAvatarUrl(localAvatar);
+              const hasCloud = cloudAvatar && isValidAvatarUrl(cloudAvatar);
+
+              const finalAvatar = hasLocal
+                ? localAvatar
+                : (hasCloud ? cloudAvatar : (isSpecialAdmin ? ADMIN_AVATAR_REAL : null));
 
               const nextState = {
                 userId: canonicalUserId,
