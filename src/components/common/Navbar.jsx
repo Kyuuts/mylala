@@ -23,10 +23,8 @@ export default function Navbar() {
     <header className="sticky top-0 z-50 bg-white border-b-[2.5px] border-black shadow-[0px_3px_0px_#000] w-full max-w-full overflow-hidden">
       <div className="max-w-5xl mx-auto px-2 sm:px-4 h-14 sm:h-16 flex items-center justify-between gap-1 sm:gap-2">
         <div className="flex items-center gap-2 shrink-0 min-w-0">
-          <Link to="/" className="flex items-center gap-1.5 sm:gap-2 font-black text-lg sm:text-xl text-black hover:opacity-90 transition shrink-0">
-            <div className="border-2 border-black rounded-xl p-0.5 bg-[#D4F63D] shadow-[2px_2px_0px_#000]">
-              <Logo size="sm" />
-            </div>
+          <Link to="/" className="flex items-center gap-2 font-black text-lg sm:text-xl text-black hover:opacity-90 transition shrink-0">
+            <Logo size="md" className="shrink-0" />
             <span className="tracking-tight font-black text-black text-xl uppercase">
               MyLala
             </span>
