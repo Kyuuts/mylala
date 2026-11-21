@@ -11,8 +11,8 @@ export const CHARACTER_VOICE_PROFILES = {
     name: 'Oliver (London Barista)',
     gender: 'male',
     accent: 'en-GB',
-    kokoroVoice: 'bm_george',
-    rate: 0.94,
+    kokoroVoice: 'en-GB-RyanNeural',
+    rate: 0.96,
     pitch: 0.98,
     preferredNames: [
       'Ryan Online (Natural)',
@@ -30,8 +30,8 @@ export const CHARACTER_VOICE_PROFILES = {
     name: 'Ms. Clara (HR Director)',
     gender: 'female',
     accent: 'en-US',
-    kokoroVoice: 'af_heart',
-    rate: 0.92,
+    kokoroVoice: 'en-US-JennyNeural',
+    rate: 0.94,
     pitch: 1.02,
     preferredNames: [
       'Jenny Online (Natural)',
@@ -48,12 +48,12 @@ export const CHARACTER_VOICE_PROFILES = {
     name: 'Daniel (Front Desk)',
     gender: 'male',
     accent: 'en-US',
-    kokoroVoice: 'am_michael',
-    rate: 0.94,
+    kokoroVoice: 'en-US-ChristopherNeural',
+    rate: 0.95,
     pitch: 0.97,
     preferredNames: [
-      'Guy Online (Natural)',
       'Christopher Online (Natural)',
+      'Guy Online (Natural)',
       'Google US English',
       'David',
       'Alex',
@@ -64,10 +64,11 @@ export const CHARACTER_VOICE_PROFILES = {
     name: 'Emma (Teman Native)',
     gender: 'female',
     accent: 'en-US',
-    kokoroVoice: 'af_bella',
-    rate: 0.97,
+    kokoroVoice: 'en-US-AriaNeural',
+    rate: 0.98,
     pitch: 1.05,
     preferredNames: [
+      'Aria Online (Natural)',
       'Ana Online (Natural)',
       'Jenny Online (Natural)',
       'Google US English',
@@ -79,8 +80,8 @@ export const CHARACTER_VOICE_PROFILES = {
     name: 'Alex (Apoteker)',
     gender: 'male',
     accent: 'en-US',
-    kokoroVoice: 'am_fenrir',
-    rate: 0.92,
+    kokoroVoice: 'en-US-GuyNeural',
+    rate: 0.93,
     pitch: 0.96,
     preferredNames: [
       'Guy Online (Natural)',
@@ -93,7 +94,7 @@ export const CHARACTER_VOICE_PROFILES = {
     name: 'Lala (AI Tutor)',
     gender: 'female',
     accent: 'en-US',
-    kokoroVoice: 'af_heart',
+    kokoroVoice: 'en-US-JennyNeural',
     rate: 0.95,
     pitch: 1.06,
     preferredNames: [
@@ -177,16 +178,16 @@ export function findBestVoiceForCharacter(scenarioId = 'cafe') {
 }
 
 /**
- * Speaks text using Kokoro AI (with smart natural browser fallback)
+ * Speaks text using Microsoft Edge / Azure Neural Voices (with smart natural browser fallback)
  */
 export function speakNaturalCharacterLine(text, scenarioId = 'cafe', voiceOverride = 'auto') {
   if (!text) return;
   const profile = CHARACTER_VOICE_PROFILES[scenarioId] || CHARACTER_VOICE_PROFILES.cafe;
 
-  let targetVoice = profile.kokoroVoice || 'af_heart';
-  if (voiceOverride === 'british') targetVoice = 'bm_george';
-  else if (voiceOverride === 'us_female') targetVoice = 'af_heart';
-  else if (voiceOverride === 'us_male') targetVoice = 'am_michael';
+  let targetVoice = profile.kokoroVoice || 'en-US-JennyNeural';
+  if (voiceOverride === 'british') targetVoice = 'en-GB-RyanNeural';
+  else if (voiceOverride === 'us_female') targetVoice = 'en-US-JennyNeural';
+  else if (voiceOverride === 'us_male') targetVoice = 'en-US-GuyNeural';
 
   ttsService.speak(text, {
     voice: targetVoice,

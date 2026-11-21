@@ -151,11 +151,11 @@ export default function Navbar() {
             </NavLink>
           )}
 
-          {/* Kokoro AI Voice Quick Settings Button */}
+          {/* Neural AI Voice Quick Settings Button */}
           <button
             type="button"
             onClick={() => setVoiceModalOpen(true)}
-            title="Pengaturan Suara AI Kokoro"
+            title="Pengaturan Suara AI (Microsoft Azure Neural)"
             className="inline-flex items-center justify-center gap-1 w-8 sm:w-auto px-0 sm:px-2.5 py-1.5 rounded-xl text-xs font-black transition cursor-pointer h-8 sm:min-h-[38px] border-2 border-black shadow-[2px_2px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_#000] bg-[#FF85C0] text-black shrink-0"
           >
             <Volume2 className="w-3.5 h-3.5 stroke-[2.5] text-black shrink-0" />

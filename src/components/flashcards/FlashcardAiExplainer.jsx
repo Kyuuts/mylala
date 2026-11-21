@@ -244,11 +244,10 @@ Pertanyaan pengguna:
         <button
           type="button"
           onClick={() => setActiveTab('nuance')}
-          className={`px-3 py-1.5 rounded-xl font-black transition flex items-center gap-1.5 shrink-0 cursor-pointer text-xs border-2 border-black active:translate-x-0.5 active:translate-y-0.5 ${
-            activeTab === 'nuance'
+          className={`px-3 py-1.5 rounded-xl font-black transition flex items-center gap-1.5 shrink-0 cursor-pointer text-xs border-2 border-black active:translate-x-0.5 active:translate-y-0.5 ${activeTab === 'nuance'
               ? 'bg-[#FF85C0] text-black shadow-[2px_2px_0px_#000]'
               : 'bg-white hover:bg-slate-100 text-black'
-          }`}
+            }`}
         >
           <BookOpen className="w-3.5 h-3.5 stroke-[2.5]" />
           <span>Nuansa & Aturan</span>
@@ -257,11 +256,10 @@ Pertanyaan pengguna:
         <button
           type="button"
           onClick={() => setActiveTab('dialogue')}
-          className={`px-3 py-1.5 rounded-xl font-black transition flex items-center gap-1.5 shrink-0 cursor-pointer text-xs border-2 border-black active:translate-x-0.5 active:translate-y-0.5 ${
-            activeTab === 'dialogue'
+          className={`px-3 py-1.5 rounded-xl font-black transition flex items-center gap-1.5 shrink-0 cursor-pointer text-xs border-2 border-black active:translate-x-0.5 active:translate-y-0.5 ${activeTab === 'dialogue'
               ? 'bg-[#70D6FF] text-black shadow-[2px_2px_0px_#000]'
               : 'bg-white hover:bg-slate-100 text-black'
-          }`}
+            }`}
         >
           <MessageSquare className="w-3.5 h-3.5 stroke-[2.5]" />
           <span>Contoh Percakapan</span>
@@ -270,11 +268,10 @@ Pertanyaan pengguna:
         <button
           type="button"
           onClick={() => setActiveTab('mnemonic')}
-          className={`px-3 py-1.5 rounded-xl font-black transition flex items-center gap-1.5 shrink-0 cursor-pointer text-xs border-2 border-black active:translate-x-0.5 active:translate-y-0.5 ${
-            activeTab === 'mnemonic'
+          className={`px-3 py-1.5 rounded-xl font-black transition flex items-center gap-1.5 shrink-0 cursor-pointer text-xs border-2 border-black active:translate-x-0.5 active:translate-y-0.5 ${activeTab === 'mnemonic'
               ? 'bg-[#D4F63D] text-black shadow-[2px_2px_0px_#000]'
               : 'bg-white hover:bg-slate-100 text-black'
-          }`}
+            }`}
         >
           <Lightbulb className="w-3.5 h-3.5 stroke-[2.5] text-black" />
           <span>Cara Cepat Ingat</span>
@@ -283,11 +280,10 @@ Pertanyaan pengguna:
         <button
           type="button"
           onClick={() => setActiveTab('custom')}
-          className={`px-3 py-1.5 rounded-xl font-black transition flex items-center gap-1.5 shrink-0 cursor-pointer text-xs border-2 border-black active:translate-x-0.5 active:translate-y-0.5 ${
-            activeTab === 'custom'
+          className={`px-3 py-1.5 rounded-xl font-black transition flex items-center gap-1.5 shrink-0 cursor-pointer text-xs border-2 border-black active:translate-x-0.5 active:translate-y-0.5 ${activeTab === 'custom'
               ? 'bg-[#B388FF] text-black shadow-[2px_2px_0px_#000]'
               : 'bg-white hover:bg-slate-100 text-black'
-          }`}
+            }`}
         >
           <HelpCircle className="w-3.5 h-3.5 stroke-[2.5]" />
           <span>Tanya Bebas</span>

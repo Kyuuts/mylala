@@ -3,10 +3,51 @@ import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 import { VitePWA } from 'vite-plugin-pwa';
 
+// Local dev server middleware for Microsoft Edge / Azure Neural TTS
+function edgeTtsDevPlugin() {
+  return {
+    name: 'edge-tts-dev-server',
+    configureServer(server) {
+      server.middlewares.use('/api/tts', async (req, res) => {
+        try {
+          const { MsEdgeTTS, OUTPUT_FORMAT } = await import('msedge-tts');
+          const url = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
+          const text = url.searchParams.get('text') || '';
+          const voice = url.searchParams.get('voice') || 'en-US-JennyNeural';
+          const rate = url.searchParams.get('rate') || '+0%';
+          const pitch = url.searchParams.get('pitch') || '+0Hz';
+
+          if (!text.trim()) {
+            res.statusCode = 400;
+            res.setHeader('Content-Type', 'application/json');
+            return res.end(JSON.stringify({ error: 'Text query parameter is required' }));
+          }
+
+          const tts = new MsEdgeTTS();
+          await tts.setMetadata(voice, OUTPUT_FORMAT.AUDIO_24KHZ_48KBITRATE_MONO_MP3);
+          const { audioStream } = tts.toStream(text.trim(), { rate, pitch });
+
+          res.setHeader('Content-Type', 'audio/mpeg');
+          res.setHeader('Cache-Control', 'no-cache');
+          audioStream.pipe(res);
+        } catch (err) {
+          console.error('[Vite Dev Edge TTS Error]:', err);
+          if (!res.headersSent) {
+            res.statusCode = 500;
+            res.setHeader('Content-Type', 'application/json');
+            res.end(JSON.stringify({ error: err.message }));
+          }
+        }
+      });
+    },
+  };
+}
+
 // https://vite.dev/config/
 export default defineConfig({
   envPrefix: ['VITE_', 'NEXT_PUBLIC_'],
   plugins: [
+    edgeTtsDevPlugin(),
     react(),
     tailwindcss(),
     VitePWA({

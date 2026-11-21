@@ -244,7 +244,7 @@ export default function FlashcardPage() {
           <button
             type="button"
             onClick={() => setShowVoiceModal(true)}
-            title="Pengaturan Suara AI Kokoro"
+            title="Pengaturan Suara AI (Microsoft Azure Neural)"
             className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-[#FF85C0] hover:bg-[#D4F63D] text-black text-xs font-black transition active:translate-x-0.5 active:translate-y-0.5 border-2 border-black shadow-[2px_2px_0px_#000] cursor-pointer"
           >
             <Volume2 className="w-3.5 h-3.5 stroke-[2.5]" />
