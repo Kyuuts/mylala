@@ -20,6 +20,7 @@ import {
 import { askLalaAI } from '../../services/aiService';
 import { useAppStore } from '../../store/useAppStore';
 import { parseFrontCardText } from './Flashcard';
+import { ttsService } from '../../services/ttsService';
 
 // In-memory response cache per card ID + query to save tokens & prevent duplicate queries
 const EXPLANATION_CACHE = new Map();
@@ -168,17 +169,10 @@ Pertanyaan pengguna:
     setCustomQuestion('');
   };
 
-  // Speech synthesis for English quotes/sentences inside response
+  // Speech synthesis for English quotes/sentences inside response via Kokoro AI
   const playSpeech = (text) => {
-    if ('speechSynthesis' in window && text) {
-      window.speechSynthesis.cancel();
-      // Remove markdown chars
-      const clean = text.replace(/[*_#`]/g, '').trim();
-      const utterance = new SpeechSynthesisUtterance(clean);
-      utterance.lang = 'en-US';
-      utterance.rate = 0.88;
-      window.speechSynthesis.speak(utterance);
-    }
+    if (!text) return;
+    ttsService.speak(text);
   };
 
   // Copy explanation to clipboard
@@ -194,29 +188,30 @@ Pertanyaan pengguna:
   return (
     <div
       ref={containerRef}
-      className="w-full bg-gradient-to-b from-indigo-50/90 via-white to-slate-50 rounded-2xl border-2 border-indigo-200/90 shadow-xl overflow-hidden transition-all duration-300 animate-in fade-in slide-in-from-top-4"
+      onKeyDown={(e) => e.stopPropagation()}
+      className="w-full bg-white rounded-3xl border-3 border-black shadow-[6px_6px_0px_#000] overflow-hidden transition-all duration-300 animate-in fade-in slide-in-from-top-4 ai-explainer-drawer"
     >
       {/* Drawer Header */}
-      <div className="px-4 py-3 bg-gradient-to-r from-indigo-600 via-indigo-700 to-purple-700 text-white flex items-center justify-between">
+      <div className="px-4 py-3 bg-[#FFD166] text-black border-b-2.5 border-black flex items-center justify-between">
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-xl bg-white/20 backdrop-blur-xs flex items-center justify-center shrink-0 shadow-inner">
-            <Bot className="w-4 h-4 text-amber-300" />
+          <div className="w-8 h-8 rounded-xl bg-white border-2 border-black shadow-[1px_1px_0px_#000] flex items-center justify-center shrink-0">
+            <Bot className="w-4 h-4 text-black stroke-[2.5]" />
           </div>
           <div>
             <div className="flex items-center gap-1.5">
-              <span className="font-extrabold text-sm tracking-tight">Asisten Lala AI</span>
-              <span className="text-[10px] font-black px-1.5 py-0.2 rounded-full bg-amber-400 text-slate-900 shadow-2xs">
+              <span className="font-black text-sm tracking-tight text-black">Asisten Lala AI</span>
+              <span className="text-[10px] font-black px-2 py-0.5 rounded-lg bg-[#D4F63D] border border-black text-black">
                 CEFR {cefrLevel}
               </span>
             </div>
-            <p className="text-[10px] text-indigo-100 truncate max-w-[240px] sm:max-w-md flex items-center gap-1">
+            <p className="text-[10px] text-black/70 font-bold truncate max-w-[240px] sm:max-w-md flex items-center gap-1">
               <span>Materi:</span>
               {parseFrontCardText(frontText).categoryHint && (
-                <span className="px-1.5 py-0.2 rounded-full bg-white/20 text-[9px] font-bold text-white shrink-0">
+                <span className="px-1.5 py-0.2 rounded-md bg-[#FF85C0] border border-black text-[9px] font-black text-black shrink-0">
                   {parseFrontCardText(frontText).categoryHint}
                 </span>
               )}
-              <strong className="text-white font-semibold truncate">
+              <strong className="text-black font-black truncate">
                 {parseFrontCardText(frontText).mainText}
               </strong>
             </p>
@@ -229,17 +224,17 @@ Pertanyaan pengguna:
             onClick={() => fetchExplanation(activeTab)}
             disabled={isLoading}
             title="Muat ulang penjelasan"
-            className="p-1.5 rounded-lg text-white/80 hover:text-white hover:bg-white/10 transition cursor-pointer disabled:opacity-50"
+            className="p-1.5 rounded-lg bg-white border-2 border-black shadow-[1px_1px_0px_#000] hover:bg-[#D4F63D] text-black transition cursor-pointer disabled:opacity-50"
           >
-            <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin' : ''}`} />
+            <RefreshCw className={`w-3.5 h-3.5 stroke-[2.5] ${isLoading ? 'animate-spin' : ''}`} />
           </button>
           <button
             type="button"
             onClick={onClose}
-            title="Tutup Asisten"
-            className="p-1.5 rounded-lg text-white/80 hover:text-white hover:bg-white/10 transition cursor-pointer"
+            title="Tutup asisten AI"
+            className="p-1.5 rounded-lg bg-[#FF85C0] border-2 border-black shadow-[1px_1px_0px_#000] hover:bg-black hover:text-white text-black transition cursor-pointer"
           >
-            <X className="w-4 h-4" />
+            <X className="w-3.5 h-3.5 stroke-[3]" />
           </button>
         </div>
       </div>

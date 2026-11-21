@@ -1,6 +1,7 @@
 import React from 'react';
 import { RotateCw, Volume2, Mic, Sparkles } from 'lucide-react';
 import { getTargetSpeechSentence, isIndonesianText } from '../../utils/speechRecognition';
+import { ttsService } from '../../services/ttsService';
 
 /**
  * Parses front card text into categoryHint and mainText so that Indonesian prefixes
@@ -108,18 +109,21 @@ export default function Flashcard({
 
   const { categoryHint, mainText } = parseFrontCardText(card.front_text);
 
+  const handleCardClick = (e) => {
+    // Physical haptic micro-vibration on mobile devices
+    if (typeof navigator !== 'undefined' && navigator.vibrate) {
+      try {
+        navigator.vibrate(14);
+      } catch {}
+    }
+    if (onFlip) onFlip(e);
+  };
+
   const playPronunciation = (e) => {
     e.stopPropagation();
-    if ('speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
-      const textToSpeak = getCleanSpeechText(card, isFlipped);
-      if (!textToSpeak) return;
-
-      const utterance = new SpeechSynthesisUtterance(textToSpeak);
-      utterance.lang = 'en-US';
-      utterance.rate = 0.88; // clear, comfortable listening pace
-      window.speechSynthesis.speak(utterance);
-    }
+    const textToSpeak = getCleanSpeechText(card, isFlipped);
+    if (!textToSpeak) return;
+    ttsService.speak(textToSpeak);
   };
 
   return (
@@ -132,27 +136,28 @@ export default function Flashcard({
           : 'Sisi Depan Kartu: Pertanyaan Active Recall. Tekan Enter atau Spasi untuk membalik ke belakang'
       }
       aria-pressed={isFlipped}
-      onClick={onFlip}
+      onClick={handleCardClick}
       onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
+        if (e.key === 'Enter') {
           e.preventDefault();
-          onFlip();
+          e.stopPropagation();
+          handleCardClick(e);
         }
       }}
-      className="w-full max-w-lg mx-auto h-84 sm:h-96 cursor-pointer perspective-1000 select-none group focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded-3xl"
+      className="w-full max-w-lg mx-auto h-84 sm:h-96 cursor-pointer perspective-1000 select-none group focus:outline-none focus:ring-3 focus:ring-black rounded-3xl active:scale-[0.985] active:translate-y-0.5 transition-all duration-150"
     >
       <div
-        className={`relative w-full h-full duration-500 transform-style-3d transition-transform ${
+        className={`relative w-full h-full card-flip-inner ${
           isFlipped ? 'rotate-y-180' : ''
         }`}
       >
         {/* FRONT SIDE (English Active Recall) */}
-        <div className="absolute inset-0 w-full h-full bg-white rounded-3xl p-6 sm:p-8 flex flex-col justify-between items-center text-center shadow-md border-2 border-slate-200 group-hover:border-indigo-300 transition-colors backface-hidden">
+        <div className="absolute inset-0 w-full h-full bg-white rounded-3xl p-6 sm:p-8 flex flex-col justify-between items-center text-center border-3 border-black shadow-[6px_6px_0px_#000] group-hover:shadow-[9px_9px_0px_#000] group-hover:-translate-y-0.5 group-active:shadow-[2px_2px_0px_#000] group-active:translate-y-1 transition-all duration-200 backface-hidden">
           <div className="w-full flex items-center justify-between text-xs">
-            <span className="font-bold tracking-wider text-indigo-700 bg-indigo-50 px-3 py-1 rounded-full uppercase">
+            <span className="font-black tracking-wider text-black bg-[#D4F63D] border-2 border-black shadow-[1px_1px_0px_#000] px-3 py-1 rounded-lg uppercase">
               English
             </span>
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-1.5">
               <button
                 type="button"
                 onClick={(e) => {
@@ -161,13 +166,13 @@ export default function Flashcard({
                 }}
                 title="Tanya Lala AI tentang kartu ini"
                 aria-label="Tanya Lala AI tentang kartu ini"
-                className={`p-2 min-w-[36px] min-h-[36px] flex items-center justify-center rounded-full transition cursor-pointer ${
+                className={`p-2 min-w-[36px] min-h-[36px] flex items-center justify-center rounded-xl border-2 border-black transition cursor-pointer shadow-[1px_1px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 ${
                   isAiExplainerActive
-                    ? 'bg-amber-100 text-amber-800'
-                    : 'hover:bg-amber-50 text-amber-600 hover:text-amber-700'
+                    ? 'bg-[#FFD166] text-black'
+                    : 'bg-white hover:bg-[#FFD166] text-black'
                 }`}
               >
-                <Sparkles className="w-4 h-4 fill-amber-400 text-amber-500" />
+                <Sparkles className="w-4 h-4 fill-black text-black" />
               </button>
               <button
                 type="button"
@@ -177,20 +182,20 @@ export default function Flashcard({
                 }}
                 title="Latih pengucapan suara (Voice Shadowing)"
                 aria-label="Latih pengucapan suara (Voice Shadowing)"
-                className={`p-2 min-w-[36px] min-h-[36px] flex items-center justify-center rounded-full transition cursor-pointer ${
-                  isShadowingActive ? 'bg-indigo-100 text-indigo-700' : 'hover:bg-indigo-50 text-slate-600 hover:text-indigo-600'
+                className={`p-2 min-w-[36px] min-h-[36px] flex items-center justify-center rounded-xl border-2 border-black transition cursor-pointer shadow-[1px_1px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 ${
+                  isShadowingActive ? 'bg-[#70D6FF] text-black' : 'bg-white hover:bg-[#70D6FF] text-black'
                 }`}
               >
-                <Mic className="w-4 h-4" />
+                <Mic className="w-4 h-4 stroke-[2.5]" />
               </button>
               <button
                 type="button"
                 onClick={playPronunciation}
-                title="Dengarkan pengucapan audio (jeda otomatis pada titik kosong)"
+                title="Dengarkan pengucapan audio"
                 aria-label="Dengarkan pengucapan audio"
-                className="p-2 min-w-[36px] min-h-[36px] flex items-center justify-center rounded-full hover:bg-indigo-50 text-slate-600 hover:text-indigo-600 transition cursor-pointer"
+                className="p-2 min-w-[36px] min-h-[36px] flex items-center justify-center rounded-xl border-2 border-black bg-white hover:bg-[#D4F63D] text-black shadow-[1px_1px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 transition cursor-pointer"
               >
-                <Volume2 className="w-4 h-4" />
+                <Volume2 className="w-4 h-4 stroke-[2.5]" />
               </button>
             </div>
           </div>
@@ -198,30 +203,30 @@ export default function Flashcard({
           <div className="my-auto px-4 space-y-2">
             {categoryHint && (
               <div className="flex justify-center">
-                <span className="inline-flex items-center gap-1 text-[11px] sm:text-xs font-bold px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-100 shadow-2xs">
+                <span className="inline-flex items-center gap-1 text-[11px] sm:text-xs font-black px-3 py-1 rounded-lg bg-[#FF85C0] text-black border-2 border-black shadow-[2px_2px_0px_#000]">
                   📌 {categoryHint}
                 </span>
               </div>
             )}
-            <h2 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-slate-900 leading-snug break-words">
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-black text-black leading-snug break-words">
               {mainText}
             </h2>
-            <p className="text-xs text-slate-600 font-medium">Tebak arti &amp; jawabannya sebelum membalik kartu</p>
+            <p className="text-xs text-black/70 font-bold">Tebak arti &amp; jawabannya sebelum membalik kartu</p>
           </div>
 
-          <div className="flex items-center gap-1.5 text-xs font-bold text-slate-500 group-hover:text-indigo-600 transition">
-            <RotateCw className="w-3.5 h-3.5 group-hover:rotate-45 transition-transform" />
-            <span>Klik atau tekan Spasi untuk membalik</span>
+          <div className="flex items-center gap-1.5 text-xs font-black text-black border-2 border-black px-3.5 py-1.5 rounded-xl bg-[#D4F63D] shadow-[2px_2px_0px_#000] group-hover:bg-[#FF85C0] group-hover:shadow-[3px_3px_0px_#000] group-active:translate-x-0.5 group-active:translate-y-0.5 transition-all duration-200">
+            <RotateCw className="w-3.5 h-3.5 stroke-[2.5] group-hover:rotate-180 transition-transform duration-500" />
+            <span>Klik atau Spasi untuk membalik</span>
           </div>
         </div>
 
         {/* BACK SIDE (Indonesian Meaning & Completed Context Sentence) */}
-        <div className="absolute inset-0 w-full h-full bg-gradient-to-br from-indigo-900 via-indigo-800 to-slate-900 text-white rounded-3xl p-6 sm:p-8 flex flex-col justify-between items-center text-center shadow-lg backface-hidden rotate-y-180">
+        <div className="absolute inset-0 w-full h-full bg-[#B388FF] text-black rounded-3xl p-6 sm:p-8 flex flex-col justify-between items-center text-center border-3 border-black shadow-[6px_6px_0px_#000] group-hover:shadow-[9px_9px_0px_#000] group-hover:-translate-y-0.5 group-active:shadow-[2px_2px_0px_#000] group-active:translate-y-1 transition-all duration-200 backface-hidden rotate-y-180">
           <div className="w-full flex items-center justify-between text-xs">
-            <span className="font-bold tracking-wider text-indigo-200 bg-white/10 px-3 py-1 rounded-full uppercase">
+            <span className="font-black tracking-wider text-black bg-white border-2 border-black shadow-[1px_1px_0px_#000] px-3 py-1 rounded-lg uppercase">
               Arti &amp; Kunci Jawaban
             </span>
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-1.5">
               <button
                 type="button"
                 onClick={(e) => {
@@ -230,13 +235,13 @@ export default function Flashcard({
                 }}
                 title="Tanya Lala AI tentang kartu ini"
                 aria-label="Tanya Lala AI tentang kartu ini"
-                className={`p-2 min-w-[36px] min-h-[36px] flex items-center justify-center rounded-full transition cursor-pointer ${
+                className={`p-2 min-w-[36px] min-h-[36px] flex items-center justify-center rounded-xl border-2 border-black transition cursor-pointer shadow-[1px_1px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 ${
                   isAiExplainerActive
-                    ? 'bg-amber-100 text-amber-800'
-                    : 'hover:bg-amber-50 text-amber-600 hover:text-amber-700'
+                    ? 'bg-[#FFD166] text-black'
+                    : 'bg-white hover:bg-[#FFD166] text-black'
                 }`}
               >
-                <Sparkles className="w-4 h-4 fill-amber-400 text-amber-500" />
+                <Sparkles className="w-4 h-4 fill-black text-black" />
               </button>
               <button
                 type="button"
@@ -246,40 +251,41 @@ export default function Flashcard({
                 }}
                 title="Latih pengucapan suara (Voice Shadowing)"
                 aria-label="Latih pengucapan suara (Voice Shadowing)"
-                className={`p-2 min-w-[36px] min-h-[36px] flex items-center justify-center rounded-full transition cursor-pointer ${
-                  isShadowingActive ? 'bg-white/20 text-white' : 'hover:bg-white/10 text-indigo-200 hover:text-white'
+                className={`p-2 min-w-[36px] min-h-[36px] flex items-center justify-center rounded-xl border-2 border-black transition cursor-pointer shadow-[1px_1px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 ${
+                  isShadowingActive ? 'bg-[#70D6FF] text-black' : 'bg-white hover:bg-[#70D6FF] text-black'
                 }`}
               >
-                <Mic className="w-4 h-4" />
+                <Mic className="w-4 h-4 stroke-[2.5]" />
               </button>
               <button
                 type="button"
                 onClick={playPronunciation}
                 title="Dengarkan pelafalan kalimat lengkap"
                 aria-label="Dengarkan pelafalan kalimat lengkap"
-                className="p-2 min-w-[36px] min-h-[36px] flex items-center justify-center rounded-full hover:bg-white/10 text-indigo-200 hover:text-white transition cursor-pointer"
+                className="p-2 min-w-[36px] min-h-[36px] flex items-center justify-center rounded-xl border-2 border-black bg-white hover:bg-[#D4F63D] text-black shadow-[1px_1px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 transition cursor-pointer"
               >
-                <Volume2 className="w-4 h-4" />
+                <Volume2 className="w-4 h-4 stroke-[2.5]" />
               </button>
             </div>
           </div>
 
           <div className="my-auto px-4 space-y-4">
-            <p className="text-xl sm:text-2xl font-extrabold text-white leading-relaxed">
+            <p className="text-xl sm:text-2xl font-black text-black leading-relaxed">
               {card.back_text}
             </p>
 
             {card.example_sentence && (
-              <div className="bg-white/10 backdrop-blur-md rounded-2xl p-3.5 border border-white/15 max-w-sm mx-auto">
-                <p className="text-xs sm:text-sm text-indigo-100 italic leading-relaxed">
+              <div className="bg-white rounded-2xl p-3.5 border-2 border-black shadow-[3px_3px_0px_#000] max-w-sm mx-auto">
+                <p className="text-xs sm:text-sm text-black italic leading-relaxed font-bold">
                   "{card.example_sentence}"
                 </p>
               </div>
             )}
           </div>
 
-          <div className="text-xs text-indigo-200/80 font-medium">
-            Evaluasi ingatanmu dengan memilih tombol di bawah
+          <div className="flex items-center gap-1.5 text-[11px] font-black text-black border-2 border-black px-3 py-1 rounded-xl bg-white shadow-[2px_2px_0px_#000] group-hover:bg-[#D4F63D] transition-colors">
+            <RotateCw className="w-3.5 h-3.5 stroke-[2.5] group-hover:rotate-180 transition-transform duration-500" />
+            <span>Pilih evaluasi di bawah atau ketuk untuk balik lagi</span>
           </div>
         </div>
       </div>

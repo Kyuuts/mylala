@@ -6,6 +6,7 @@ import {
   evaluatePronunciation,
 } from '../../utils/speechRecognition';
 import { useAppStore } from '../../store/useAppStore';
+import { ttsService } from '../../services/ttsService';
 
 export default function VoiceShadowingWidget({ targetSentence, cardId, isFlipped }) {
   const { addXP } = useAppStore();
@@ -50,15 +51,11 @@ export default function VoiceShadowingWidget({ targetSentence, cardId, isFlipped
     .replace(/\s+/g, ' ')
     .trim();
 
-  // 1. Play reference native audio
+  // 1. Play reference native audio via Kokoro AI
   const playReferenceAudio = (e) => {
     if (e) e.stopPropagation();
-    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(cleanTarget);
-      utterance.lang = 'en-US';
-      utterance.rate = 0.88;
-      window.speechSynthesis.speak(utterance);
+    if (cleanTarget) {
+      ttsService.speak(cleanTarget);
     }
   };
 

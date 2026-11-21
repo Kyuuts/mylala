@@ -18,6 +18,8 @@ import {
 import { GRADED_ARTICLES } from '../services/readingArticlesData';
 import { CEFR_LEVELS } from '../utils/moduleLevel';
 import { useAppStore } from '../store/useAppStore';
+import { ttsService } from '../services/ttsService';
+import VoiceSelectorModal from '../components/common/VoiceSelectorModal';
 
 export default function ReadingPage() {
   const [selectedLevel, setSelectedLevel] = useState('ALL');
@@ -33,6 +35,7 @@ export default function ReadingPage() {
   const [activeParagraphIndex, setActiveParagraphIndex] = useState(null);
   const [isPlayingAll, setIsPlayingAll] = useState(false);
   const [speechRate, setSpeechRate] = useState(1.0); // 0.85 | 1.0 | 1.15
+  const [showVoiceModal, setShowVoiceModal] = useState(false);
   const isPlayingAllRef = useRef(false);
 
   // Auto-open specific article if passed via query param ?article=... or route /reading/:id
@@ -55,9 +58,7 @@ export default function ReadingPage() {
   // Clean up audio when modal closes or component unmounts
   useEffect(() => {
     return () => {
-      if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-      }
+      ttsService.stop();
     };
   }, [activeArticle]);
 
@@ -79,9 +80,7 @@ export default function ReadingPage() {
   };
 
   const stopAudio = () => {
-    if ('speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
-    }
+    ttsService.stop();
     setActiveParagraphIndex(null);
     setIsPlayingAll(false);
     isPlayingAllRef.current = false;
@@ -89,34 +88,23 @@ export default function ReadingPage() {
 
   const handleSpeakWord = (text) => {
     stopAudio();
-    if ('speechSynthesis' in window) {
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = 'en-US';
-      utterance.rate = 0.9;
-      window.speechSynthesis.speak(utterance);
-    }
+    ttsService.speak(text);
   };
 
   const speakParagraph = (text, index, onComplete) => {
-    if (!('speechSynthesis' in window)) return;
-    window.speechSynthesis.cancel();
-
+    stopAudio();
     setActiveParagraphIndex(index);
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'en-US';
-    utterance.rate = speechRate;
 
-    utterance.onend = () => {
-      setActiveParagraphIndex(null);
-      if (onComplete) onComplete();
-    };
-
-    utterance.onerror = () => {
-      setActiveParagraphIndex(null);
-      if (onComplete) onComplete();
-    };
-
-    window.speechSynthesis.speak(utterance);
+    ttsService
+      .speak(text, { speed: speechRate })
+      .then(() => {
+        setActiveParagraphIndex(null);
+        if (onComplete) onComplete();
+      })
+      .catch(() => {
+        setActiveParagraphIndex(null);
+        if (onComplete) onComplete();
+      });
   };
 
   const handleToggleParagraph = (text, index) => {
@@ -183,6 +171,17 @@ export default function ReadingPage() {
           <p className="text-xs sm:text-sm text-sky-100 leading-relaxed">
             Tingkatkan pemahaman bahasa secara alami lewat artikel pilihan. Dilengkapi <strong>audio native per paragraf</strong> dan fitur ketuk kata untuk simpan langsung ke kartu hafalan!
           </p>
+
+          <div className="pt-2">
+            <button
+              type="button"
+              onClick={() => setShowVoiceModal(true)}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#D4F63D] text-black font-black text-xs border-2 border-black shadow-[3px_3px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 hover:bg-white transition cursor-pointer"
+            >
+              <Volume2 className="w-4 h-4 stroke-[2.5]" />
+              <span>Pengaturan Suara AI Kokoro</span>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -348,26 +347,38 @@ export default function ReadingPage() {
                 )}
               </div>
 
-              {/* Speed Selector */}
-              <div className="flex items-center gap-1 text-[11px] font-bold">
-                <span className="text-slate-400 mr-1">Tempo:</span>
-                {[
-                  { rate: 0.85, label: '0.85x' },
-                  { rate: 1.0, label: '1.0x' },
-                  { rate: 1.15, label: '1.15x' },
-                ].map((s) => (
-                  <button
-                    key={s.rate}
-                    onClick={() => setSpeechRate(s.rate)}
-                    className={`px-2 py-0.5 rounded-md transition ${
-                      speechRate === s.rate
-                        ? 'bg-indigo-600 text-white font-extrabold'
-                        : 'bg-white/10 text-slate-300 hover:bg-white/20'
-                    }`}
-                  >
-                    {s.label}
-                  </button>
-                ))}
+              {/* Speed Selector & Voice Modal Trigger */}
+              <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1 text-[11px] font-bold">
+                  <span className="text-slate-400 mr-1">Tempo:</span>
+                  {[
+                    { rate: 0.85, label: '0.85x' },
+                    { rate: 1.0, label: '1.0x' },
+                    { rate: 1.15, label: '1.15x' },
+                  ].map((s) => (
+                    <button
+                      key={s.rate}
+                      onClick={() => setSpeechRate(s.rate)}
+                      className={`px-2 py-0.5 rounded-md transition ${
+                        speechRate === s.rate
+                          ? 'bg-indigo-600 text-white font-extrabold'
+                          : 'bg-white/10 text-slate-300 hover:bg-white/20'
+                      }`}
+                    >
+                      {s.label}
+                    </button>
+                  ))}
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setShowVoiceModal(true)}
+                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-xs font-black bg-[#FF85C0] text-black border border-black shadow-[1px_1px_0px_#000] hover:bg-[#D4F63D] transition cursor-pointer"
+                  title="Pilih Karakter Suara AI Kokoro"
+                >
+                  <Volume2 className="w-3.5 h-3.5 stroke-[2.5]" />
+                  <span>Suara AI</span>
+                </button>
               </div>
             </div>
 
@@ -493,6 +504,12 @@ export default function ReadingPage() {
           </div>
         </div>
       )}
+
+      {/* Kokoro AI Voice Selector Modal */}
+      <VoiceSelectorModal
+        isOpen={showVoiceModal}
+        onClose={() => setShowVoiceModal(false)}
+      />
     </div>
   );
 }

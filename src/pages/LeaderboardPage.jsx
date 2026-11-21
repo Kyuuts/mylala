@@ -80,23 +80,23 @@ export default function LeaderboardPage() {
       : 100;
 
   return (
-    <div className="space-y-8 max-w-4xl mx-auto py-2">
-      {/* 1. HERO LEAGUE BANNER */}
-      <div className={`relative overflow-hidden rounded-3xl bg-gradient-to-r ${currentTier.gradient} text-white p-6 sm:p-8 shadow-lg`}>
+    <div className="space-y-6 max-w-4xl mx-auto py-2">
+      {/* 1. HERO LEAGUE BANNER (Neo-Brutalism Style) */}
+      <div className="relative overflow-hidden rounded-3xl bg-[#FFD166] text-black p-6 sm:p-8 border-3 border-black shadow-[6px_6px_0px_#000]">
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-2">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-white/20 backdrop-blur-md">
-              <Clock className="w-3.5 h-3.5 text-amber-300" />
-              <span>Reset Mingguan: {countdown.formatted} lagi (Minggu 23:59 WIB)</span>
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-black bg-white border-2 border-black shadow-[2px_2px_0px_#000] text-black uppercase">
+              <Clock className="w-3.5 h-3.5 stroke-[2.5]" />
+              <span>Reset Mingguan: {countdown.formatted} lagi</span>
             </div>
 
             <div className="flex items-center gap-3">
               <span className="text-4xl sm:text-5xl">{currentTier.badge}</span>
               <div>
-                <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
+                <h1 className="text-2xl sm:text-4xl font-black tracking-tight text-black uppercase">
                   {currentTier.name}
                 </h1>
-                <p className="text-xs sm:text-sm text-white/80">
+                <p className="text-xs sm:text-sm text-black/80 font-bold">
                   Liga Pembelajar Bahasa Mingguan • Musim 2026
                 </p>
               </div>
@@ -104,10 +104,10 @@ export default function LeaderboardPage() {
           </div>
 
           {/* User Quick Stats in Banner */}
-          <div className="w-full sm:w-auto bg-black/25 backdrop-blur-md rounded-2xl p-4 sm:p-5 border border-white/15 flex flex-col sm:flex-row items-center gap-4">
+          <div className="w-full sm:w-auto bg-white rounded-2xl p-4 sm:p-5 border-2 border-black shadow-[3px_3px_0px_#000] flex flex-col sm:flex-row items-center gap-4 text-black">
             {/* User Avatar & Name in Banner */}
-            <div className="flex items-center gap-3 w-full sm:w-auto border-b sm:border-b-0 sm:border-r border-white/15 pb-3 sm:pb-0 sm:pr-4">
-              <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-white/40 shadow-sm shrink-0 bg-white/20 flex items-center justify-center">
+            <div className="flex items-center gap-3 w-full sm:w-auto border-b sm:border-b-0 sm:border-r-2 border-black pb-3 sm:pb-0 sm:pr-4">
+              <div className="w-12 h-12 rounded-xl overflow-hidden border-2 border-black shadow-[2px_2px_0px_#000] shrink-0 bg-[#FF85C0] flex items-center justify-center font-black">
                 {user?.avatarUrl ? (
                   <img
                     src={user.avatarUrl}
@@ -115,14 +115,14 @@ export default function LeaderboardPage() {
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <span className="text-2xl">🌟</span>
+                  <span className="text-xl">{(user?.name || 'K').charAt(0).toUpperCase()}</span>
                 )}
               </div>
               <div className="min-w-0">
-                <p className="font-extrabold text-sm text-white truncate max-w-[140px] sm:max-w-[160px]">
+                <p className="font-black text-sm text-black truncate max-w-[140px] sm:max-w-[160px] uppercase">
                   {user?.name || 'Kamu'}
                 </p>
-                <p className="text-[11px] text-white/70 truncate">
+                <p className="text-[11px] text-black/70 truncate font-bold">
                   @{user?.username || 'username'}
                 </p>
               </div>
@@ -130,30 +130,30 @@ export default function LeaderboardPage() {
 
             <div className="flex items-center justify-around w-full sm:w-auto gap-4 sm:gap-6">
               <div className="text-center">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-white/70">Peringkat</span>
-                <p className="text-2xl sm:text-3xl font-extrabold text-amber-300">
+                <span className="text-[10px] font-black uppercase tracking-wider text-black/70">Peringkat</span>
+                <p className="text-2xl sm:text-3xl font-black text-black">
                   {userEntry.rank ? `#${userEntry.rank}` : '-'}
                 </p>
               </div>
-              <div className="w-px h-10 bg-white/20" />
+              <div className="w-0.5 h-10 bg-black/20" />
               <div className="text-center">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-white/70">XP Mingguan</span>
-                <p className="text-2xl sm:text-3xl font-extrabold text-white">{weeklyXp || 0}</p>
+                <span className="text-[10px] font-black uppercase tracking-wider text-black/70">XP Mingguan</span>
+                <p className="text-2xl sm:text-3xl font-black text-black">{weeklyXp || 0}</p>
               </div>
-              <div className="w-px h-10 bg-white/20" />
+              <div className="w-0.5 h-10 bg-black/20" />
               <div className="text-center">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-white/70">Streak</span>
-                <p className="text-2xl sm:text-3xl font-extrabold text-orange-400 flex items-center justify-center gap-1">
-                  <Flame className="w-5 h-5 fill-current" /> {streak || 1}
+                <span className="text-[10px] font-black uppercase tracking-wider text-black/70">Streak</span>
+                <p className="text-2xl sm:text-3xl font-black text-black flex items-center justify-center gap-1">
+                  <Flame className="w-5 h-5 fill-black stroke-[2.5]" /> {streak || 1}
                 </p>
               </div>
             </div>
 
             <button
               onClick={() => setShareModalOpen(true)}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-900 text-xs font-bold transition active:scale-95 cursor-pointer shadow-2xs"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-[#D4F63D] hover:bg-[#cbf130] text-black text-xs font-black border-2 border-black shadow-[2px_2px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_#000] transition cursor-pointer"
             >
-              <Share2 className="w-3.5 h-3.5" />
+              <Share2 className="w-3.5 h-3.5 stroke-[2.5]" />
               <span>Bagikan</span>
             </button>
           </div>
@@ -161,14 +161,14 @@ export default function LeaderboardPage() {
 
         {/* Next Tier Progress Bar */}
         {currentTier.nextTier && (
-          <div className="relative z-10 mt-6 pt-5 border-t border-white/15 space-y-2">
-            <div className="flex items-center justify-between text-xs font-semibold">
+          <div className="relative z-10 mt-6 pt-5 border-t-2 border-black/15 space-y-2">
+            <div className="flex items-center justify-between text-xs font-black text-black">
               <span>Menuju {currentTier.nextTier}</span>
               <span>{xpNeededForNext > 0 ? `${xpNeededForNext} XP lagi` : 'Siap Promosi!'}</span>
             </div>
-            <div className="w-full bg-black/30 rounded-full h-2.5 overflow-hidden">
+            <div className="w-full bg-white h-3.5 rounded-full border-2 border-black p-0.5 overflow-hidden">
               <div
-                className="bg-gradient-to-r from-amber-300 to-yellow-400 h-2.5 rounded-full transition-all duration-500 shadow-xs"
+                className="bg-black h-full rounded-full transition-all duration-500"
                 style={{ width: `${progressPercent}%` }}
               />
             </div>
@@ -177,22 +177,22 @@ export default function LeaderboardPage() {
       </div>
 
       {/* 2. LEADERBOARD TABLE */}
-      <div className="bg-white rounded-3xl border border-slate-200/90 shadow-xs overflow-hidden">
-        <div className="p-5 sm:p-6 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div className="bg-white rounded-3xl border-3 border-black shadow-[6px_6px_0px_#000] overflow-hidden">
+        <div className="p-5 sm:p-6 border-b-2 border-black flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[#D4F63D]">
           <div>
             <div className="flex items-center gap-2">
-              <h2 className="text-lg font-extrabold text-slate-900 flex items-center gap-2">
-                <Trophy className="w-5 h-5 text-amber-500" />
+              <h2 className="text-lg font-black text-black flex items-center gap-2 uppercase tracking-tight">
+                <Trophy className="w-5 h-5 stroke-[2.5]" />
                 <span>Klasemen Liga Pembelajar</span>
               </h2>
               {isSupabaseReady && (
-                <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
-                  Realtime Live
+                <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[10px] font-black bg-black text-white">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#D4F63D] animate-ping" />
+                  Live
                 </span>
               )}
             </div>
-            <p className="text-xs text-slate-500 mt-0.5">
+            <p className="text-xs text-black/80 font-bold mt-0.5">
               Top 5 akan naik ke liga berikutnya saat reset minggu malam (Minggu 23:59 WIB).
             </p>
           </div>
@@ -200,18 +200,18 @@ export default function LeaderboardPage() {
           <div className="flex items-center gap-2 self-start sm:self-auto shrink-0 flex-wrap">
             <button
               onClick={() => setShareModalOpen(true)}
-              className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-700 border border-amber-300 font-bold text-xs sm:text-sm transition active:scale-95 cursor-pointer shadow-2xs"
+              className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl bg-white text-black border-2 border-black shadow-[2px_2px_0px_#000] font-black text-xs sm:text-sm transition active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_#000] cursor-pointer"
             >
-              <Share2 className="w-4 h-4 text-amber-600" />
+              <Share2 className="w-4 h-4 stroke-[2.5]" />
               <span>Bagikan Peringkat</span>
             </button>
 
             <Link
               to="/flashcards/all"
-              className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-bold transition shadow-xs"
+              className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-[#FF85C0] text-black border-2 border-black shadow-[2px_2px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_#000] text-xs sm:text-sm font-black transition"
             >
-              <Layers className="w-4 h-4" />
-              <span>Latihan Tambah XP</span>
+              <Layers className="w-4 h-4 stroke-[2.5]" />
+              <span>Tambah XP</span>
             </Link>
           </div>
         </div>

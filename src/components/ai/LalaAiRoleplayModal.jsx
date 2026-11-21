@@ -33,6 +33,7 @@ import {
 import {
   speakNaturalCharacterLine,
   findBestVoiceForCharacter,
+  stopCharacterLine,
 } from '../../utils/characterVoiceEngine';
 
 export default function LalaAiRoleplayModal({ isOpen, onClose }) {
@@ -86,9 +87,7 @@ export default function LalaAiRoleplayModal({ isOpen, onClose }) {
       if (recognitionRef.current) {
         recognitionRef.current.abort();
       }
-      if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-      }
+      stopCharacterLine();
     }
   }, [isOpen]);
 

@@ -26,30 +26,28 @@ export default function LevelFilter({ activeLevel = 'All', onSelectLevel, counts
           <button
             key={lvl.id}
             onClick={() => onSelectLevel(lvl.id)}
-            className={`shrink-0 inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+            className={`shrink-0 inline-flex items-center gap-1.5 sm:gap-2 px-3 py-1.5 rounded-xl text-xs font-black transition-all border-2 border-black cursor-pointer ${
               isActive
-                ? 'bg-slate-900 text-white shadow-xs'
+                ? 'bg-[#D4F63D] text-black shadow-[2px_2px_0px_#000]'
                 : isUserLevel
-                ? 'bg-emerald-50/70 text-emerald-900 border border-emerald-300 ring-1 ring-emerald-400/30 hover:bg-emerald-100'
-                : 'bg-white text-slate-600 hover:bg-slate-100 hover:text-slate-900 border border-slate-200'
-            }`}
+                ? 'bg-[#80ED99] text-black shadow-[2px_2px_0px_#000] hover:bg-[#6ee7b7]'
+                : 'bg-white text-black shadow-[2px_2px_0px_#000] hover:bg-slate-100'
+            } active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_#000]`}
           >
-            {lvl.dot && <span className={`w-2 h-2 rounded-full ${lvl.dot} shrink-0`} />}
+            {lvl.dot && <span className={`w-2 h-2 rounded-full ${lvl.dot} border border-black shrink-0`} />}
             <span className="hidden sm:inline">{lvl.label}</span>
             <span className="sm:hidden">{lvl.shortLabel}</span>
 
             {isUserLevel && (
-              <span className={`text-[9px] font-extrabold px-1.5 py-0.2 rounded-md tracking-wider uppercase ${
-                isActive ? 'bg-emerald-500 text-white' : 'bg-emerald-600 text-white'
-              }`}>
+              <span className="text-[9px] font-black px-1.5 py-0.2 rounded-md tracking-wider uppercase bg-black text-white">
                 Jalurmu
               </span>
             )}
 
             {typeof count === 'number' && (
               <span
-                className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
-                  isActive ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-600'
+                className={`text-[10px] px-1.5 py-0.2 rounded-md font-black border border-black ${
+                  isActive ? 'bg-black text-white' : 'bg-white text-black'
                 }`}
               >
                 {count}

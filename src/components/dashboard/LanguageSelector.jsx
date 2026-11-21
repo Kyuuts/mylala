@@ -74,41 +74,39 @@ export default function LanguageSelector({ activeLanguage = 'en', onSelectLangua
             <button
               key={lang.id}
               onClick={() => handleClick(lang)}
-              className={`shrink-0 min-w-[130px] sm:min-w-0 text-left p-2.5 sm:p-4 rounded-xl sm:rounded-2xl border transition-all duration-200 flex flex-col justify-between ${
+              className={`shrink-0 min-w-[130px] sm:min-w-0 text-left p-3 sm:p-4 rounded-2xl border-2 border-black transition-all duration-150 flex flex-col justify-between cursor-pointer ${
                 isActive
-                  ? 'bg-gradient-to-br from-indigo-50 to-white border-indigo-500 ring-2 ring-indigo-500/20 shadow-xs'
-                  : isComingSoon
-                  ? 'bg-slate-50/60 border-slate-200/80 hover:bg-slate-100/80 cursor-pointer opacity-85'
-                  : 'bg-white border-slate-200 hover:border-slate-300'
+                  ? 'bg-[#D4F63D] text-black shadow-[3px_3px_0px_#000] active:translate-x-0.5 active:translate-y-0.5'
+                  : 'bg-white text-black shadow-[2px_2px_0px_#000] hover:bg-slate-50'
               }`}
             >
               <div className="flex items-start justify-between">
                 <span className="text-xl sm:text-3xl select-none">{lang.flag}</span>
                 {isActive ? (
-                  <span className="inline-flex items-center gap-1 text-[9px] sm:text-[10px] font-extrabold px-1.5 sm:px-2 py-0.5 rounded-full bg-indigo-600 text-white">
-                    <CheckCircle2 className="w-2.5 h-2.5" /> Aktif
+                  <span className="inline-flex items-center gap-1 text-[9px] sm:text-[10px] font-black px-2 py-0.5 rounded-md bg-black text-white">
+                    <CheckCircle2 className="w-2.5 h-2.5 stroke-[2.5]" /> Aktif
                   </span>
                 ) : (
-                  <span className="inline-flex items-center gap-1 text-[9px] sm:text-[10px] font-bold px-1.5 sm:px-2 py-0.5 rounded-full bg-slate-200/80 text-slate-600">
-                    <Lock className="w-2.5 h-2.5 text-slate-500" /> Soon
+                  <span className="inline-flex items-center gap-1 text-[9px] sm:text-[10px] font-black px-1.5 py-0.5 rounded-md bg-slate-100 border border-black/40 text-black">
+                    <Lock className="w-2.5 h-2.5 text-black" /> Soon
                   </span>
                 )}
               </div>
 
-              <div className="mt-1.5 sm:mt-2.5">
-                <h4 className="font-extrabold text-slate-900 text-xs sm:text-base leading-tight truncate">
+              <div className="mt-2 sm:mt-3">
+                <h4 className="font-black text-black text-xs sm:text-base leading-tight truncate">
                   {lang.name}
                 </h4>
-                <p className="text-[10px] sm:text-[11px] text-slate-500 font-medium mt-0.5 truncate hidden sm:block">
+                <p className="text-[10px] sm:text-[11px] text-black/70 font-bold mt-0.5 truncate hidden sm:block">
                   {lang.nativeName}
                 </p>
               </div>
 
-              <div className="mt-2 sm:mt-3 pt-1.5 sm:pt-2 border-t border-slate-200/60 flex items-center justify-between text-[10px] sm:text-[11px]">
-                <span className={isActive ? 'font-bold text-indigo-700' : 'text-slate-400'}>
+              <div className="mt-2 pt-1.5 border-t-2 border-black/10 flex items-center justify-between text-[10px] sm:text-[11px]">
+                <span className="font-black text-black">
                   {isActive ? `${lang.modulesCount} Modul` : 'Dalam Kurasi'}
                 </span>
-                {isActive && <Sparkles className="w-3 h-3 text-indigo-500" />}
+                {isActive && <Sparkles className="w-3.5 h-3.5 fill-black text-black" />}
               </div>
             </button>
           );
@@ -117,13 +115,13 @@ export default function LanguageSelector({ activeLanguage = 'en', onSelectLangua
 
       {/* Floating Info Notification for Coming Soon Languages */}
       {comingSoonToast && (
-        <div className="p-3 rounded-xl bg-indigo-50 border border-indigo-200 text-indigo-800 text-xs font-semibold flex items-center justify-between animate-fade-in">
+        <div className="p-3 rounded-xl bg-[#FF85C0] border-2 border-black text-black text-xs font-black shadow-[3px_3px_0px_#000] flex items-center justify-between animate-fade-in">
           <span>
-            🚀 Modul <strong>{comingSoonToast}</strong> sedang dalam tahap kurasi kurikulum. Saat ini kurikulum <strong>Bahasa Inggris</strong> sudah lengkap dan siap dipelajari!
+            🚀 Modul <strong>{comingSoonToast}</strong> sedang dalam tahap kurasi. Kurikulum <strong>Bahasa Inggris</strong> sudah lengkap dan siap!
           </span>
           <button
             onClick={() => setComingSoonToast(null)}
-            className="text-indigo-600 hover:text-indigo-900 font-bold ml-2"
+            className="text-black hover:opacity-75 font-black ml-2 px-1.5 py-0.5 border border-black rounded bg-white cursor-pointer"
           >
             ✕
           </button>

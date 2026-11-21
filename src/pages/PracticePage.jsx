@@ -30,6 +30,8 @@ import {
 } from '../services/practiceModesData';
 import { useAppStore } from '../store/useAppStore';
 import LalaAiRoleplayModal from '../components/ai/LalaAiRoleplayModal';
+import { ttsService } from '../services/ttsService';
+import VoiceSelectorModal from '../components/common/VoiceSelectorModal';
 
 export default function PracticePage() {
   const { flashcards, userProgress, streak, weeklyXp, addXp } = useAppStore();
@@ -112,23 +114,16 @@ export default function PracticePage() {
   const [sbAvailableTokens, setSbAvailableTokens] = useState([]);
   const [sbSubmitted, setSbSubmitted] = useState(false);
   const [sbIsCorrect, setSbIsCorrect] = useState(false);
+  const [showVoiceModal, setShowVoiceModal] = useState(false);
 
-  // Helper for text-to-speech audio
+  // Helper for text-to-speech audio via Kokoro AI
   const handleSpeak = (text, rate = 1.0) => {
-    if ('speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = 'en-US';
-      utterance.rate = rate;
-      window.speechSynthesis.speak(utterance);
-    }
+    ttsService.speak(text, { speed: rate });
   };
 
   // Close any modal and stop audio
   const handleCloseModal = () => {
-    if ('speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
-    }
+    ttsService.stop();
     setActiveModal(null);
   };
 
@@ -288,6 +283,17 @@ export default function PracticePage() {
             <p className="text-xs sm:text-sm text-orange-100 leading-relaxed">
               Ubah pengetahuan pasif menjadi kemampuan aktif. Pilih salah satu mode latihan di bawah untuk melatih ingatan kartu, kejelian detektif, telinga dikte, menulis, hingga simulasi dialog!
             </p>
+
+            <div className="pt-2">
+              <button
+                type="button"
+                onClick={() => setShowVoiceModal(true)}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#D4F63D] text-black font-black text-xs border-2 border-black shadow-[3px_3px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 hover:bg-white transition cursor-pointer"
+              >
+                <Volume2 className="w-4 h-4 stroke-[2.5]" />
+                <span>Pengaturan Suara AI Kokoro</span>
+              </button>
+            </div>
           </div>
 
           {/* Quick Metrics Badge */}
@@ -946,6 +952,12 @@ export default function PracticePage() {
       <LalaAiRoleplayModal
         isOpen={isAiRoleplayOpen}
         onClose={() => setIsAiRoleplayOpen(false)}
+      />
+
+      {/* Kokoro AI Voice Selector Modal */}
+      <VoiceSelectorModal
+        isOpen={showVoiceModal}
+        onClose={() => setShowVoiceModal(false)}
       />
     </div>
   );

@@ -1559,13 +1559,21 @@ export const useAppStore = create(
         }
 
         // Always resolve from unified store
-        cards = get().flashcards;
-        if (moduleId && moduleId !== 'all') {
+        cards = get().flashcards || [];
+        const activeProgress = get().userProgress || {};
+        const now = new Date();
+
+        if (moduleId === 'due') {
+          // Strictly filter for cards that are DUE for review today according to the Spaced Repetition (SRS) schedule
+          cards = cards.filter((c) => {
+            const prog = activeProgress[c.id];
+            return Boolean(prog && prog.last_reviewed_at && prog.next_review_date && new Date(prog.next_review_date) <= now);
+          });
+        } else if (moduleId && moduleId !== 'all') {
           cards = cards.filter((c) => c.module_id === moduleId);
         }
 
         // Enrich cards with active user progress metadata
-        const activeProgress = get().userProgress || {};
         const enriched = cards.map((c) => {
           const prog = activeProgress[c.id];
           const hasStudied = Boolean(prog && prog.last_reviewed_at);

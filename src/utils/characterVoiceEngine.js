@@ -1,7 +1,9 @@
 /**
  * Natural Character Voice Engine for MyLala PWA
- * Intelligently maps roleplay characters to the highest-quality Natural & Neural voices available in Web Speech API.
+ * Intelligently maps roleplay characters to Studio-Grade Kokoro-82M AI Voices
+ * with zero-latency Graceful Fallback to Natural & Neural voices in Web Speech API.
  */
+import { ttsService } from '../services/ttsService';
 
 // Voice Profiles for Roleplay Characters
 export const CHARACTER_VOICE_PROFILES = {
@@ -9,6 +11,7 @@ export const CHARACTER_VOICE_PROFILES = {
     name: 'Oliver (London Barista)',
     gender: 'male',
     accent: 'en-GB',
+    kokoroVoice: 'bm_george',
     rate: 0.94,
     pitch: 0.98,
     preferredNames: [
@@ -27,6 +30,7 @@ export const CHARACTER_VOICE_PROFILES = {
     name: 'Ms. Clara (HR Director)',
     gender: 'female',
     accent: 'en-US',
+    kokoroVoice: 'af_heart',
     rate: 0.92,
     pitch: 1.02,
     preferredNames: [
@@ -44,6 +48,7 @@ export const CHARACTER_VOICE_PROFILES = {
     name: 'Daniel (Front Desk)',
     gender: 'male',
     accent: 'en-US',
+    kokoroVoice: 'am_michael',
     rate: 0.94,
     pitch: 0.97,
     preferredNames: [
@@ -59,6 +64,7 @@ export const CHARACTER_VOICE_PROFILES = {
     name: 'Emma (Teman Native)',
     gender: 'female',
     accent: 'en-US',
+    kokoroVoice: 'af_bella',
     rate: 0.97,
     pitch: 1.05,
     preferredNames: [
@@ -73,6 +79,7 @@ export const CHARACTER_VOICE_PROFILES = {
     name: 'Alex (Apoteker)',
     gender: 'male',
     accent: 'en-US',
+    kokoroVoice: 'am_fenrir',
     rate: 0.92,
     pitch: 0.96,
     preferredNames: [
@@ -86,6 +93,7 @@ export const CHARACTER_VOICE_PROFILES = {
     name: 'Lala (AI Tutor)',
     gender: 'female',
     accent: 'en-US',
+    kokoroVoice: 'af_heart',
     rate: 0.95,
     pitch: 1.06,
     preferredNames: [
@@ -169,58 +177,26 @@ export function findBestVoiceForCharacter(scenarioId = 'cafe') {
 }
 
 /**
- * Speaks text using the best natural voice for the character
+ * Speaks text using Kokoro AI (with smart natural browser fallback)
  */
 export function speakNaturalCharacterLine(text, scenarioId = 'cafe', voiceOverride = 'auto') {
-  if (typeof window === 'undefined' || !('speechSynthesis' in window) || !text) {
-    return;
-  }
+  if (!text) return;
+  const profile = CHARACTER_VOICE_PROFILES[scenarioId] || CHARACTER_VOICE_PROFILES.cafe;
 
-  window.speechSynthesis.cancel();
+  let targetVoice = profile.kokoroVoice || 'af_heart';
+  if (voiceOverride === 'british') targetVoice = 'bm_george';
+  else if (voiceOverride === 'us_female') targetVoice = 'af_heart';
+  else if (voiceOverride === 'us_male') targetVoice = 'am_michael';
 
-  // Strip brackets, markdown, and emojis for clean natural speaking
-  const cleanText = text
-    .replace(/[*_#`~]/g, '')
-    .replace(/\(.*?\)/g, '')
-    .replace(/\[.*?\]/g, '')
-    .trim();
+  ttsService.speak(text, {
+    voice: targetVoice,
+    speed: profile.rate || 1.0,
+  });
+}
 
-  if (!cleanText) return;
-
-  const utterance = new SpeechSynthesisUtterance(cleanText);
-  const { voice, profile } = findBestVoiceForCharacter(scenarioId);
-
-  // Apply voice override if user selected a custom voice preset
-  if (voiceOverride !== 'auto') {
-    const allVoices = getSystemVoices();
-    if (voiceOverride === 'british') {
-      const br = allVoices.find(
-        (v) =>
-          v.lang.toLowerCase().includes('gb') &&
-          (v.name.includes('Natural') || v.name.includes('Google') || v.name.includes('Daniel'))
-      ) || allVoices.find((v) => v.lang.toLowerCase().includes('gb'));
-      if (br) utterance.voice = br;
-    } else if (voiceOverride === 'us_female') {
-      const usFem = allVoices.find(
-        (v) =>
-          v.lang.toLowerCase().includes('us') &&
-          (v.name.includes('Jenny') || v.name.includes('Aria') || v.name.includes('Samantha') || v.name.includes('Zira'))
-      );
-      if (usFem) utterance.voice = usFem;
-    } else if (voiceOverride === 'us_male') {
-      const usMale = allVoices.find(
-        (v) =>
-          v.lang.toLowerCase().includes('us') &&
-          (v.name.includes('Guy') || v.name.includes('David') || v.name.includes('Alex'))
-      );
-      if (usMale) utterance.voice = usMale;
-    }
-  } else if (voice) {
-    utterance.voice = voice;
-  }
-
-  utterance.rate = profile.rate;
-  utterance.pitch = profile.pitch;
-
-  window.speechSynthesis.speak(utterance);
+/**
+ * Stop any ongoing character line
+ */
+export function stopCharacterLine() {
+  ttsService.stop();
 }

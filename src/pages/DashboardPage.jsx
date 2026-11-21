@@ -127,117 +127,189 @@ export default function DashboardPage() {
     });
   }, [modules, selectedLevel, selectedCategory]);
 
+  const todayFormatted = useMemo(() => {
+    return new Date().toLocaleDateString('id-ID', {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
+    });
+  }, []);
+
   return (
     <div className="space-y-4 sm:space-y-6">
-      {/* 1. Header & Greeting Bar with Placement Test Trigger */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-white p-4 sm:p-5 rounded-2xl sm:rounded-3xl border border-slate-200/80 shadow-xs">
+      {/* 1. Header & Greeting Bar (Styled like the top row in the Neo-Brutalism photo) */}
+      <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          {user?.avatarUrl && (
-            <img
-              src={user.avatarUrl}
-              alt={user.name || user.username || 'User'}
-              className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover ring-2 ring-indigo-500/30 shadow-xs shrink-0"
-            />
-          )}
-          <div className="space-y-0.5">
-            <div className="flex items-center gap-2 flex-wrap">
-              <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
-                Dashboard Belajar
-              </h1>
-              <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-[10px] font-extrabold uppercase tracking-wider">
-                🟢 Level Aktif: {cefrLevel || 'A1'}
-              </span>
-            </div>
-            <p className="text-xs text-slate-500">
-              Halo, <strong className="text-indigo-600 font-bold">{user?.name || user?.username || 'Siswa'}</strong>! Kuasai bahasa secara bertahap &amp; terstruktur.
-            </p>
+          {/* Avatar / Initial Box */}
+          <div className="w-12 h-12 rounded-2xl bg-[#FF85C0] border-2 border-black shadow-[3px_3px_0px_#000] flex items-center justify-center font-black text-xl text-black shrink-0 overflow-hidden">
+            {user?.avatarUrl ? (
+              <img
+                src={user.avatarUrl}
+                alt={user.name || user.username || 'User'}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <span>{(user?.name || user?.username || 'K').charAt(0).toUpperCase()}</span>
+            )}
+          </div>
+
+          <div>
+            <span className="block text-xs font-black uppercase tracking-wider text-black/70">
+              {todayFormatted}
+            </span>
+            <h1 className="text-xl sm:text-2xl font-black text-black tracking-tight uppercase">
+              HALO, {user?.name || user?.username || 'KIA'}
+            </h1>
           </div>
         </div>
 
-        <div className="flex items-center gap-2 self-start sm:self-auto shrink-0">
-          <button
-            onClick={() => setScannerOpen(true)}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl bg-gradient-to-r from-teal-600 to-indigo-600 hover:from-teal-500 hover:to-indigo-500 text-white text-xs font-bold shadow-xs transition active:scale-95 cursor-pointer"
-          >
-            <Compass className="w-3.5 h-3.5 text-yellow-300" />
-            <span>Scan Level (3 Menit)</span>
-          </button>
-
+        <div className="flex items-center gap-2 shrink-0">
           <button
             onClick={loadData}
             disabled={loading}
-            className="p-1.5 sm:p-2 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-600 transition active:scale-95 disabled:opacity-50 cursor-pointer"
+            className="w-11 h-11 rounded-2xl bg-white border-2 border-black shadow-[3px_3px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_#000] flex items-center justify-center text-black cursor-pointer transition"
             title="Segarkan Data"
           >
-            <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
+            <RefreshCw className={`w-5 h-5 stroke-[2.5] ${loading ? 'animate-spin' : ''}`} />
           </button>
         </div>
       </div>
 
-      {/* 2. Unified High-Impact Daily Action Hub (Hero: SRS Due + Liga Mingguan) */}
-      {(() => {
-        const tier = getTierFromXP(weeklyXp || 0);
-        return (
-          <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 rounded-2xl sm:rounded-3xl p-4 sm:p-5 text-white flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 border border-slate-800 shadow-md">
-            <div className="flex items-center gap-3">
-              <div className="w-11 h-11 rounded-2xl bg-amber-500/20 border border-amber-400/30 flex items-center justify-center text-2xl shrink-0">
-                {tier.badge}
-              </div>
-              <div>
-                <div className="flex items-center gap-2">
-                  <span className="text-[10px] font-bold text-amber-400 uppercase tracking-wider">Liga {tier.name}</span>
-                  <span className="text-slate-500">•</span>
-                  <span className="text-xs text-slate-300 font-bold">{weeklyXp || 0} XP</span>
-                </div>
-                <h3 className="text-sm sm:text-base font-extrabold text-white mt-0.5">
-                  {metrics.dueCount > 0
-                    ? `Ada ${metrics.dueCount} Flashcard Perlu Diulang Hari Ini!`
-                    : `Semua Kartu Aman! Siap Belajar Materi Baru.`}
-                </h3>
-              </div>
+      {/* 2. Primary Hero Card (Lavender/Lilac Neo-Brutalism card like in photo) */}
+      <div className="bg-[#B388FF] rounded-3xl border-2 border-black shadow-[5px_5px_0px_#000] p-5 sm:p-7 text-black space-y-4">
+        <div>
+          <span className="text-xs font-black uppercase tracking-wider text-black block">
+            KARTU PERLU DIREVIEW HARI INI
+          </span>
+          <div className="flex items-baseline gap-2.5 mt-1 flex-wrap">
+            <span className="text-4xl sm:text-6xl font-black text-black tracking-tight">
+              {metrics.dueCount}
+            </span>
+            <span className="text-xl sm:text-2xl font-black text-black uppercase">
+              KARTU
+            </span>
+            <span className={`text-xs font-black px-2.5 py-1 rounded-md border-2 border-black shadow-[1px_1px_0px_#000] uppercase ${
+              metrics.dueCount > 0 ? 'bg-black text-white' : 'bg-[#80ED99] text-black'
+            }`}>
+              {metrics.dueCount > 0 ? `${metrics.dueCount} Kartu Jatuh Tempo SRS` : 'Semua Kartu Aman'}
+            </span>
+          </div>
+        </div>
+
+        {/* Progress Bar with Labels */}
+        <div className="space-y-1.5 pt-1">
+          <div className="flex items-center justify-between text-xs font-black text-black">
+            <span>
+              {metrics.dueCount > 0
+                ? `${metrics.dueCount} kartu SRS dijadwalkan ulang hari ini`
+                : 'Target review hari ini telah tercapai'}
+            </span>
+            <span className="uppercase">Level {selectedLevel}</span>
+          </div>
+          <div className="w-full bg-white/50 h-4 rounded-full border-2 border-black p-0.5 overflow-hidden">
+            <div
+              className="bg-black h-full rounded-full transition-all duration-500"
+              style={{
+                width: `${Math.min(100, Math.max(15, Math.round(((metrics.masteredCount || 1) / (metrics.totalCards || 20)) * 100)))}%`,
+              }}
+            />
+          </div>
+        </div>
+
+        {/* Action Button & Sub-stats */}
+        <div className="pt-2 border-t-2 border-black/15 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs font-black">
+          <div className="flex items-center gap-4">
+            <div>
+              <span className="text-black/70">Total Modul: </span>
+              <span>{modules.length} Materi</span>
             </div>
-
-            <div className="flex items-center gap-2 shrink-0 w-full sm:w-auto">
-              <Link
-                to="/flashcards/all"
-                className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-white text-indigo-700 hover:bg-indigo-50 font-bold text-xs shadow-xs transition active:scale-95"
-              >
-                <PlayCircle className="w-4 h-4 text-indigo-600" />
-                <span>{metrics.dueCount > 0 ? 'Mulai Review' : 'Latihan Flashcard'}</span>
-              </Link>
-
-              <button
-                onClick={() => setShareModalOpen(true)}
-                className="p-2.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-400/30 transition active:scale-95 cursor-pointer shrink-0"
-                title="Bagikan Pencapaian"
-              >
-                <Share2 className="w-4 h-4" />
-              </button>
-
-              <Link
-                to="/leaderboard"
-                className="inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold border border-white/20 transition active:scale-95 shrink-0"
-              >
-                <Trophy className="w-4 h-4 text-amber-400" />
-                <span className="hidden sm:inline">Klasemen</span>
-              </Link>
+            <div>
+              <span className="text-black/70">Liga XP: </span>
+              <span>{weeklyXp || 0} XP</span>
             </div>
           </div>
-        );
-      })()}
 
-      {/* 3. Compact Metrics Overview Strip */}
+          <Link
+            to={metrics.dueCount > 0 ? '/flashcards/due' : '/flashcards/all'}
+            className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-black text-white hover:bg-neutral-800 text-xs sm:text-sm font-black border-2 border-black shadow-[2px_2px_0px_#fff] active:translate-x-0.5 active:translate-y-0.5 cursor-pointer shrink-0 transition"
+          >
+            <PlayCircle className="w-4 h-4 stroke-[2.5]" />
+            <span>
+              {metrics.dueCount > 0
+                ? `Mulai Review (${metrics.dueCount} Kartu)`
+                : 'Latihan Bebas (Semua Modul)'}
+            </span>
+          </Link>
+        </div>
+      </div>
+
+      {/* 3. The 4 Iconic Neo-Brutalism Action Buttons Row (From the screenshot) */}
+      <div className="grid grid-cols-4 gap-2.5 sm:gap-4">
+        {/* Button 1: Pink (+ / Flashcard Review) */}
+        <Link
+          to={metrics.dueCount > 0 ? '/flashcards/due' : '/flashcards/all'}
+          className="bg-[#FF85C0] border-2 border-black shadow-[3px_3px_0px_#000] rounded-2xl p-2.5 sm:p-4 flex flex-col items-center justify-center gap-1 active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_#000] transition group text-black"
+        >
+          <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl bg-white/20 border-2 border-black flex items-center justify-center shadow-[1px_1px_0px_#000]">
+            <PlusCircle className="w-5 h-5 sm:w-6 sm:h-6 stroke-[2.5]" />
+          </div>
+          <span className="text-[11px] sm:text-xs font-black tracking-tight text-center">
+            {metrics.dueCount > 0 ? `Review (${metrics.dueCount})` : 'Flashcard'}
+          </span>
+        </Link>
+
+        {/* Button 2: White (Scan Level) */}
+        <button
+          onClick={() => setScannerOpen(true)}
+          className="bg-white border-2 border-black shadow-[3px_3px_0px_#000] rounded-2xl p-2.5 sm:p-4 flex flex-col items-center justify-center gap-1 active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_#000] transition group text-black cursor-pointer"
+        >
+          <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl bg-[#D4F63D] border-2 border-black flex items-center justify-center shadow-[1px_1px_0px_#000]">
+            <Compass className="w-5 h-5 sm:w-6 sm:h-6 stroke-[2.5]" />
+          </div>
+          <span className="text-[11px] sm:text-xs font-black tracking-tight text-center">
+            Scan Level
+          </span>
+        </button>
+
+        {/* Button 3: Sky Blue (Latihan / Practice) */}
+        <Link
+          to="/practice"
+          className="bg-[#70D6FF] border-2 border-black shadow-[3px_3px_0px_#000] rounded-2xl p-2.5 sm:p-4 flex flex-col items-center justify-center gap-1 active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_#000] transition group text-black"
+        >
+          <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl bg-white/20 border-2 border-black flex items-center justify-center shadow-[1px_1px_0px_#000]">
+            <Flame className="w-5 h-5 sm:w-6 sm:h-6 stroke-[2.5]" />
+          </div>
+          <span className="text-[11px] sm:text-xs font-black tracking-tight text-center">
+            Latihan
+          </span>
+        </Link>
+
+        {/* Button 4: Sun Yellow (Liga / Leaderboard) */}
+        <Link
+          to="/leaderboard"
+          className="bg-[#FFD166] border-2 border-black shadow-[3px_3px_0px_#000] rounded-2xl p-2.5 sm:p-4 flex flex-col items-center justify-center gap-1 active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_#000] transition group text-black"
+        >
+          <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl bg-white/20 border-2 border-black flex items-center justify-center shadow-[1px_1px_0px_#000]">
+            <Trophy className="w-5 h-5 sm:w-6 sm:h-6 stroke-[2.5]" />
+          </div>
+          <span className="text-[11px] sm:text-xs font-black tracking-tight text-center">
+            Liga
+          </span>
+        </Link>
+      </div>
+
+      {/* 4. Compact Metrics Overview Strip */}
       <MetricsOverview metrics={metrics} totalModules={modules.length} />
 
-      {/* 4. LANGKAH 1: PILIH BAHASA */}
-      <section className="bg-white p-3.5 sm:p-5 rounded-2xl sm:rounded-3xl border border-slate-200/80 shadow-xs space-y-2.5">
+      {/* 5. LANGKAH 1: PILIH BAHASA */}
+      <section className="bg-white p-4 sm:p-5 rounded-2xl sm:rounded-3xl border-2 border-black shadow-[4px_4px_0px_#000] space-y-3">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2 text-slate-800 font-extrabold text-xs sm:text-sm">
-            <span className="w-5 h-5 rounded-full bg-indigo-600 text-white flex items-center justify-center text-[10px] font-black">1</span>
-            <span>Pilih Bahasa Pembelajaran</span>
+          <div className="flex items-center gap-2 text-black font-black text-xs sm:text-sm uppercase tracking-wide">
+            <span className="w-5 h-5 rounded-md bg-black text-white flex items-center justify-center text-[10px] font-black">1</span>
+            <span>PILIH BAHASA PEMBELAJARAN</span>
           </div>
-          <span className="text-[10px] text-slate-500 font-medium">
-            Bahasa aktif: <strong>Inggris (100% Siap)</strong>
+          <span className="text-[10px] font-black uppercase text-black bg-[#D4F63D] px-2 py-0.5 rounded-md border border-black shadow-[1px_1px_0px_#000]">
+            Inggris Siap
           </span>
         </div>
         <LanguageSelector
@@ -248,17 +320,17 @@ export default function DashboardPage() {
 
       {/* Jika bahasa selain Inggris dipilih, tampilkan coming soon */}
       {selectedLanguage !== 'en' ? (
-        <div className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200 p-8 sm:p-12 text-center space-y-3">
+        <div className="bg-white rounded-2xl sm:rounded-3xl border-2 border-black shadow-[4px_4px_0px_#000] p-8 text-center space-y-3">
           <span className="text-4xl">🚀</span>
-          <h3 className="text-base sm:text-lg font-extrabold text-slate-900">
+          <h3 className="text-base sm:text-lg font-black text-black uppercase">
             Kurikulum Sedang Dalam Tahap Kurasi
           </h3>
-          <p className="text-xs sm:text-sm text-slate-600 max-w-md mx-auto">
-            Bahasa ini sedang disiapkan oleh tim kurator. Saat ini kurikulum <strong>Bahasa Inggris</strong> dari level A1 hingga C1 sudah lengkap dengan 50 modul dan siap dipelajari!
+          <p className="text-xs sm:text-sm text-black/70 max-w-md mx-auto font-medium">
+            Saat ini kurikulum <strong>Bahasa Inggris</strong> dari level A1 hingga C1 sudah lengkap dan siap dipelajari!
           </p>
           <button
             onClick={() => setSelectedLanguage('en')}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs sm:text-sm shadow-xs transition cursor-pointer"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#FF85C0] border-2 border-black shadow-[3px_3px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 text-black font-black text-xs sm:text-sm cursor-pointer"
           >
             Kembali ke Bahasa Inggris 🇬🇧
           </button>
@@ -267,14 +339,14 @@ export default function DashboardPage() {
         /* Jika Bahasa Inggris dipilih: LANGKAH 2 & 3 */
         <div className="space-y-4 sm:space-y-5">
           {/* LANGKAH 2: PILIH LEVEL CEFR */}
-          <section className="bg-white p-3.5 sm:p-5 rounded-2xl sm:rounded-3xl border border-slate-200/80 shadow-xs space-y-2.5">
+          <section className="bg-white p-4 sm:p-5 rounded-2xl sm:rounded-3xl border-2 border-black shadow-[4px_4px_0px_#000] space-y-3">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 text-slate-800 font-extrabold text-xs sm:text-sm">
-                <span className="w-5 h-5 rounded-full bg-indigo-600 text-white flex items-center justify-center text-[10px] font-black">2</span>
-                <span>Pilih Level CEFR Materi</span>
+              <div className="flex items-center gap-2 text-black font-black text-xs sm:text-sm uppercase tracking-wide">
+                <span className="w-5 h-5 rounded-md bg-black text-white flex items-center justify-center text-[10px] font-black">2</span>
+                <span>PILIH LEVEL CEFR</span>
               </div>
-              <span className="text-[10px] text-slate-500 font-medium hidden sm:inline">
-                Pilih salah satu level di bawah untuk membuka modulnya
+              <span className="text-[10px] font-black text-black/60 hidden sm:inline uppercase">
+                Filter Level Kurikulum
               </span>
             </div>
 
@@ -286,7 +358,7 @@ export default function DashboardPage() {
             />
           </section>
 
-          {/* LANGKAH 3: AREA MODUL & PROGRESS LEVEL TERPILIH */}
+          {/* LANGKAH 3: KANTONG MODUL & PROGRESS LEVEL TERPILIH */}
           <section className="space-y-4">
             {/* Progress Level Card & Exit Exam */}
             <LevelProgressCard
@@ -295,32 +367,32 @@ export default function DashboardPage() {
               onOpenExam={(lvl) => setActiveExamLevel(lvl)}
             />
 
-            {/* Header Modul Level & Filter Topik */}
-            <div className="bg-white p-3.5 sm:p-5 rounded-2xl sm:rounded-3xl border border-slate-200/80 shadow-xs space-y-3">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            {/* Header Modul Level & Filter Topik (Matches "KANTONG" from screenshot) */}
+            <div className="bg-white p-4 sm:p-5 rounded-2xl sm:rounded-3xl border-2 border-black shadow-[4px_4px_0px_#000] space-y-3">
+              <div className="flex items-center justify-between gap-2">
                 <div>
-                  <h3 className="text-sm sm:text-base font-extrabold text-slate-900">
-                    Modul Pembelajaran Level {selectedLevel}
+                  <h3 className="text-base sm:text-lg font-black text-black uppercase tracking-tight">
+                    KANTONG MATERI • LEVEL {selectedLevel}
                   </h3>
-                  <p className="text-xs text-slate-500">
-                    Menampilkan {filteredModules.length} modul belajar ringkas 1 halaman.
+                  <p className="text-xs text-black/70 font-semibold">
+                    {filteredModules.length} modul ringkas siap dipelajari
                   </p>
                 </div>
 
                 <div className="flex items-center gap-2">
                   <Link
                     to="/create"
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 transition"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border-2 border-black bg-[#FFD166] hover:bg-[#facc15] shadow-[2px_2px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_#000] text-black text-xs font-black transition"
                   >
-                    <PlusCircle className="w-3.5 h-3.5" />
-                    <span>+ Buat Modul</span>
+                    <PlusCircle className="w-3.5 h-3.5 stroke-[2.5]" />
+                    <span>+ Modul</span>
                   </Link>
                 </div>
               </div>
 
               {/* Filter Topik Kategori */}
-              <div className="pt-2 border-t border-slate-100 flex items-center gap-2">
-                <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider shrink-0 hidden sm:inline">
+              <div className="pt-2 border-t-2 border-black/10 flex items-center gap-2">
+                <span className="text-[11px] font-black text-black/60 uppercase tracking-wider shrink-0 hidden sm:inline">
                   Topik:
                 </span>
                 <CategoryFilter

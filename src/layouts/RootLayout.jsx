@@ -66,13 +66,17 @@ export default function RootLayout() {
   }, [setOnline]);
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900 w-full max-w-full overflow-x-hidden">
+    <div className="min-h-screen flex flex-col bg-[#D4F63D] text-black w-full max-w-full overflow-x-hidden selection:bg-black selection:text-[#D4F63D]">
       <Navbar />
-      <main className="flex-1 max-w-5xl w-full mx-auto px-3 sm:px-4 py-3.5 sm:py-6 pb-24 md:pb-8 overflow-x-hidden">
+      <main className="flex-1 max-w-5xl w-full mx-auto px-3 sm:px-4 py-4 sm:py-6 pb-28 md:pb-10 overflow-x-hidden">
         <Outlet />
       </main>
-      <footer className="py-6 border-t border-slate-200 text-center text-xs text-slate-500 mb-16 md:mb-0">
-        MyLala &bull; Made by Kyuut
+      <footer className="py-6 text-center text-xs font-extrabold text-black mb-16 md:mb-0">
+        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl border-2 border-black bg-white shadow-[2px_2px_0px_#000]">
+          <span>⚡ MyLala • Neo-Brutalism Lab</span>
+          <span>•</span>
+          <span>Made with ❤️ by Kyuut</span>
+        </div>
       </footer>
       <BottomNav />
       <SyncToast />
