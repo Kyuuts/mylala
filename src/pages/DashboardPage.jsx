@@ -1,9 +1,21 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { PlayCircle, Sparkles, RefreshCw, AlertCircle, PlusCircle, Filter, Trophy, Flame, Share2, Compass, X, CheckCircle2 } from 'lucide-react';
+import {
+  PlayCircle,
+  Sparkles,
+  RefreshCw,
+  AlertCircle,
+  PlusCircle,
+  Trophy,
+  Compass,
+  CheckCircle2,
+  ChevronDown,
+  BookOpen,
+  ArrowRight,
+  Award,
+} from 'lucide-react';
 import { useAppStore } from '../store/useAppStore';
 import MetricsOverview from '../components/dashboard/MetricsOverview';
-import LanguageSelector from '../components/dashboard/LanguageSelector';
 import LevelFilter from '../components/dashboard/LevelFilter';
 import CategoryFilter from '../components/dashboard/CategoryFilter';
 import ModuleCard from '../components/dashboard/ModuleCard';
@@ -12,8 +24,8 @@ import LanguageScannerModal from '../components/scanner/LanguageScannerModal';
 import SoftLockModal from '../components/common/SoftLockModal';
 import LevelProgressCard from '../components/dashboard/LevelProgressCard';
 import LevelExitExamModal from '../components/exam/LevelExitExamModal';
+import LanguageSelectorModal from '../components/common/LanguageSelectorModal';
 import { getModuleLevel } from '../utils/moduleLevel';
-import { getTierFromXP } from '../utils/rankSystem';
 
 export default function DashboardPage() {
   const {
@@ -22,17 +34,20 @@ export default function DashboardPage() {
     user,
     weeklyXp,
     streak,
+    completedModules,
     fetchUserStatsFromSupabase,
     dashboardSelectedLevel,
     setDashboardSelectedLevel,
     cefrLevel,
     checkWeeklyReset,
   } = useAppStore();
-  const [shareModalOpen, setShareModalOpen] = useState(false);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (checkWeeklyReset) checkWeeklyReset();
   }, [checkWeeklyReset]);
+
   const [modules, setModules] = useState([]);
   const [metrics, setMetrics] = useState({
     learningCount: 0,
@@ -42,14 +57,15 @@ export default function DashboardPage() {
     totalCards: 0,
   });
 
-  // Filter States
-  const navigate = useNavigate();
+  // Filter & Modal States
   const [selectedLanguage, setSelectedLanguage] = useState('en');
+  const [langModalOpen, setLangModalOpen] = useState(false);
   const [selectedLevel, setSelectedLevel] = useState(cefrLevel || user?.cefrLevel || 'A1'); // 'A1' | 'A2' | 'B1' | 'B2' | 'C1'
   const [selectedCategory, setSelectedCategory] = useState('All'); // 'All' | 'Grammar' | 'Kosakata' | 'Konjungsi'
   const [scannerOpen, setScannerOpen] = useState(false);
   const [softLockModule, setSoftLockModule] = useState(null);
   const [activeExamLevel, setActiveExamLevel] = useState(null);
+  const [shareModalOpen, setShareModalOpen] = useState(false);
 
   // Sync selected level if store triggers a one-shot level filter redirect (e.g. from placement test or exam)
   useEffect(() => {
@@ -127,6 +143,25 @@ export default function DashboardPage() {
     });
   }, [modules, selectedLevel, selectedCategory]);
 
+  // Priority Sorting: Separate into Uncompleted (TOP) and Completed (BOTTOM)
+  const completedSet = useMemo(() => new Set(completedModules || []), [completedModules]);
+
+  const { uncompletedModules, completedModulesList } = useMemo(() => {
+    const uncompleted = [];
+    const completed = [];
+    filteredModules.forEach((m) => {
+      if (completedSet.has(m.id)) {
+        completed.push(m);
+      } else {
+        uncompleted.push(m);
+      }
+    });
+    return { uncompletedModules: uncompleted, completedModulesList: completed };
+  }, [filteredModules, completedSet]);
+
+  // Determine the next actionable module for Smart Action Hero
+  const nextActionableModule = uncompletedModules[0] || null;
+
   const todayFormatted = useMemo(() => {
     return new Date().toLocaleDateString('id-ID', {
       weekday: 'long',
@@ -135,9 +170,18 @@ export default function DashboardPage() {
     });
   }, []);
 
+  const languageLabels = {
+    en: { name: 'Inggris', flag: '🇬🇧' },
+    ja: { name: 'Jepang', flag: '🇯🇵' },
+    ko: { name: 'Korea', flag: '🇰🇷' },
+    de: { name: 'Jerman', flag: '🇩🇪' },
+  };
+
+  const currentLangInfo = languageLabels[selectedLanguage] || languageLabels.en;
+
   return (
     <div className="space-y-4 sm:space-y-6">
-      {/* 1. Header & Greeting Bar (Styled like the top row in the Neo-Brutalism photo) */}
+      {/* 1. Header & Greeting Bar with Compact Language Pill */}
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-3">
           {/* Avatar / Initial Box */}
@@ -163,11 +207,22 @@ export default function DashboardPage() {
           </div>
         </div>
 
+        {/* Compact Right Header Actions: Language Switcher Pill + Refresh */}
         <div className="flex items-center gap-2 shrink-0">
+          <button
+            onClick={() => setLangModalOpen(true)}
+            className="px-3 py-2 rounded-2xl bg-white hover:bg-[#D4F63D] border-2 border-black shadow-[3px_3px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_#000] flex items-center gap-1.5 text-xs font-black text-black cursor-pointer transition"
+            title="Ganti Bahasa Pembelajaran"
+          >
+            <span className="text-base leading-none select-none">{currentLangInfo.flag}</span>
+            <span className="hidden sm:inline">{currentLangInfo.name}</span>
+            <ChevronDown className="w-3.5 h-3.5 stroke-[2.5]" />
+          </button>
+
           <button
             onClick={loadData}
             disabled={loading}
-            className="w-11 h-11 rounded-2xl bg-white border-2 border-black shadow-[3px_3px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_#000] flex items-center justify-center text-black cursor-pointer transition"
+            className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-white border-2 border-black shadow-[3px_3px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_#000] flex items-center justify-center text-black cursor-pointer transition"
             title="Segarkan Data"
           >
             <RefreshCw className={`w-5 h-5 stroke-[2.5] ${loading ? 'animate-spin' : ''}`} />
@@ -175,150 +230,159 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* 2. Primary Hero Card (Lavender/Lilac Neo-Brutalism card like in photo) */}
+      {/* 2. Smart Action Hero Card */}
       <div className="bg-[#B388FF] rounded-3xl border-2 border-black shadow-[5px_5px_0px_#000] p-5 sm:p-7 text-black space-y-4">
-        <div>
-          <span className="text-xs font-black uppercase tracking-wider text-black block">
-            KARTU PERLU DIREVIEW HARI INI
-          </span>
-          <div className="flex items-baseline gap-2.5 mt-1 flex-wrap">
-            <span className="text-4xl sm:text-6xl font-black text-black tracking-tight">
-              {metrics.dueCount}
-            </span>
-            <span className="text-xl sm:text-2xl font-black text-black uppercase">
-              KARTU
-            </span>
-            <span className={`text-xs font-black px-2.5 py-1 rounded-md border-2 border-black shadow-[1px_1px_0px_#000] uppercase ${
-              metrics.dueCount > 0 ? 'bg-black text-white' : 'bg-[#80ED99] text-black'
-            }`}>
-              {metrics.dueCount > 0 ? `${metrics.dueCount} Kartu Jatuh Tempo SRS` : 'Semua Kartu Aman'}
-            </span>
-          </div>
-        </div>
-
-        {/* Progress Bar with Labels */}
-        <div className="space-y-1.5 pt-1">
-          <div className="flex items-center justify-between text-xs font-black text-black">
-            <span>
-              {metrics.dueCount > 0
-                ? `${metrics.dueCount} kartu SRS dijadwalkan ulang hari ini`
-                : 'Target review hari ini telah tercapai'}
-            </span>
-            <span className="uppercase">Level {selectedLevel}</span>
-          </div>
-          <div className="w-full bg-white/50 h-4 rounded-full border-2 border-black p-0.5 overflow-hidden">
-            <div
-              className="bg-black h-full rounded-full transition-all duration-500"
-              style={{
-                width: `${Math.min(100, Math.max(15, Math.round(((metrics.masteredCount || 1) / (metrics.totalCards || 20)) * 100)))}%`,
-              }}
-            />
-          </div>
-        </div>
-
-        {/* Action Button & Sub-stats */}
-        <div className="pt-2 border-t-2 border-black/15 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs font-black">
-          <div className="flex items-center gap-4">
+        {metrics.dueCount > 0 ? (
+          /* Mode A: Ada Kartu SRS Jatuh Tempo (Review First!) */
+          <>
             <div>
-              <span className="text-black/70">Total Modul: </span>
-              <span>{modules.length} Materi</span>
+              <span className="text-xs font-black uppercase tracking-wider text-black block">
+                KARTU PERLU DIREVIEW HARI INI
+              </span>
+              <div className="flex items-baseline gap-2.5 mt-1 flex-wrap">
+                <span className="text-4xl sm:text-6xl font-black text-black tracking-tight">
+                  {metrics.dueCount}
+                </span>
+                <span className="text-xl sm:text-2xl font-black text-black uppercase">
+                  KARTU
+                </span>
+                <span className="text-xs font-black px-2.5 py-1 rounded-md border-2 border-black shadow-[1px_1px_0px_#000] uppercase bg-black text-white">
+                  {metrics.dueCount} Kartu Jatuh Tempo SRS
+                </span>
+              </div>
             </div>
-            <div>
-              <span className="text-black/70">Liga XP: </span>
-              <span>{weeklyXp || 0} XP</span>
-            </div>
-          </div>
 
-          <Link
-            to={metrics.dueCount > 0 ? '/flashcards/due' : '/flashcards/all'}
-            className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-black text-white hover:bg-neutral-800 text-xs sm:text-sm font-black border-2 border-black shadow-[2px_2px_0px_#fff] active:translate-x-0.5 active:translate-y-0.5 cursor-pointer shrink-0 transition"
-          >
-            <PlayCircle className="w-4 h-4 stroke-[2.5]" />
-            <span>
-              {metrics.dueCount > 0
-                ? `Mulai Review (${metrics.dueCount} Kartu)`
-                : 'Latihan Bebas (Semua Modul)'}
-            </span>
-          </Link>
-        </div>
+            {/* Progress Bar with Labels */}
+            <div className="space-y-1.5 pt-1">
+              <div className="flex items-center justify-between text-xs font-black text-black">
+                <span>{metrics.dueCount} kartu SRS dijadwalkan ulang hari ini</span>
+                <span className="uppercase">Level {selectedLevel}</span>
+              </div>
+              <div className="w-full bg-white/50 h-4 rounded-full border-2 border-black p-0.5 overflow-hidden">
+                <div
+                  className="bg-black h-full rounded-full transition-all duration-500"
+                  style={{
+                    width: `${Math.min(100, Math.max(15, Math.round(((metrics.masteredCount || 1) / (metrics.totalCards || 20)) * 100)))}%`,
+                  }}
+                />
+              </div>
+            </div>
+
+            {/* Action Button & Sub-stats */}
+            <div className="pt-2 border-t-2 border-black/15 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs font-black">
+              <div className="flex items-center gap-4">
+                <div>
+                  <span className="text-black/70">Total Modul: </span>
+                  <span>{modules.length} Materi</span>
+                </div>
+                <div>
+                  <span className="text-black/70">Liga XP: </span>
+                  <span>{weeklyXp || 0} XP</span>
+                </div>
+              </div>
+
+              <Link
+                to="/flashcards/due"
+                className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-black text-white hover:bg-neutral-800 text-xs sm:text-sm font-black border-2 border-black shadow-[2px_2px_0px_#fff] active:translate-x-0.5 active:translate-y-0.5 cursor-pointer shrink-0 transition"
+              >
+                <PlayCircle className="w-4 h-4 stroke-[2.5]" />
+                <span>Mulai Review ({metrics.dueCount} Kartu)</span>
+              </Link>
+            </div>
+          </>
+        ) : (
+          /* Mode B: Semua Kartu Review Aman -> Smart Next Module Action */
+          <>
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] sm:text-xs font-black px-2.5 py-0.5 rounded-md border-2 border-black shadow-[1px_1px_0px_#000] uppercase bg-[#80ED99] text-black">
+                  ✓ Semua Kartu Review Aman!
+                </span>
+                <span className="text-xs font-black uppercase text-black/70">
+                  Target Review Tercapai
+                </span>
+              </div>
+
+              {nextActionableModule ? (
+                <div className="pt-2">
+                  <span className="text-xs font-black uppercase tracking-wider text-black/80 block">
+                    Lanjut Pelajari Materi Berikutnya:
+                  </span>
+                  <h2 className="text-xl sm:text-2xl font-black text-black tracking-tight mt-0.5 leading-snug">
+                    {nextActionableModule.title}
+                  </h2>
+                </div>
+              ) : (
+                <div className="pt-2">
+                  <span className="text-xs font-black uppercase tracking-wider text-black/80 block">
+                    Pencapaian Level {selectedLevel}:
+                  </span>
+                  <h2 className="text-xl sm:text-2xl font-black text-black tracking-tight mt-0.5 leading-snug">
+                    Semua Materi Level {selectedLevel} Telah Kamu Pelajari! 🏆
+                  </h2>
+                </div>
+              )}
+            </div>
+
+            {/* Quick Progress Bar */}
+            <div className="space-y-1.5 pt-1">
+              <div className="flex items-center justify-between text-xs font-black text-black">
+                <span>
+                  {uncompletedModules.length > 0
+                    ? `Tersisa ${uncompletedModules.length} materi belum dipelajari di level ini`
+                    : 'Kamu siap mengambil Ujian Kelulusan!'}
+                </span>
+                <span className="uppercase">Level {selectedLevel}</span>
+              </div>
+              <div className="w-full bg-white/50 h-4 rounded-full border-2 border-black p-0.5 overflow-hidden">
+                <div
+                  className="bg-black h-full rounded-full transition-all duration-500"
+                  style={{
+                    width: `${filteredModules.length > 0 ? Math.min(100, Math.round((completedModulesList.length / filteredModules.length) * 100)) : 100}%`,
+                  }}
+                />
+              </div>
+            </div>
+
+            {/* Action Button & Sub-stats */}
+            <div className="pt-2 border-t-2 border-black/15 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs font-black">
+              <div className="flex items-center gap-4">
+                <div>
+                  <span className="text-black/70">Progress Level: </span>
+                  <span>{completedModulesList.length} / {filteredModules.length} Selesai</span>
+                </div>
+                <div>
+                  <span className="text-black/70">Liga XP: </span>
+                  <span>{weeklyXp || 0} XP</span>
+                </div>
+              </div>
+
+              {nextActionableModule ? (
+                <Link
+                  to={`/module/${nextActionableModule.id}`}
+                  className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-black text-white hover:bg-neutral-800 text-xs sm:text-sm font-black border-2 border-black shadow-[2px_2px_0px_#fff] active:translate-x-0.5 active:translate-y-0.5 cursor-pointer shrink-0 transition"
+                >
+                  <BookOpen className="w-4 h-4 stroke-[2.5]" />
+                  <span>Mulai Pelajari Modul Ini →</span>
+                </Link>
+              ) : (
+                <button
+                  onClick={() => setActiveExamLevel(selectedLevel)}
+                  className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-black text-white hover:bg-neutral-800 text-xs sm:text-sm font-black border-2 border-black shadow-[2px_2px_0px_#fff] active:translate-x-0.5 active:translate-y-0.5 cursor-pointer shrink-0 transition"
+                >
+                  <Award className="w-4 h-4 stroke-[2.5]" />
+                  <span>Ambil Ujian Kelulusan {selectedLevel}</span>
+                </button>
+              )}
+            </div>
+          </>
+        )}
       </div>
 
-      {/* 3. The 4 Iconic Neo-Brutalism Action Buttons Row (From the screenshot) */}
-      <div className="grid grid-cols-4 gap-2.5 sm:gap-4">
-        {/* Button 1: Pink (+ / Flashcard Review) */}
-        <Link
-          to={metrics.dueCount > 0 ? '/flashcards/due' : '/flashcards/all'}
-          className="bg-[#FF85C0] border-2 border-black shadow-[3px_3px_0px_#000] rounded-2xl p-2.5 sm:p-4 flex flex-col items-center justify-center gap-1 active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_#000] transition group text-black"
-        >
-          <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl bg-white/20 border-2 border-black flex items-center justify-center shadow-[1px_1px_0px_#000]">
-            <PlusCircle className="w-5 h-5 sm:w-6 sm:h-6 stroke-[2.5]" />
-          </div>
-          <span className="text-[11px] sm:text-xs font-black tracking-tight text-center">
-            {metrics.dueCount > 0 ? `Review (${metrics.dueCount})` : 'Flashcard'}
-          </span>
-        </Link>
-
-        {/* Button 2: White (Scan Level) */}
-        <button
-          onClick={() => setScannerOpen(true)}
-          className="bg-white border-2 border-black shadow-[3px_3px_0px_#000] rounded-2xl p-2.5 sm:p-4 flex flex-col items-center justify-center gap-1 active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_#000] transition group text-black cursor-pointer"
-        >
-          <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl bg-[#D4F63D] border-2 border-black flex items-center justify-center shadow-[1px_1px_0px_#000]">
-            <Compass className="w-5 h-5 sm:w-6 sm:h-6 stroke-[2.5]" />
-          </div>
-          <span className="text-[11px] sm:text-xs font-black tracking-tight text-center">
-            Scan Level
-          </span>
-        </button>
-
-        {/* Button 3: Sky Blue (Latihan / Practice) */}
-        <Link
-          to="/practice"
-          className="bg-[#70D6FF] border-2 border-black shadow-[3px_3px_0px_#000] rounded-2xl p-2.5 sm:p-4 flex flex-col items-center justify-center gap-1 active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_#000] transition group text-black"
-        >
-          <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl bg-white/20 border-2 border-black flex items-center justify-center shadow-[1px_1px_0px_#000]">
-            <Flame className="w-5 h-5 sm:w-6 sm:h-6 stroke-[2.5]" />
-          </div>
-          <span className="text-[11px] sm:text-xs font-black tracking-tight text-center">
-            Latihan
-          </span>
-        </Link>
-
-        {/* Button 4: Sun Yellow (Liga / Leaderboard) */}
-        <Link
-          to="/leaderboard"
-          className="bg-[#FFD166] border-2 border-black shadow-[3px_3px_0px_#000] rounded-2xl p-2.5 sm:p-4 flex flex-col items-center justify-center gap-1 active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_#000] transition group text-black"
-        >
-          <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl bg-white/20 border-2 border-black flex items-center justify-center shadow-[1px_1px_0px_#000]">
-            <Trophy className="w-5 h-5 sm:w-6 sm:h-6 stroke-[2.5]" />
-          </div>
-          <span className="text-[11px] sm:text-xs font-black tracking-tight text-center">
-            Liga
-          </span>
-        </Link>
-      </div>
-
-      {/* 4. Compact Metrics Overview Strip */}
+      {/* 3. Compact Metrics Overview Strip */}
       <MetricsOverview metrics={metrics} totalModules={modules.length} />
 
-      {/* 5. LANGKAH 1: PILIH BAHASA */}
-      <section className="bg-white p-4 sm:p-5 rounded-2xl sm:rounded-3xl border-2 border-black shadow-[4px_4px_0px_#000] space-y-3">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2 text-black font-black text-xs sm:text-sm uppercase tracking-wide">
-            <span className="w-5 h-5 rounded-md bg-black text-white flex items-center justify-center text-[10px] font-black">1</span>
-            <span>PILIH BAHASA PEMBELAJARAN</span>
-          </div>
-          <span className="text-[10px] font-black uppercase text-black bg-[#D4F63D] px-2 py-0.5 rounded-md border border-black shadow-[1px_1px_0px_#000]">
-            Inggris Siap
-          </span>
-        </div>
-        <LanguageSelector
-          activeLanguage={selectedLanguage}
-          onSelectLanguage={setSelectedLanguage}
-        />
-      </section>
-
-      {/* Jika bahasa selain Inggris dipilih, tampilkan coming soon */}
+      {/* 4. Jika Bahasa Selain Inggris Dipilih: Tampilkan Info Kurasi */}
       {selectedLanguage !== 'en' ? (
         <div className="bg-white rounded-2xl sm:rounded-3xl border-2 border-black shadow-[4px_4px_0px_#000] p-8 text-center space-y-3">
           <span className="text-4xl">🚀</span>
@@ -336,38 +400,36 @@ export default function DashboardPage() {
           </button>
         </div>
       ) : (
-        /* Jika Bahasa Inggris dipilih: LANGKAH 2 & 3 */
+        /* Jika Bahasa Inggris dipilih: Unified Level & Modules Section */
         <div className="space-y-4 sm:space-y-5">
-          {/* LANGKAH 2: PILIH LEVEL CEFR */}
-          <section className="bg-white p-4 sm:p-5 rounded-2xl sm:rounded-3xl border-2 border-black shadow-[4px_4px_0px_#000] space-y-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 text-black font-black text-xs sm:text-sm uppercase tracking-wide">
-                <span className="w-5 h-5 rounded-md bg-black text-white flex items-center justify-center text-[10px] font-black">2</span>
-                <span>PILIH LEVEL CEFR</span>
-              </div>
-              <span className="text-[10px] font-black text-black/60 hidden sm:inline uppercase">
-                Filter Level Kurikulum
-              </span>
+          {/* Integrated Level Pathway Bar & Diagnostic Scan */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between gap-2 overflow-x-auto no-scrollbar pb-1">
+              <LevelFilter
+                activeLevel={selectedLevel}
+                onSelectLevel={setSelectedLevel}
+                counts={levelCounts}
+              />
+              <button
+                onClick={() => setScannerOpen(true)}
+                className="shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border-2 border-black bg-white hover:bg-[#D4F63D] text-black text-xs font-black shadow-[2px_2px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 transition cursor-pointer"
+                title="Tes level kecakapan bahasamu sekarang"
+              >
+                <Compass className="w-3.5 h-3.5 stroke-[2.5]" />
+                <span className="hidden sm:inline">Scan Level</span>
+              </button>
             </div>
 
-            {/* Level Selector Pills */}
-            <LevelFilter
-              activeLevel={selectedLevel}
-              onSelectLevel={setSelectedLevel}
-              counts={levelCounts}
-            />
-          </section>
-
-          {/* LANGKAH 3: KANTONG MODUL & PROGRESS LEVEL TERPILIH */}
-          <section className="space-y-4">
-            {/* Progress Level Card & Exit Exam */}
+            {/* Level Progress Card & Exit Exam */}
             <LevelProgressCard
               activeLevel={selectedLevel}
               modules={modules}
               onOpenExam={(lvl) => setActiveExamLevel(lvl)}
             />
+          </div>
 
-            {/* Header Modul Level & Filter Topik (Matches "KANTONG" from screenshot) */}
+          {/* Kantong Materi Header & Kategori Filter */}
+          <section className="space-y-4">
             <div className="bg-white p-4 sm:p-5 rounded-2xl sm:rounded-3xl border-2 border-black shadow-[4px_4px_0px_#000] space-y-3">
               <div className="flex items-center justify-between gap-2">
                 <div>
@@ -375,7 +437,7 @@ export default function DashboardPage() {
                     KANTONG MATERI • LEVEL {selectedLevel}
                   </h3>
                   <p className="text-xs text-black/70 font-semibold">
-                    {filteredModules.length} modul ringkas siap dipelajari
+                    {uncompletedModules.length} belum dipelajari • {completedModulesList.length} selesai
                   </p>
                 </div>
 
@@ -409,7 +471,7 @@ export default function DashboardPage() {
               </div>
             )}
 
-            {/* Grid of Modules */}
+            {/* Grid of Modules with Priority Sorting (Uncompleted at TOP, Completed at BOTTOM) */}
             {loading ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-5 py-2">
                 {[1, 2, 3].map((n) => (
@@ -433,19 +495,69 @@ export default function DashboardPage() {
                 </button>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-5">
-                {filteredModules.map((mod) => (
-                  <ModuleCard
-                    key={mod.id}
-                    module={mod}
-                    onOpenSoftLock={(m) => setSoftLockModule(m)}
-                  />
-                ))}
+              <div className="space-y-6">
+                {/* 1. Modul yang Belum Dikerjakan (PRIORITAS UTAMA DI ATAS) */}
+                {uncompletedModules.length > 0 && (
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between px-1">
+                      <span className="text-xs font-black uppercase tracking-wider text-black flex items-center gap-1.5">
+                        <Sparkles className="w-4 h-4 fill-black text-black" />
+                        <span>Materi Siap Dipelajari ({uncompletedModules.length})</span>
+                      </span>
+                      <span className="text-[11px] font-black text-black/60 bg-white px-2 py-0.5 rounded-md border border-black/30">
+                        Prioritas Belajar
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-5">
+                      {uncompletedModules.map((mod) => (
+                        <ModuleCard
+                          key={mod.id}
+                          module={mod}
+                          onOpenSoftLock={(m) => setSoftLockModule(m)}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* 2. Modul yang Sudah Selesai Dikerjakan (PINDAH KE BAWAH) */}
+                {completedModulesList.length > 0 && (
+                  <div className="space-y-3 pt-3">
+                    <div className="flex items-center justify-between px-1 pt-2 border-t-2 border-black/10">
+                      <span className="text-xs font-black uppercase tracking-wider text-black flex items-center gap-1.5">
+                        <CheckCircle2 className="w-4 h-4 text-[#80ED99] fill-black stroke-[2.5]" />
+                        <span>Materi Selesai Dipelajari ({completedModulesList.length})</span>
+                      </span>
+                      <span className="text-[11px] font-black text-black bg-[#80ED99] px-2 py-0.5 rounded-md border border-black shadow-[1px_1px_0px_#000]">
+                        Tersimpan di Memori
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-5 opacity-90 hover:opacity-100 transition">
+                      {completedModulesList.map((mod) => (
+                        <ModuleCard
+                          key={mod.id}
+                          module={mod}
+                          onOpenSoftLock={(m) => setSoftLockModule(m)}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </section>
         </div>
       )}
+
+      {/* Compact Language Selector Modal */}
+      <LanguageSelectorModal
+        isOpen={langModalOpen}
+        onClose={() => setLangModalOpen(false)}
+        activeLanguage={selectedLanguage}
+        onSelectLanguage={(langId) => setSelectedLanguage(langId)}
+      />
 
       {/* Social Viral Share Card Modal */}
       <ShareCardModal
