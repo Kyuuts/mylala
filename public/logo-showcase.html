@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MyLala • Showcase 3 Desain Logo Neo-Brutalism</title>
+  <title>MyLala • Showcase Logo Pro & Natural (Neo-Brutalism)</title>
   <style>
     * {
       box-sizing: border-box;
@@ -22,20 +22,20 @@
       margin: 0 auto;
     }
     .header-box {
-      background: #70D6FF;
+      background: #D4F63D;
       border: 3.5px solid #000;
       box-shadow: 6px 6px 0px #000;
       border-radius: 24px;
-      padding: 24px;
-      margin-bottom: 28px;
+      padding: 28px 24px;
+      margin-bottom: 24px;
       text-align: center;
     }
     .header-badge {
       display: inline-block;
-      background: #D4F63D;
+      background: #FFFFFF;
       border: 2px solid #000;
       box-shadow: 2px 2px 0px #000;
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 900;
       padding: 4px 12px;
       border-radius: 12px;
@@ -43,7 +43,7 @@
       margin-bottom: 12px;
     }
     h1 {
-      font-size: clamp(24px, 4vw, 36px);
+      font-size: clamp(24px, 4vw, 34px);
       font-weight: 900;
       text-transform: uppercase;
       letter-spacing: -0.5px;
@@ -53,9 +53,10 @@
     p.subtitle {
       font-size: 14px;
       font-weight: 700;
-      color: rgba(0,0,0,0.8);
-      max-width: 600px;
+      color: rgba(0,0,0,0.85);
+      max-width: 680px;
       margin: 0 auto;
+      line-height: 1.5;
     }
     .controls {
       display: flex;
@@ -63,15 +64,15 @@
       align-items: center;
       justify-content: center;
       gap: 10px;
-      margin-bottom: 32px;
+      margin-bottom: 28px;
     }
     .btn-bg {
       border: 2.5px solid #000;
       box-shadow: 3px 3px 0px #000;
       font-weight: 900;
-      font-size: 12px;
-      padding: 8px 16px;
-      border-radius: 14px;
+      font-size: 11px;
+      padding: 8px 14px;
+      border-radius: 12px;
       cursor: pointer;
       transition: transform 0.1s ease;
     }
@@ -79,11 +80,27 @@
       transform: translate(2px, 2px);
       box-shadow: 1px 1px 0px #000;
     }
+    .section-title {
+      font-size: 13px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .section-title::after {
+      content: '';
+      flex: 1;
+      height: 2.5px;
+      background: #000;
+    }
     .grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
       gap: 24px;
-      margin-bottom: 40px;
+      margin-bottom: 36px;
     }
     .card {
       background: #FFFFFF;
@@ -94,6 +111,11 @@
       display: flex;
       flex-direction: column;
       justify-content: space-between;
+      position: relative;
+    }
+    .card-pro {
+      border-color: #000;
+      box-shadow: 8px 8px 0px #000;
     }
     .card-tag {
       display: inline-block;
@@ -106,9 +128,8 @@
       text-transform: uppercase;
       margin-bottom: 12px;
     }
-    .tag-1 { background: #70D6FF; }
-    .tag-2 { background: #D4F63D; }
-    .tag-3 { background: #FFD166; }
+    .tag-pro { background: #D4F63D; color: #000; }
+    .tag-clean { background: #70D6FF; color: #000; }
     .card h2 {
       font-size: 20px;
       font-weight: 900;
@@ -119,47 +140,46 @@
       font-size: 12px;
       font-weight: 700;
       color: #333;
-      margin-bottom: 20px;
-      min-height: 36px;
+      margin-bottom: 18px;
+      line-height: 1.45;
     }
     .logo-stage {
       background: #F8FAFC;
       border: 2.5px solid #000;
       box-shadow: inset 2px 2px 0px rgba(0,0,0,0.06);
       border-radius: 22px;
-      padding: 28px;
+      padding: 24px;
       display: flex;
       align-items: center;
       justify-content: center;
-      margin-bottom: 20px;
+      margin-bottom: 18px;
       min-height: 240px;
     }
     .logo-stage img {
-      max-width: 180px;
-      max-height: 180px;
+      max-width: 190px;
+      max-height: 190px;
       width: 100%;
       height: auto;
       object-fit: contain;
-      filter: drop-shadow(0 4px 12px rgba(0,0,0,0.05));
     }
     .mockup-preview {
       border: 2px solid #000;
       border-radius: 16px;
-      padding: 12px 16px;
-      margin-bottom: 20px;
+      padding: 12px 14px;
+      margin-bottom: 18px;
       background: #FFFFFF;
     }
     .mockup-title {
-      font-size: 11px;
+      font-size: 10px;
       font-weight: 900;
       text-transform: uppercase;
-      color: #666;
+      color: #555;
       margin-bottom: 8px;
     }
     .mockup-navbar {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
       padding: 8px 12px;
       background: #FFFFFF;
       border: 2px solid #000;
@@ -167,13 +187,14 @@
       border-radius: 12px;
     }
     .mockup-navbar img {
-      width: 28px;
-      height: 28px;
+      width: 32px;
+      height: 32px;
     }
     .mockup-navbar span {
       font-weight: 900;
-      font-size: 15px;
+      font-size: 16px;
       text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
     .actions {
       display: grid;
@@ -205,10 +226,7 @@
     }
     .btn-svg { background: #D4F63D; }
     .btn-png { background: #FF85C0; }
-    .recommend-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
+    .badge-star {
       background: #FFD166;
       border: 2px solid #000;
       box-shadow: 1.5px 1.5px 0px #000;
@@ -216,7 +234,6 @@
       border-radius: 8px;
       font-size: 10px;
       font-weight: 900;
-      margin-left: 6px;
     }
   </style>
 </head>
@@ -224,104 +241,86 @@
   <div class="container">
     <!-- Header Box -->
     <div class="header-box">
-      <div class="header-badge">🎨 Brand Identity Lab</div>
-      <h1>Showcase 3 Konsep Logo Baru MyLala</h1>
+      <div class="header-badge">✨ Human-Crafted Brand Identity</div>
+      <h1>2 Opsi Logo Baru: Professional &amp; Natural</h1>
       <p class="subtitle">
-        Dirancang khusus dengan estetika <strong>Neo-Brutalism</strong>: garis tepi hitam tebal, bayangan offset solid tanpa blur, dan warna pop energik.
+        Menghilangkan ornamen klise AI (bintang sparkle berlebihan / kartun acak). Fokus pada <strong>geometri cerdas</strong>, <strong>simbolisme Active Recall &amp; percakapan</strong>, serta keselarasan proporsional dengan estetika Neo-Brutalism.
       </p>
     </div>
 
     <!-- Background Color Switcher Controls -->
     <div class="controls">
-      <span style="font-size: 12px; font-weight: 900; text-transform: uppercase;">Uji Latar Belakang:</span>
+      <span style="font-size: 11px; font-weight: 900; text-transform: uppercase;">Uji Latar:</span>
       <button class="btn-bg" style="background: #FFFDF0;" onclick="changeBg('#FFFDF0')">Warm Cream</button>
       <button class="btn-bg" style="background: #FFFFFF;" onclick="changeBg('#FFFFFF')">Pure White</button>
       <button class="btn-bg" style="background: #18181B; color: #FFF;" onclick="changeBg('#18181B')">Dark Mode</button>
       <button class="btn-bg" style="background: #D4F63D;" onclick="changeBg('#D4F63D')">Volt Lime</button>
       <button class="btn-bg" style="background: #70D6FF;" onclick="changeBg('#70D6FF')">Cyber Sky</button>
-      <button class="btn-bg" style="background: #FF85C0;" onclick="changeBg('#FF85C0')">Pop Pink</button>
     </div>
 
-    <!-- 3 Logo Cards Grid -->
+    <div class="section-title">2 Opsi Rekomendasi Baru (Professional &amp; Natural)</div>
+
+    <!-- 2 Pro Logo Cards Grid -->
     <div class="grid">
-      <!-- OPSI 1 -->
-      <div class="card">
+      <!-- OPSI PRO 1 -->
+      <div class="card card-pro">
         <div>
-          <span class="card-tag tag-1">Opsi 1 • Fungsional</span>
-          <h2>The Chatting Flashcards</h2>
-          <p class="desc">Dua kartu Active Recall bertumpuk dengan ekor balon dialog dan bintang Pop Pink Lala AI.</p>
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+            <span class="card-tag tag-pro">Opsi A • The Flipping Dialogue</span>
+            <span class="badge-star">Natural &amp; Clean</span>
+          </div>
+          <h2>The Flipping Dialogue</h2>
+          <p class="desc">
+            Dua kartu memori yang sedang dibalik (Active Recall). Kartu depan memiliki ekor percakapan geometris yang rapi dengan monogram "m" putih bersih. Tanpa bintang AI klise.
+          </p>
           
-          <div class="logo-stage" id="stage-1">
-            <img src="/assets/logos/logo-concept-1-flashcards.svg" alt="Konsep 1: Chatting Flashcards">
+          <div class="logo-stage" id="stage-pro-1">
+            <img src="/assets/logos/logo-concept-pro-1.svg" alt="Konsep Pro 1: The Flipping Dialogue">
           </div>
 
           <div class="mockup-preview">
-            <div class="mockup-title">Simulasi di Navbar App:</div>
+            <div class="mockup-title">Simulasi Tampilan di Header Navbar:</div>
             <div class="mockup-navbar">
-              <img src="/assets/logos/logo-concept-1-flashcards.svg" alt="logo">
+              <img src="/assets/logos/logo-concept-pro-1.svg" alt="logo">
               <span>MYLALA</span>
             </div>
           </div>
         </div>
 
         <div class="actions">
-          <a href="/assets/logos/logo-concept-1-flashcards.svg" download="mylala-logo-concept-1.svg" class="btn-action btn-svg">📥 Unduh SVG</a>
-          <a href="/assets/logos/logo-concept-1-flashcards-512.png" download="mylala-logo-concept-1-512.png" class="btn-action btn-png">🖼️ Unduh PNG</a>
+          <a href="/assets/logos/logo-concept-pro-1.svg" download="mylala-logo-pro-1.svg" class="btn-action btn-svg">📥 Unduh SVG</a>
+          <a href="/assets/logos/logo-concept-pro-1-512.png" download="mylala-logo-pro-1-512.png" class="btn-action btn-png">🖼️ Unduh PNG</a>
         </div>
       </div>
 
-      <!-- OPSI 2 (REKOMENDASI UTAMA) -->
-      <div class="card" style="border-color: #000; box-shadow: 8px 8px 0px #000; position: relative;">
+      <!-- OPSI PRO 2 -->
+      <div class="card card-pro">
         <div>
-          <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap;">
-            <span class="card-tag tag-2">Opsi 2 • Monogram Pop</span>
-            <span class="recommend-badge">⭐ Rekomendasi Utama</span>
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+            <span class="card-tag tag-clean">Opsi B • Twin Dialogue Cards ("M")</span>
+            <span class="badge-star">Sangat Ikonik</span>
           </div>
-          <h2>The Chunky Monogram M</h2>
-          <p class="desc">Huruf M simetris ganda melambangkan pilar memori & gelombang suara dengan bintang AI.</p>
+          <h2>The Dialogue Monogram ("M")</h2>
+          <p class="desc">
+            Bentuk siluet huruf "M" yang terbentuk dari dua kartu dialog saling berhadapan: Kartu Putih (Pertanyaan) dan Kartu Biru dengan centang aktif (Jawaban). Sangat cerdas dan modern.
+          </p>
           
-          <div class="logo-stage" id="stage-2">
-            <img src="/assets/logos/logo-concept-2-monogram.svg" alt="Konsep 2: Chunky Monogram M">
+          <div class="logo-stage" id="stage-pro-2">
+            <img src="/assets/logos/logo-concept-pro-2.svg" alt="Konsep Pro 2: Twin Dialogue Cards">
           </div>
 
           <div class="mockup-preview">
-            <div class="mockup-title">Simulasi di Navbar App:</div>
+            <div class="mockup-title">Simulasi Tampilan di Header Navbar:</div>
             <div class="mockup-navbar">
-              <img src="/assets/logos/logo-concept-2-monogram.svg" alt="logo">
+              <img src="/assets/logos/logo-concept-pro-2.svg" alt="logo">
               <span>MYLALA</span>
             </div>
           </div>
         </div>
 
         <div class="actions">
-          <a href="/assets/logos/logo-concept-2-monogram.svg" download="mylala-logo-concept-2.svg" class="btn-action btn-svg">📥 Unduh SVG</a>
-          <a href="/assets/logos/logo-concept-2-monogram-512.png" download="mylala-logo-concept-2-512.png" class="btn-action btn-png">🖼️ Unduh PNG</a>
-        </div>
-      </div>
-
-      <!-- OPSI 3 -->
-      <div class="card">
-        <div>
-          <span class="card-tag tag-3">Opsi 3 • Maskot Ceria</span>
-          <h2>Lala Mascot Smile & Headset</h2>
-          <p class="desc">Karakter Lala AI tersenyum ramah dengan mata bintang mengedip dan headset audio.</p>
-          
-          <div class="logo-stage" id="stage-3">
-            <img src="/assets/logos/logo-concept-3-mascot.svg" alt="Konsep 3: Lala Mascot Smile">
-          </div>
-
-          <div class="mockup-preview">
-            <div class="mockup-title">Simulasi di Navbar App:</div>
-            <div class="mockup-navbar">
-              <img src="/assets/logos/logo-concept-3-mascot.svg" alt="logo">
-              <span>MYLALA</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="actions">
-          <a href="/assets/logos/logo-concept-3-mascot.svg" download="mylala-logo-concept-3.svg" class="btn-action btn-svg">📥 Unduh SVG</a>
-          <a href="/assets/logos/logo-concept-3-mascot-512.png" download="mylala-logo-concept-3-512.png" class="btn-action btn-png">🖼️ Unduh PNG</a>
+          <a href="/assets/logos/logo-concept-pro-2.svg" download="mylala-logo-pro-2.svg" class="btn-action btn-svg">📥 Unduh SVG</a>
+          <a href="/assets/logos/logo-concept-pro-2-512.png" download="mylala-logo-pro-2-512.png" class="btn-action btn-png">🖼️ Unduh PNG</a>
         </div>
       </div>
     </div>

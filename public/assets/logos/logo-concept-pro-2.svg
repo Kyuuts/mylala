@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <!-- SOLID BLACK HARD SHADOW OF CONTAINER -->
+  <rect x="48" y="48" width="424" height="424" rx="104" fill="#000000" />
+
+  <!-- MAIN SQUIRCLE BADGE (ELECTRIC VOLT LIME) -->
+  <rect x="34" y="34" width="424" height="424" rx="104" fill="#D4F63D" stroke="#000000" stroke-width="18" stroke-linejoin="round" />
+
+  <!-- ========================================== -->
+  <!-- DUAL SPEECH FLASHCARDS ("m" EMBLEM)        -->
+  <!-- Left Bubble: Pure White Card               -->
+  <!-- Right Bubble: Sky Blue Card + Speech Tail  -->
+  <!-- ========================================== -->
+
+  <!-- 1. LEFT CARD (WHITE FLASHCARD / SPEAKER A) -->
+  <!-- Hard Shadow -->
+  <rect x="118" y="152" width="136" height="200" rx="38" fill="#000000" />
+  <!-- Card Body -->
+  <rect x="106" y="140" width="136" height="200" rx="38" fill="#FFFFFF" stroke="#000000" stroke-width="16" stroke-linejoin="round" />
+  <!-- Minimal Content Lines on Left Card (Prompt / Question) -->
+  <line x1="140" y1="196" x2="208" y2="196" stroke="#000000" stroke-width="14" stroke-linecap="round" />
+  <line x1="140" y1="232" x2="186" y2="232" stroke="#000000" stroke-width="14" stroke-linecap="round" />
+  <!-- Dialogue Notch at Bottom Left -->
+  <path d="M 136 340 L 114 374 L 164 340 Z" fill="#FFFFFF" stroke="#000000" stroke-width="14" stroke-linejoin="round" />
+
+  <!-- 2. RIGHT CARD (CYBER SKY BLUE FLASHCARD / SPEAKER B) -->
+  <!-- Hard Shadow -->
+  <path
+    d="M 270 148
+       H 382
+       A 38 38 0 0 1 420 186
+       V 310
+       A 38 38 0 0 1 382 348
+       H 296
+       L 254 390
+       L 268 348
+       H 270
+       A 38 38 0 0 1 232 310
+       V 186
+       A 38 38 0 0 1 270 148 Z"
+    fill="#000000"
+    transform="translate(12, 12)"
+  />
+  <!-- Card Body -->
+  <path
+    d="M 270 148
+       H 382
+       A 38 38 0 0 1 420 186
+       V 310
+       A 38 38 0 0 1 382 348
+       H 296
+       L 254 390
+       L 268 348
+       H 270
+       A 38 38 0 0 1 232 310
+       V 186
+       A 38 38 0 0 1 270 148 Z"
+    fill="#70D6FF"
+    stroke="#000000"
+    stroke-width="16"
+    stroke-linejoin="round"
+  />
+
+  <!-- Active Wave / Check on Right Card (Feedback / Answer) -->
+  <path
+    d="M 288 238 L 316 264 L 372 208"
+    fill="none"
+    stroke="#000000"
+    stroke-width="16"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+
+  <!-- ========================================== -->
+  <!-- CONNECTING ARCH BRIDGE (CREATES "m" FLOW)  -->
+  <!-- ========================================== -->
+  <path
+    d="M 216 156 Q 256 122 296 156"
+    fill="none"
+    stroke="#000000"
+    stroke-width="16"
+    stroke-linecap="round"
+  />
+</svg>
