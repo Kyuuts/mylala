@@ -73,7 +73,7 @@ export default function RootLayout() {
       </main>
       <footer className="py-6 text-center text-xs font-extrabold text-black mb-16 md:mb-0">
         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl border-2 border-black bg-white shadow-[2px_2px_0px_#000]">
-          <span>⚡ MyLala • Neo-Brutalism Lab</span>
+          <span>⚡ MyLala</span>
           <span>•</span>
           <span>Made with ❤️ by Kyuut</span>
         </div>

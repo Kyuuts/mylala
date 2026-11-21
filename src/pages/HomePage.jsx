@@ -108,7 +108,7 @@ export default function HomePage() {
 
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-white border-2 border-black shadow-[2px_2px_0px_#000] text-black text-xs font-black uppercase tracking-wider">
             <Zap className="w-3.5 h-3.5 stroke-[2.5]" />
-            <span>MyLala &bull; Neo-Brutalism Micro-Learning PWA</span>
+            <span>MyLala &bull; Active Recall Micro-Learning PWA</span>
           </div>
 
           <h1 className="text-3xl sm:text-5xl md:text-6xl font-black tracking-tight text-black leading-tight uppercase">

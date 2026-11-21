@@ -627,10 +627,26 @@ export const useAppStore = create(
                   streak: row.streak,
                 };
 
-                const resolvedAvatar =
+                let resolvedAvatar =
                   (cloudSyncData.avatarUrl && isValidAvatarUrl(cloudSyncData.avatarUrl))
                     ? cloudSyncData.avatarUrl
-                    : (isSpecialAdmin ? ADMIN_AVATAR_REAL : null);
+                    : null;
+
+                try {
+                  const targetCheckId = isSpecialAdmin ? 'admin-imam-001' : (row.user_id || cloudSyncData.id);
+                  const { data: prof } = await supabase
+                    .from('profiles')
+                    .select('avatar_url, name')
+                    .eq('id', targetCheckId)
+                    .maybeSingle();
+                  if (prof?.avatar_url && isValidAvatarUrl(prof.avatar_url)) {
+                    resolvedAvatar = prof.avatar_url;
+                  }
+                } catch (_) {}
+
+                if (!resolvedAvatar && isSpecialAdmin) {
+                  resolvedAvatar = ADMIN_AVATAR_REAL;
+                }
 
                 cloudAccount = {
                   id: isSpecialAdmin ? 'admin-imam-001' : (row.user_id || cloudSyncData.id),
@@ -1467,14 +1483,24 @@ export const useAppStore = create(
                 },
               };
 
-              // Respect active user avatar if valid to prevent stale cloud rows from overwriting local photo
+              // Authoritative cloud avatar takes precedence so changes on laptop or HP immediately sync across devices!
               const localAvatar = state.user?.avatarUrl;
               const hasLocal = localAvatar && isValidAvatarUrl(localAvatar);
               const hasCloud = cloudAvatar && isValidAvatarUrl(cloudAvatar);
 
-              const finalAvatar = hasLocal
-                ? localAvatar
-                : (hasCloud ? cloudAvatar : (isSpecialAdmin ? ADMIN_AVATAR_REAL : null));
+              const finalAvatar = hasCloud
+                ? cloudAvatar
+                : (hasLocal ? localAvatar : (isSpecialAdmin ? ADMIN_AVATAR_REAL : null));
+
+              const activeUsername = (state.user?.username || targetUsername || '').toLowerCase();
+              const updatedAccounts = { ...(state.accounts || {}) };
+              if (activeUsername && updatedAccounts[activeUsername]) {
+                updatedAccounts[activeUsername] = {
+                  ...updatedAccounts[activeUsername],
+                  avatarUrl: finalAvatar,
+                  name: cloudName || data?.name || updatedAccounts[activeUsername].name,
+                };
+              }
 
               const nextState = {
                 userId: canonicalUserId,
@@ -1488,6 +1514,7 @@ export const useAppStore = create(
                 xp: currentXp,
                 streak: currentStreak,
                 userStatsByUserId: updatedStats,
+                accounts: updatedAccounts,
                 user: state.user
                   ? {
                       ...state.user,
