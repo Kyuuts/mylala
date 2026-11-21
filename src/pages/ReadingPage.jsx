@@ -122,10 +122,21 @@ export default function ReadingPage() {
 
     const paragraphs = activeArticle.content_paragraphs;
 
+    // Pre-cache all paragraphs in background for zero-latency sequential playback
+    ttsService.prefetchSentences(paragraphs).catch(() => {});
+
     for (let i = 0; i < paragraphs.length; i++) {
       if (!isPlayingAllRef.current) break;
 
       setActiveParagraphIndex(i);
+
+      // Smooth scroll the reading view to follow active paragraph
+      try {
+        const activeEl = document.getElementById(`reading-paragraph-${i}`);
+        if (activeEl) {
+          activeEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      } catch {}
 
       try {
         await ttsService.speak(paragraphs[i], { speed: speechRate });
@@ -137,7 +148,7 @@ export default function ReadingPage() {
 
       // Small natural breathing pause between paragraphs
       if (i < paragraphs.length - 1) {
-        await new Promise((resolve) => setTimeout(resolve, 500));
+        await new Promise((resolve) => setTimeout(resolve, 400));
       }
     }
 
@@ -395,6 +406,7 @@ export default function ReadingPage() {
                 return (
                   <div
                     key={idx}
+                    id={`reading-paragraph-${idx}`}
                     className={`p-4 rounded-2xl transition-all relative border-2 ${
                       isPlayingThis
                         ? 'bg-[#D4F63D]/30 border-black shadow-[3px_3px_0px_#000]'

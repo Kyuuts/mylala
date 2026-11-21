@@ -30,12 +30,9 @@ import {
   isSpeechRecognitionSupported,
   getSpeechRecognitionInstance,
 } from '../../utils/speechRecognition';
-import {
-  speakNaturalCharacterLine,
-  findBestVoiceForCharacter,
-  stopCharacterLine,
-} from '../../utils/characterVoiceEngine';
-import { EDGE_AZURE_VOICES } from '../../services/ttsService';
+import { speakNaturalCharacterLine, findBestVoiceForCharacter, stopCharacterLine } from '../../utils/characterVoiceEngine';
+import { EDGE_AZURE_VOICES, ttsService } from '../../services/ttsService';
+import VoiceSelectorModal from '../common/VoiceSelectorModal';
 
 export default function LalaAiRoleplayModal({ isOpen, onClose }) {
   const { user, cefrLevel, addXp, getEffectiveAiConfig } = useAppStore();
@@ -53,8 +50,9 @@ export default function LalaAiRoleplayModal({ isOpen, onClose }) {
   const [isLoading, setIsLoading] = useState(false);
   const [turnsCount, setTurnsCount] = useState(0);
 
-  // Voice Preference State ('auto' | 'british' | 'us_female' | 'us_male')
+  // Voice Preference State ('auto' | Microsoft Azure Voice ID)
   const [voiceMode, setVoiceMode] = useState('auto');
+  const [showVoiceModal, setShowVoiceModal] = useState(false);
 
   // Speech Recognition State
   const [isListening, setIsListening] = useState(false);
@@ -293,6 +291,33 @@ export default function LalaAiRoleplayModal({ isOpen, onClose }) {
             </div>
 
             <div className="p-4 sm:p-5 overflow-y-auto space-y-3 flex-1 text-xs w-full">
+              {/* Microsoft Azure Neural Voice Selector Bar */}
+              <div className="flex items-center justify-between p-2.5 rounded-2xl bg-[#FFFDF0] border-2 border-black shadow-[2px_2px_0px_#000]">
+                <div className="flex items-center gap-2 min-w-0">
+                  <div className="w-8 h-8 rounded-xl bg-[#D4F63D] border-2 border-black shadow-[1px_1px_0px_#000] flex items-center justify-center shrink-0">
+                    <Volume2 className="w-4 h-4 text-black stroke-[2.5]" />
+                  </div>
+                  <div className="min-w-0">
+                    <div className="text-xs font-black text-black truncate flex items-center gap-1.5">
+                      <span>Suara AI:</span>
+                      <span className="px-1.5 py-0.2 rounded-md bg-white border border-black text-[10px]">
+                        {voiceMode === 'auto' ? 'Auto Karakter 🎭' : (EDGE_AZURE_VOICES.find(v => v.id === voiceMode)?.name || voiceMode)}
+                      </span>
+                    </div>
+                    <p className="text-[10px] text-black/60 font-bold truncate">
+                      Microsoft Azure Neural Studio Voices
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowVoiceModal(true)}
+                  className="px-3 py-1.5 rounded-xl bg-[#FF85C0] hover:bg-[#D4F63D] border-2 border-black shadow-[2px_2px_0px_#000] text-xs font-black text-black cursor-pointer active:translate-x-0.5 active:translate-y-0.5 transition shrink-0"
+                >
+                  Pilih Suara
+                </button>
+              </div>
+
               <div className="flex items-center justify-between px-1">
                 <span className="font-black text-black uppercase">Pilih Topik Latihan:</span>
                 <span className="text-[10px] font-black px-2.5 py-0.5 rounded-lg bg-[#FFD166] border border-black text-black">
@@ -361,39 +386,19 @@ export default function LalaAiRoleplayModal({ isOpen, onClose }) {
               </div>
 
               <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
-                {/* Voice Preset Dropdown (Microsoft Edge / Azure Neural) */}
-                <div className="flex items-center gap-1 bg-white px-2 py-1 rounded-xl text-[10px] font-black text-black border-2 border-black shadow-[1px_1px_0px_#000] shrink-0">
-                  <Volume2 className="w-3 h-3 text-black stroke-[2.5] shrink-0" />
-                  <select
-                    value={voiceMode}
-                    onChange={(e) => setVoiceMode(e.target.value)}
-                    className="bg-transparent text-black font-black text-[10px] focus:outline-none cursor-pointer max-w-[80px] sm:max-w-none truncate"
-                    title="Pilih Karakter & Aksen Suara Microsoft AI"
-                  >
-                    <option value="auto">Auto (Sesuai Karakter) 🎭</option>
-                    <optgroup label="🇺🇸 American English">
-                      {EDGE_AZURE_VOICES.filter((v) => v.locale === 'en-US').map((v) => (
-                        <option key={v.id} value={v.id}>
-                          {v.flag} {v.name} ({v.gender}) - {v.badge}
-                        </option>
-                      ))}
-                    </optgroup>
-                    <optgroup label="🇬🇧 British English">
-                      {EDGE_AZURE_VOICES.filter((v) => v.locale === 'en-GB').map((v) => (
-                        <option key={v.id} value={v.id}>
-                          {v.flag} {v.name} ({v.gender}) - {v.badge}
-                        </option>
-                      ))}
-                    </optgroup>
-                    <optgroup label="🇦🇺 Australian English">
-                      {EDGE_AZURE_VOICES.filter((v) => v.locale === 'en-AU').map((v) => (
-                        <option key={v.id} value={v.id}>
-                          {v.flag} {v.name} ({v.gender}) - {v.badge}
-                        </option>
-                      ))}
-                    </optgroup>
-                  </select>
-                </div>
+                {/* Voice Selector Modal Trigger */}
+                <button
+                  type="button"
+                  onClick={() => setShowVoiceModal(true)}
+                  title="Pilih Suara Microsoft Azure Neural"
+                  className="flex items-center gap-1 bg-white hover:bg-[#D4F63D] px-2.5 py-1 rounded-xl text-[10px] sm:text-xs font-black text-black border-2 border-black shadow-[1.5px_1.5px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 transition cursor-pointer shrink-0"
+                >
+                  <Volume2 className="w-3.5 h-3.5 text-black stroke-[2.5]" />
+                  <span className="hidden sm:inline">Suara:</span>
+                  <span className="max-w-[70px] sm:max-w-[110px] truncate">
+                    {voiceMode === 'auto' ? 'Auto 🎭' : (EDGE_AZURE_VOICES.find(v => v.id === voiceMode)?.name || 'Kustom')}
+                  </span>
+                </button>
 
                 <button
                   type="button"
@@ -628,6 +633,16 @@ export default function LalaAiRoleplayModal({ isOpen, onClose }) {
             </div>
           </div>
         )}
+
+        {/* Microsoft Azure Neural Voice Selector Modal */}
+        <VoiceSelectorModal
+          isOpen={showVoiceModal}
+          onClose={() => {
+            setShowVoiceModal(false);
+            const preferred = ttsService.getPreferredVoice();
+            if (preferred) setVoiceMode(preferred);
+          }}
+        />
       </div>
     </div>,
     document.body

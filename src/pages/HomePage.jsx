@@ -103,9 +103,7 @@ export default function HomePage() {
         // Public Guest Hero Section
         <section className="text-center space-y-6 max-w-3xl mx-auto pt-4 sm:pt-6">
           <div className="flex justify-center mb-2">
-            <div className="p-3 bg-white rounded-3xl border-3 border-black shadow-[4px_4px_0px_#000]">
-              <Logo size="xl" />
-            </div>
+            <Logo size="xl" />
           </div>
 
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-white border-2 border-black shadow-[2px_2px_0px_#000] text-black text-xs font-black uppercase tracking-wider">

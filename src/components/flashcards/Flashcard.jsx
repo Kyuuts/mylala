@@ -144,7 +144,7 @@ export default function Flashcard({
           handleCardClick(e);
         }
       }}
-      className="w-full max-w-lg mx-auto h-[420px] sm:h-[460px] min-h-[410px] sm:min-h-[450px] cursor-pointer perspective-1000 select-none group focus:outline-none focus:ring-3 focus:ring-black rounded-3xl active:scale-[0.985] active:translate-y-0.5 transition-all duration-150"
+      className="w-full max-w-lg mx-auto h-[380px] sm:h-[440px] min-h-[360px] sm:min-h-[420px] cursor-pointer perspective-1000 select-none group focus:outline-none focus:ring-3 focus:ring-black rounded-3xl active:scale-[0.985] active:translate-y-0.5 transition-all duration-150"
     >
       <div
         className={`relative w-full h-full card-flip-inner ${
@@ -225,7 +225,7 @@ export default function Flashcard({
         </div>
 
         {/* BACK SIDE (Indonesian Meaning & Completed Context Sentence) */}
-        <div className="absolute inset-0 w-full h-full bg-[#B388FF] text-black rounded-3xl p-5 sm:p-7 flex flex-col justify-between items-center text-center border-3 border-black shadow-[6px_6px_0px_#000] group-hover:shadow-[9px_9px_0px_#000] group-hover:-translate-y-0.5 group-active:shadow-[2px_2px_0px_#000] group-active:translate-y-1 transition-all duration-200 backface-hidden rotate-y-180 overflow-hidden">
+        <div className="absolute inset-0 w-full h-full bg-[#B388FF] text-black rounded-3xl p-4 sm:p-6 flex flex-col justify-between items-center text-center border-3 border-black shadow-[6px_6px_0px_#000] group-hover:shadow-[9px_9px_0px_#000] group-hover:-translate-y-0.5 group-active:shadow-[2px_2px_0px_#000] group-active:translate-y-1 transition-all duration-200 backface-hidden rotate-y-180 overflow-hidden">
           <div className="w-full flex items-center justify-between text-xs shrink-0">
             <span className="font-black tracking-wider text-black bg-white border-2 border-black shadow-[1px_1px_0px_#000] px-3 py-1 rounded-lg uppercase">
               Arti &amp; Kunci Jawaban
@@ -273,27 +273,27 @@ export default function Flashcard({
             </div>
           </div>
 
-          <div className="my-auto px-2 sm:px-4 space-y-2.5 sm:space-y-3.5 w-full max-h-[250px] sm:max-h-[290px] overflow-y-auto overflow-x-hidden scrollbar-thin">
+          <div className="my-auto px-2 sm:px-3 space-y-2 sm:space-y-2.5 w-full max-h-[220px] sm:max-h-[260px] overflow-y-auto overflow-x-hidden scrollbar-thin">
             <p className={`${
               (card.back_text || '').length > 60
-                ? 'text-base sm:text-lg'
-                : 'text-xl sm:text-2xl'
-            } font-black text-black leading-relaxed break-words`}>
+                ? 'text-sm sm:text-base'
+                : 'text-lg sm:text-xl'
+            } font-black text-black leading-snug break-words`}>
               {card.back_text}
             </p>
 
             {card.example_sentence && (
-              <div className="bg-white rounded-2xl p-3 sm:p-3.5 border-2 border-black shadow-[3px_3px_0px_#000] max-w-sm mx-auto text-center">
-                <p className="text-xs sm:text-[13px] text-black italic leading-snug font-bold break-words">
+              <div className="bg-white rounded-xl p-2.5 sm:p-3 border-2 border-black shadow-[2px_2px_0px_#000] max-w-sm mx-auto text-center">
+                <p className="text-[11px] sm:text-xs text-black italic leading-snug font-bold break-words">
                   "{card.example_sentence}"
                 </p>
               </div>
             )}
           </div>
 
-          <div className="shrink-0 flex items-center gap-1.5 text-[11px] font-black text-black border-2 border-black px-3 py-1 rounded-xl bg-white shadow-[2px_2px_0px_#000] group-hover:bg-[#D4F63D] transition-colors">
-            <RotateCw className="w-3.5 h-3.5 stroke-[2.5] group-hover:rotate-180 transition-transform duration-500" />
-            <span>Pilih evaluasi di bawah atau ketuk untuk balik lagi</span>
+          <div className="shrink-0 flex items-center gap-1.5 text-[10px] sm:text-[11px] font-black text-black/80 px-2.5 py-1 rounded-lg bg-white/90 border border-black shadow-[1px_1px_0px_#000]">
+            <RotateCw className="w-3 h-3 stroke-[2.5]" />
+            <span>Ketuk kartu untuk membalik kembali</span>
           </div>
         </div>
       </div>

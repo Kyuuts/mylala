@@ -208,13 +208,16 @@ export default function VoiceSelectorModal({ isOpen, onClose }) {
                   key={s}
                   type="button"
                   onClick={() => handleSelectSpeed(s)}
-                  className={`py-1 rounded-xl text-xs font-black border-2 border-black transition active:translate-x-0.5 active:translate-y-0.5 cursor-pointer ${
+                  className={`py-1 sm:py-1.5 px-0.5 sm:px-1 rounded-xl text-[11px] sm:text-xs font-black border-2 border-black transition active:translate-x-0.5 active:translate-y-0.5 cursor-pointer flex flex-col items-center justify-center leading-tight ${
                     isSpeedActive
                       ? 'bg-[#FF85C0] text-black shadow-[2px_2px_0px_#000]'
                       : 'bg-white hover:bg-slate-100 text-black'
                   }`}
                 >
-                  {s}x {s === 1.0 ? '(Normal)' : s < 1.0 ? '(Lambat)' : '(Cepat)'}
+                  <span>{s}x</span>
+                  <span className="text-[9px] font-bold text-black/70">
+                    {s === 1.0 ? 'Normal' : s < 1.0 ? 'Lambat' : 'Cepat'}
+                  </span>
                 </button>
               );
             })}

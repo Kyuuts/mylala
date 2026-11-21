@@ -119,6 +119,15 @@ class TTSService {
     this.listeners = new Set();
     this.preferredVoice = this._loadPreferredVoice();
     this.preferredSpeed = this._loadPreferredSpeed();
+    this.sharedAudio = null;
+  }
+
+  _getOrCreateAudio() {
+    if (typeof window === 'undefined') return null;
+    if (!this.sharedAudio) {
+      this.sharedAudio = new Audio();
+    }
+    return this.sharedAudio;
   }
 
   _loadPreferredVoice() {
@@ -219,36 +228,39 @@ class TTSService {
   }
 
   /**
-   * Play an audio Blob via HTMLAudioElement
+   * Play an audio Blob via HTMLAudioElement (Reuses persistent Audio instance to preserve mobile gesture)
    */
   _playAudioBlob(blob) {
     return new Promise((resolve, reject) => {
       this.stop();
 
+      const audio = this._getOrCreateAudio() || new Audio();
       const audioUrl = URL.createObjectURL(blob);
-      const audio = new Audio(audioUrl);
+      audio.src = audioUrl;
       this.currentAudio = audio;
 
       this._setStatus('speaking');
 
-      audio.onended = () => {
+      const cleanup = () => {
+        audio.onended = null;
+        audio.onerror = null;
         URL.revokeObjectURL(audioUrl);
         this.currentAudio = null;
         this._setStatus('ready');
+      };
+
+      audio.onended = () => {
+        cleanup();
         resolve();
       };
 
       audio.onerror = (e) => {
-        URL.revokeObjectURL(audioUrl);
-        this.currentAudio = null;
-        this._setStatus('ready');
+        cleanup();
         reject(e);
       };
 
       audio.play().catch((err) => {
-        URL.revokeObjectURL(audioUrl);
-        this.currentAudio = null;
-        this._setStatus('ready');
+        cleanup();
         reject(err);
       });
     });
@@ -404,6 +416,7 @@ class TTSService {
       try {
         this.currentAudio.pause();
         this.currentAudio.currentTime = 0;
+        this.currentAudio.src = '';
       } catch {}
       this.currentAudio = null;
     }

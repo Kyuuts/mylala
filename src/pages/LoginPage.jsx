@@ -64,10 +64,8 @@ export default function LoginPage() {
 
         {/* Brand Header */}
         <div className="text-center space-y-3">
-          <div className="flex justify-center">
-            <div className="p-1.5 rounded-2xl bg-[#D4F63D] border-2.5 border-black shadow-[3px_3px_0px_#000]">
-              <Logo size="lg" />
-            </div>
+          <div className="flex justify-center mb-1">
+            <Logo size="lg" />
           </div>
           <div>
             <h1 className="text-2xl sm:text-3xl font-black text-black tracking-tight uppercase flex items-center justify-center gap-2">
