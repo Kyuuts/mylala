@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <!-- CONTAINER SQUIRCLE BADGE -->
+  <rect x="56" y="56" width="416" height="416" rx="98" fill="#000000" />
+  <rect x="42" y="42" width="416" height="416" rx="98" fill="#FFFDF0" stroke="#000000" stroke-width="18" stroke-linejoin="round" />
+
+  <!-- ========================================== -->
+  <!-- LALA THE CHATTER BIRD (2D CARTOON MASCOT)  -->
+  <!-- ========================================== -->
+
+  <!-- 1. Hard Shadow of Bird Body -->
+  <ellipse cx="266" cy="276" rx="145" ry="140" fill="#000000" />
+
+  <!-- 2. Main Bird Body (Electric Volt Lime) -->
+  <ellipse cx="256" cy="266" rx="145" ry="140" fill="#D4F63D" stroke="#000000" stroke-width="16" />
+
+  <!-- 3. Belly Oval (Pure White) -->
+  <ellipse cx="256" cy="316" rx="96" ry="76" fill="#FFFFFF" stroke="#000000" stroke-width="12" />
+
+  <!-- 4. Audio Headphone Band (Curving over Head) -->
+  <path
+    d="M 152 230 C 152 110 360 110 360 230"
+    fill="none"
+    stroke="#000000"
+    stroke-width="18"
+    stroke-linecap="round"
+  />
+
+  <!-- Left Headphone Ear Cushion -->
+  <rect x="122" y="210" width="34" height="66" rx="17" fill="#70D6FF" stroke="#000000" stroke-width="12" />
+
+  <!-- Right Headphone Ear Cushion + Shadow -->
+  <rect x="362" y="218" width="36" height="70" rx="18" fill="#000000" />
+  <rect x="354" y="210" width="36" height="70" rx="18" fill="#70D6FF" stroke="#000000" stroke-width="12" />
+  <circle cx="372" cy="245" r="8" fill="#FF85C0" stroke="#000000" stroke-width="5" />
+
+  <!-- Headphone Microphone Stem (Curving towards Beak) -->
+  <path
+    d="M 372 276 Q 372 344 316 352"
+    fill="none"
+    stroke="#000000"
+    stroke-width="12"
+    stroke-linecap="round"
+  />
+  <circle cx="310" cy="352" r="11" fill="#FFD166" stroke="#000000" stroke-width="6" />
+
+  <!-- 5. Eyes (Big Friendly Cartoon Eyes with Shine) -->
+  <!-- Left Eye -->
+  <ellipse cx="206" cy="236" rx="20" ry="26" fill="#000000" />
+  <circle cx="212" cy="226" r="8" fill="#FFFFFF" />
+  <circle cx="202" cy="244" r="3.5" fill="#FFFFFF" />
+
+  <!-- Right Eye -->
+  <ellipse cx="306" cy="236" rx="20" ry="26" fill="#000000" />
+  <circle cx="312" cy="226" r="8" fill="#FFFFFF" />
+  <circle cx="302" cy="244" r="3.5" fill="#FFFFFF" />
+
+  <!-- 6. Rosy Pink Blush Cheeks -->
+  <ellipse cx="172" cy="272" rx="18" ry="11" fill="#FF85C0" stroke="#000000" stroke-width="5" />
+  <ellipse cx="340" cy="272" rx="18" ry="11" fill="#FF85C0" stroke="#000000" stroke-width="5" />
+
+  <!-- 7. Cute Orange Beak (Curved Diamond) -->
+  <polygon points="256,242 278,266 256,286 234,266" fill="#FFD166" stroke="#000000" stroke-width="10" stroke-linejoin="round" />
+
+  <!-- 8. Cute Little Wings on Side -->
+  <path
+    d="M 120 286 C 100 326 130 366 168 346"
+    fill="#D4F63D"
+    stroke="#000000"
+    stroke-width="14"
+    stroke-linecap="round"
+  />
+</svg>
