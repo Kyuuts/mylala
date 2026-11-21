@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MyLala • Showcase 3 Desain Logo Neo-Brutalism</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+    body {
+      background-color: #FFFDF0;
+      color: #000000;
+      padding: 24px 16px 60px;
+      transition: background-color 0.2s ease;
+    }
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .header-box {
+      background: #70D6FF;
+      border: 3.5px solid #000;
+      box-shadow: 6px 6px 0px #000;
+      border-radius: 24px;
+      padding: 24px;
+      margin-bottom: 28px;
+      text-align: center;
+    }
+    .header-badge {
+      display: inline-block;
+      background: #D4F63D;
+      border: 2px solid #000;
+      box-shadow: 2px 2px 0px #000;
+      font-size: 12px;
+      font-weight: 900;
+      padding: 4px 12px;
+      border-radius: 12px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    h1 {
+      font-size: clamp(24px, 4vw, 36px);
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: -0.5px;
+      line-height: 1.15;
+      margin-bottom: 8px;
+    }
+    p.subtitle {
+      font-size: 14px;
+      font-weight: 700;
+      color: rgba(0,0,0,0.8);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 32px;
+    }
+    .btn-bg {
+      border: 2.5px solid #000;
+      box-shadow: 3px 3px 0px #000;
+      font-weight: 900;
+      font-size: 12px;
+      padding: 8px 16px;
+      border-radius: 14px;
+      cursor: pointer;
+      transition: transform 0.1s ease;
+    }
+    .btn-bg:active {
+      transform: translate(2px, 2px);
+      box-shadow: 1px 1px 0px #000;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 24px;
+      margin-bottom: 40px;
+    }
+    .card {
+      background: #FFFFFF;
+      border: 3.5px solid #000;
+      box-shadow: 7px 7px 0px #000;
+      border-radius: 28px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .card-tag {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 900;
+      padding: 4px 10px;
+      border-radius: 10px;
+      border: 2px solid #000;
+      box-shadow: 1.5px 1.5px 0px #000;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    .tag-1 { background: #70D6FF; }
+    .tag-2 { background: #D4F63D; }
+    .tag-3 { background: #FFD166; }
+    .card h2 {
+      font-size: 20px;
+      font-weight: 900;
+      margin-bottom: 4px;
+      line-height: 1.2;
+    }
+    .card p.desc {
+      font-size: 12px;
+      font-weight: 700;
+      color: #333;
+      margin-bottom: 20px;
+      min-height: 36px;
+    }
+    .logo-stage {
+      background: #F8FAFC;
+      border: 2.5px solid #000;
+      box-shadow: inset 2px 2px 0px rgba(0,0,0,0.06);
+      border-radius: 22px;
+      padding: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+      min-height: 240px;
+    }
+    .logo-stage img {
+      max-width: 180px;
+      max-height: 180px;
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+      filter: drop-shadow(0 4px 12px rgba(0,0,0,0.05));
+    }
+    .mockup-preview {
+      border: 2px solid #000;
+      border-radius: 16px;
+      padding: 12px 16px;
+      margin-bottom: 20px;
+      background: #FFFFFF;
+    }
+    .mockup-title {
+      font-size: 11px;
+      font-weight: 900;
+      text-transform: uppercase;
+      color: #666;
+      margin-bottom: 8px;
+    }
+    .mockup-navbar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      background: #FFFFFF;
+      border: 2px solid #000;
+      box-shadow: 2px 2px 0px #000;
+      border-radius: 12px;
+    }
+    .mockup-navbar img {
+      width: 28px;
+      height: 28px;
+    }
+    .mockup-navbar span {
+      font-weight: 900;
+      font-size: 15px;
+      text-transform: uppercase;
+    }
+    .actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .btn-action {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      border: 2px solid #000;
+      box-shadow: 2px 2px 0px #000;
+      font-weight: 900;
+      font-size: 11px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      text-decoration: none;
+      color: #000;
+      text-align: center;
+      cursor: pointer;
+    }
+    .btn-action:hover {
+      opacity: 0.9;
+    }
+    .btn-action:active {
+      transform: translate(1px, 1px);
+      box-shadow: 1px 1px 0px #000;
+    }
+    .btn-svg { background: #D4F63D; }
+    .btn-png { background: #FF85C0; }
+    .recommend-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: #FFD166;
+      border: 2px solid #000;
+      box-shadow: 1.5px 1.5px 0px #000;
+      padding: 2px 8px;
+      border-radius: 8px;
+      font-size: 10px;
+      font-weight: 900;
+      margin-left: 6px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header Box -->
+    <div class="header-box">
+      <div class="header-badge">🎨 Brand Identity Lab</div>
+      <h1>Showcase 3 Konsep Logo Baru MyLala</h1>
+      <p class="subtitle">
+        Dirancang khusus dengan estetika <strong>Neo-Brutalism</strong>: garis tepi hitam tebal, bayangan offset solid tanpa blur, dan warna pop energik.
+      </p>
+    </div>
+
+    <!-- Background Color Switcher Controls -->
+    <div class="controls">
+      <span style="font-size: 12px; font-weight: 900; text-transform: uppercase;">Uji Latar Belakang:</span>
+      <button class="btn-bg" style="background: #FFFDF0;" onclick="changeBg('#FFFDF0')">Warm Cream</button>
+      <button class="btn-bg" style="background: #FFFFFF;" onclick="changeBg('#FFFFFF')">Pure White</button>
+      <button class="btn-bg" style="background: #18181B; color: #FFF;" onclick="changeBg('#18181B')">Dark Mode</button>
+      <button class="btn-bg" style="background: #D4F63D;" onclick="changeBg('#D4F63D')">Volt Lime</button>
+      <button class="btn-bg" style="background: #70D6FF;" onclick="changeBg('#70D6FF')">Cyber Sky</button>
+      <button class="btn-bg" style="background: #FF85C0;" onclick="changeBg('#FF85C0')">Pop Pink</button>
+    </div>
+
+    <!-- 3 Logo Cards Grid -->
+    <div class="grid">
+      <!-- OPSI 1 -->
+      <div class="card">
+        <div>
+          <span class="card-tag tag-1">Opsi 1 • Fungsional</span>
+          <h2>The Chatting Flashcards</h2>
+          <p class="desc">Dua kartu Active Recall bertumpuk dengan ekor balon dialog dan bintang Pop Pink Lala AI.</p>
+          
+          <div class="logo-stage" id="stage-1">
+            <img src="/assets/logos/logo-concept-1-flashcards.svg" alt="Konsep 1: Chatting Flashcards">
+          </div>
+
+          <div class="mockup-preview">
+            <div class="mockup-title">Simulasi di Navbar App:</div>
+            <div class="mockup-navbar">
+              <img src="/assets/logos/logo-concept-1-flashcards.svg" alt="logo">
+              <span>MYLALA</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="actions">
+          <a href="/assets/logos/logo-concept-1-flashcards.svg" download="mylala-logo-concept-1.svg" class="btn-action btn-svg">📥 Unduh SVG</a>
+          <a href="/assets/logos/logo-concept-1-flashcards-512.png" download="mylala-logo-concept-1-512.png" class="btn-action btn-png">🖼️ Unduh PNG</a>
+        </div>
+      </div>
+
+      <!-- OPSI 2 (REKOMENDASI UTAMA) -->
+      <div class="card" style="border-color: #000; box-shadow: 8px 8px 0px #000; position: relative;">
+        <div>
+          <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap;">
+            <span class="card-tag tag-2">Opsi 2 • Monogram Pop</span>
+            <span class="recommend-badge">⭐ Rekomendasi Utama</span>
+          </div>
+          <h2>The Chunky Monogram M</h2>
+          <p class="desc">Huruf M simetris ganda melambangkan pilar memori & gelombang suara dengan bintang AI.</p>
+          
+          <div class="logo-stage" id="stage-2">
+            <img src="/assets/logos/logo-concept-2-monogram.svg" alt="Konsep 2: Chunky Monogram M">
+          </div>
+
+          <div class="mockup-preview">
+            <div class="mockup-title">Simulasi di Navbar App:</div>
+            <div class="mockup-navbar">
+              <img src="/assets/logos/logo-concept-2-monogram.svg" alt="logo">
+              <span>MYLALA</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="actions">
+          <a href="/assets/logos/logo-concept-2-monogram.svg" download="mylala-logo-concept-2.svg" class="btn-action btn-svg">📥 Unduh SVG</a>
+          <a href="/assets/logos/logo-concept-2-monogram-512.png" download="mylala-logo-concept-2-512.png" class="btn-action btn-png">🖼️ Unduh PNG</a>
+        </div>
+      </div>
+
+      <!-- OPSI 3 -->
+      <div class="card">
+        <div>
+          <span class="card-tag tag-3">Opsi 3 • Maskot Ceria</span>
+          <h2>Lala Mascot Smile & Headset</h2>
+          <p class="desc">Karakter Lala AI tersenyum ramah dengan mata bintang mengedip dan headset audio.</p>
+          
+          <div class="logo-stage" id="stage-3">
+            <img src="/assets/logos/logo-concept-3-mascot.svg" alt="Konsep 3: Lala Mascot Smile">
+          </div>
+
+          <div class="mockup-preview">
+            <div class="mockup-title">Simulasi di Navbar App:</div>
+            <div class="mockup-navbar">
+              <img src="/assets/logos/logo-concept-3-mascot.svg" alt="logo">
+              <span>MYLALA</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="actions">
+          <a href="/assets/logos/logo-concept-3-mascot.svg" download="mylala-logo-concept-3.svg" class="btn-action btn-svg">📥 Unduh SVG</a>
+          <a href="/assets/logos/logo-concept-3-mascot-512.png" download="mylala-logo-concept-3-512.png" class="btn-action btn-png">🖼️ Unduh PNG</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function changeBg(color) {
+      document.body.style.backgroundColor = color;
+      const isDark = color === '#18181B';
+      document.querySelectorAll('.logo-stage').forEach(el => {
+        el.style.backgroundColor = isDark ? '#27272A' : '#F8FAFC';
+      });
+    }
+  </script>
+</body>
+</html>
