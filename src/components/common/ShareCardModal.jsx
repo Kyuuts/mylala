@@ -215,7 +215,7 @@ export default function ShareCardModal({ isOpen, onClose, customStats = null }) 
           </div>
 
           {/* Interactive Card Canvas Live Preview */}
-          <div className="relative rounded-2xl overflow-hidden border-3 border-black shadow-[4px_4px_0px_#000] bg-black flex items-center justify-center max-h-[50vh]">
+          <div className="relative rounded-2xl overflow-hidden border-3 border-black shadow-[4px_4px_0px_#000] bg-[#FFFDF0] flex items-center justify-center max-h-[50vh]">
             <canvas
               ref={canvasRef}
               className={`block max-h-[48vh] w-auto h-auto object-contain transition-all duration-300 ${

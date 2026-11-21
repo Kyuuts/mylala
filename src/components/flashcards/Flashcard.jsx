@@ -144,7 +144,7 @@ export default function Flashcard({
           handleCardClick(e);
         }
       }}
-      className="w-full max-w-lg mx-auto h-84 sm:h-96 cursor-pointer perspective-1000 select-none group focus:outline-none focus:ring-3 focus:ring-black rounded-3xl active:scale-[0.985] active:translate-y-0.5 transition-all duration-150"
+      className="w-full max-w-lg mx-auto h-[420px] sm:h-[460px] min-h-[410px] sm:min-h-[450px] cursor-pointer perspective-1000 select-none group focus:outline-none focus:ring-3 focus:ring-black rounded-3xl active:scale-[0.985] active:translate-y-0.5 transition-all duration-150"
     >
       <div
         className={`relative w-full h-full card-flip-inner ${
@@ -152,8 +152,8 @@ export default function Flashcard({
         }`}
       >
         {/* FRONT SIDE (English Active Recall) */}
-        <div className="absolute inset-0 w-full h-full bg-white rounded-3xl p-6 sm:p-8 flex flex-col justify-between items-center text-center border-3 border-black shadow-[6px_6px_0px_#000] group-hover:shadow-[9px_9px_0px_#000] group-hover:-translate-y-0.5 group-active:shadow-[2px_2px_0px_#000] group-active:translate-y-1 transition-all duration-200 backface-hidden">
-          <div className="w-full flex items-center justify-between text-xs">
+        <div className="absolute inset-0 w-full h-full bg-white rounded-3xl p-5 sm:p-7 flex flex-col justify-between items-center text-center border-3 border-black shadow-[6px_6px_0px_#000] group-hover:shadow-[9px_9px_0px_#000] group-hover:-translate-y-0.5 group-active:shadow-[2px_2px_0px_#000] group-active:translate-y-1 transition-all duration-200 backface-hidden overflow-hidden">
+          <div className="w-full flex items-center justify-between text-xs shrink-0">
             <span className="font-black tracking-wider text-black bg-[#D4F63D] border-2 border-black shadow-[1px_1px_0px_#000] px-3 py-1 rounded-lg uppercase">
               English
             </span>
@@ -200,7 +200,7 @@ export default function Flashcard({
             </div>
           </div>
 
-          <div className="my-auto px-4 space-y-2">
+          <div className="my-auto px-2 sm:px-4 space-y-2.5 w-full max-h-[250px] sm:max-h-[290px] overflow-y-auto overflow-x-hidden scrollbar-thin">
             {categoryHint && (
               <div className="flex justify-center">
                 <span className="inline-flex items-center gap-1 text-[11px] sm:text-xs font-black px-3 py-1 rounded-lg bg-[#FF85C0] text-black border-2 border-black shadow-[2px_2px_0px_#000]">
@@ -208,21 +208,25 @@ export default function Flashcard({
                 </span>
               </div>
             )}
-            <h2 className="text-xl sm:text-2xl md:text-3xl font-black text-black leading-snug break-words">
+            <h2 className={`${
+              (mainText || '').length > 70
+                ? 'text-lg sm:text-xl'
+                : 'text-xl sm:text-2xl md:text-3xl'
+            } font-black text-black leading-snug break-words`}>
               {mainText}
             </h2>
             <p className="text-xs text-black/70 font-bold">Tebak arti &amp; jawabannya sebelum membalik kartu</p>
           </div>
 
-          <div className="flex items-center gap-1.5 text-xs font-black text-black border-2 border-black px-3.5 py-1.5 rounded-xl bg-[#D4F63D] shadow-[2px_2px_0px_#000] group-hover:bg-[#FF85C0] group-hover:shadow-[3px_3px_0px_#000] group-active:translate-x-0.5 group-active:translate-y-0.5 transition-all duration-200">
+          <div className="shrink-0 flex items-center gap-1.5 text-xs font-black text-black border-2 border-black px-3.5 py-1.5 rounded-xl bg-[#D4F63D] shadow-[2px_2px_0px_#000] group-hover:bg-[#FF85C0] group-hover:shadow-[3px_3px_0px_#000] group-active:translate-x-0.5 group-active:translate-y-0.5 transition-all duration-200">
             <RotateCw className="w-3.5 h-3.5 stroke-[2.5] group-hover:rotate-180 transition-transform duration-500" />
             <span>Klik atau Spasi untuk membalik</span>
           </div>
         </div>
 
         {/* BACK SIDE (Indonesian Meaning & Completed Context Sentence) */}
-        <div className="absolute inset-0 w-full h-full bg-[#B388FF] text-black rounded-3xl p-6 sm:p-8 flex flex-col justify-between items-center text-center border-3 border-black shadow-[6px_6px_0px_#000] group-hover:shadow-[9px_9px_0px_#000] group-hover:-translate-y-0.5 group-active:shadow-[2px_2px_0px_#000] group-active:translate-y-1 transition-all duration-200 backface-hidden rotate-y-180">
-          <div className="w-full flex items-center justify-between text-xs">
+        <div className="absolute inset-0 w-full h-full bg-[#B388FF] text-black rounded-3xl p-5 sm:p-7 flex flex-col justify-between items-center text-center border-3 border-black shadow-[6px_6px_0px_#000] group-hover:shadow-[9px_9px_0px_#000] group-hover:-translate-y-0.5 group-active:shadow-[2px_2px_0px_#000] group-active:translate-y-1 transition-all duration-200 backface-hidden rotate-y-180 overflow-hidden">
+          <div className="w-full flex items-center justify-between text-xs shrink-0">
             <span className="font-black tracking-wider text-black bg-white border-2 border-black shadow-[1px_1px_0px_#000] px-3 py-1 rounded-lg uppercase">
               Arti &amp; Kunci Jawaban
             </span>
@@ -269,21 +273,25 @@ export default function Flashcard({
             </div>
           </div>
 
-          <div className="my-auto px-4 space-y-4">
-            <p className="text-xl sm:text-2xl font-black text-black leading-relaxed">
+          <div className="my-auto px-2 sm:px-4 space-y-2.5 sm:space-y-3.5 w-full max-h-[250px] sm:max-h-[290px] overflow-y-auto overflow-x-hidden scrollbar-thin">
+            <p className={`${
+              (card.back_text || '').length > 60
+                ? 'text-base sm:text-lg'
+                : 'text-xl sm:text-2xl'
+            } font-black text-black leading-relaxed break-words`}>
               {card.back_text}
             </p>
 
             {card.example_sentence && (
-              <div className="bg-white rounded-2xl p-3.5 border-2 border-black shadow-[3px_3px_0px_#000] max-w-sm mx-auto">
-                <p className="text-xs sm:text-sm text-black italic leading-relaxed font-bold">
+              <div className="bg-white rounded-2xl p-3 sm:p-3.5 border-2 border-black shadow-[3px_3px_0px_#000] max-w-sm mx-auto text-center">
+                <p className="text-xs sm:text-[13px] text-black italic leading-snug font-bold break-words">
                   "{card.example_sentence}"
                 </p>
               </div>
             )}
           </div>
 
-          <div className="flex items-center gap-1.5 text-[11px] font-black text-black border-2 border-black px-3 py-1 rounded-xl bg-white shadow-[2px_2px_0px_#000] group-hover:bg-[#D4F63D] transition-colors">
+          <div className="shrink-0 flex items-center gap-1.5 text-[11px] font-black text-black border-2 border-black px-3 py-1 rounded-xl bg-white shadow-[2px_2px_0px_#000] group-hover:bg-[#D4F63D] transition-colors">
             <RotateCw className="w-3.5 h-3.5 stroke-[2.5] group-hover:rotate-180 transition-transform duration-500" />
             <span>Pilih evaluasi di bawah atau ketuk untuk balik lagi</span>
           </div>

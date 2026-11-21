@@ -1,60 +1,55 @@
 /**
  * Ultra-Crisp Canvas Generator for MyLala Social Share Cards
+ * 100% Neo-Brutalism Design System:
+ * - High-contrast vibrant palettes
+ * - Bold black borders (4px - 6px)
+ * - Hard solid black drop-shadows (no blur)
+ * - Sharp typography and clean badge pills
  * Generates 1080x1920 (Story 9:16) and 1080x1080 (Square 1:1) high-definition viral cards
  * for WhatsApp Status, Instagram Stories, LinkedIn, and Telegram.
  */
 
-// Theme palettes mapped by League Tier
+// Tier Themes with Vibrant Neo-Brutalist Color Accents
 const TIER_THEMES = {
   Bronze: {
-    bgTop: '#1E140A',
-    bgBottom: '#451A03',
-    glowColor: 'rgba(217, 119, 6, 0.35)',
-    accent: '#F59E0B',
-    accentLight: '#FDE68A',
+    bgCanvas: '#FFF1E6',
+    accentColor: '#FFD166',
     badge: '🥉',
     title: 'Bronze League',
+    tagBg: '#FF85C0',
   },
   Silver: {
-    bgTop: '#0F172A',
-    bgBottom: '#1E293B',
-    glowColor: 'rgba(148, 163, 184, 0.35)',
-    accent: '#94A3B8',
-    accentLight: '#F1F5F9',
+    bgCanvas: '#F1F5F9',
+    accentColor: '#70D6FF',
     badge: '🥈',
     title: 'Silver League',
+    tagBg: '#D4F63D',
   },
   Gold: {
-    bgTop: '#1C1300',
-    bgBottom: '#713F12',
-    glowColor: 'rgba(245, 158, 11, 0.45)',
-    accent: '#FBBF24',
-    accentLight: '#FEF3C7',
+    bgCanvas: '#FEF9C3',
+    accentColor: '#FFD166',
     badge: '🥇',
     title: 'Gold League',
+    tagBg: '#FF85C0',
   },
   Platinum: {
-    bgTop: '#022C22',
-    bgBottom: '#0E4F5A',
-    glowColor: 'rgba(6, 182, 212, 0.45)',
-    accent: '#22D3EE',
-    accentLight: '#CFFAFE',
+    bgCanvas: '#E0F2FE',
+    accentColor: '#70D6FF',
     badge: '💎',
     title: 'Platinum League',
+    tagBg: '#D4F63D',
   },
   Diamond: {
-    bgTop: '#17092B',
-    bgBottom: '#4C1D95',
-    glowColor: 'rgba(168, 85, 247, 0.5)',
-    accent: '#C084FC',
-    accentLight: '#F3E8FF',
+    bgCanvas: '#F3E8FF',
+    accentColor: '#B388FF',
     badge: '👑',
     title: 'Diamond League',
+    tagBg: '#70D6FF',
   },
 };
 
 /**
- * Helper to draw rounded rectangle with fallback for older canvas implementations
+ * Helper to draw rounded rectangle with fallback
  */
 function drawRoundedRect(ctx, x, y, width, height, radius) {
   if (ctx.roundRect) {
@@ -76,7 +71,31 @@ function drawRoundedRect(ctx, x, y, width, height, radius) {
 }
 
 /**
- * Draw complete viral share card onto HTML5 Canvas
+ * Helper to draw a Neo-Brutalist Box with solid offset shadow & solid border
+ */
+function drawNeoBox(ctx, x, y, width, height, radius, bgColor, shadowOffset = 8, borderWidth = 4) {
+  // 1. Solid Black Offset Shadow
+  if (shadowOffset > 0) {
+    ctx.save();
+    drawRoundedRect(ctx, x + shadowOffset, y + shadowOffset, width, height, radius);
+    ctx.fillStyle = '#000000';
+    ctx.fill();
+    ctx.restore();
+  }
+
+  // 2. Main Box Fill & Solid Black Stroke
+  ctx.save();
+  drawRoundedRect(ctx, x, y, width, height, radius);
+  ctx.fillStyle = bgColor;
+  ctx.fill();
+  ctx.strokeStyle = '#000000';
+  ctx.lineWidth = borderWidth;
+  ctx.stroke();
+  ctx.restore();
+}
+
+/**
+ * Draw complete viral share card onto HTML5 Canvas in Neo-Brutalism Aesthetic
  */
 export function drawShareCard(canvas, data) {
   if (!canvas) return;
@@ -85,7 +104,7 @@ export function drawShareCard(canvas, data) {
     format = 'story', // 'story' (9:16) | 'square' (1:1)
     name = 'Pembelajar MyLala',
     username = 'learner',
-    tierName = 'Bronze League',
+    tierName = 'Gold League',
     rank = 1,
     weeklyXp = 0,
     streak = 1,
@@ -104,219 +123,218 @@ export function drawShareCard(canvas, data) {
   if (!ctx) return;
 
   // Determine tier theme
-  const tierKey = Object.keys(TIER_THEMES).find((k) =>
-    (tierName || '').toLowerCase().includes(k.toLowerCase())
-  ) || 'Bronze';
+  const tierKey =
+    Object.keys(TIER_THEMES).find((k) =>
+      (tierName || '').toLowerCase().includes(k.toLowerCase())
+    ) || 'Gold';
   const theme = TIER_THEMES[tierKey];
 
   // ==========================================
-  // 1. BACKGROUND WITH VIBRANT RADIAL GLOWS
+  // 1. BASE BACKGROUND & RETRO DOT GRID
   // ==========================================
-  const bgGrad = ctx.createLinearGradient(0, 0, width, height);
-  bgGrad.addColorStop(0, theme.bgTop);
-  bgGrad.addColorStop(1, theme.bgBottom);
-  ctx.fillStyle = bgGrad;
+  ctx.fillStyle = theme.bgCanvas;
   ctx.fillRect(0, 0, width, height);
 
-  // Ambient top light glow
-  const topGlow = ctx.createRadialGradient(width * 0.5, isStory ? 350 : 250, 50, width * 0.5, isStory ? 350 : 250, 700);
-  topGlow.addColorStop(0, theme.glowColor);
-  topGlow.addColorStop(1, 'rgba(0, 0, 0, 0)');
-  ctx.fillStyle = topGlow;
-  ctx.fillRect(0, 0, width, height);
+  // Subtle Neo-Brutalist dot grid pattern
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.06)';
+  const dotSpacing = 36;
+  for (let x = 18; x < width; x += dotSpacing) {
+    for (let y = 18; y < height; y += dotSpacing) {
+      ctx.beginPath();
+      ctx.arc(x, y, 2.5, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
 
-  // Subtle bottom accent glow
-  const bottomGlow = ctx.createRadialGradient(width * 0.8, height * 0.85, 50, width * 0.8, height * 0.85, 600);
-  bottomGlow.addColorStop(0, 'rgba(99, 102, 241, 0.25)');
-  bottomGlow.addColorStop(1, 'rgba(0, 0, 0, 0)');
-  ctx.fillStyle = bottomGlow;
-  ctx.fillRect(0, 0, width, height);
+  // Outer framing border
+  ctx.strokeStyle = '#000000';
+  ctx.lineWidth = 12;
+  ctx.strokeRect(12, 12, width - 24, height - 24);
 
   // ==========================================
-  // 2. BRAND WATERMARK & APP IDENTITY
+  // 2. BRAND WATERMARK CAPSULE
   // ==========================================
-  const topMargin = isStory ? 130 : 70;
+  const topMargin = isStory ? 110 : 55;
+  const pillW = 440;
+  const pillH = 64;
+  const pillX = (width - pillW) / 2;
+  const pillY = topMargin;
 
-  // App Brand Capsule
-  const brandPillY = topMargin;
-  ctx.save();
-  drawRoundedRect(ctx, width / 2 - 240, brandPillY, 480, 72, 36);
-  ctx.fillStyle = 'rgba(255, 255, 255, 0.12)';
-  ctx.fill();
-  ctx.strokeStyle = 'rgba(255, 255, 255, 0.25)';
-  ctx.lineWidth = 2;
-  ctx.stroke();
-  ctx.restore();
+  drawNeoBox(ctx, pillX, pillY, pillW, pillH, 20, '#D4F63D', 6, 4);
 
-  ctx.fillStyle = '#FFFFFF';
-  ctx.font = 'bold 30px system-ui, -apple-system, sans-serif';
+  ctx.fillStyle = '#000000';
+  ctx.font = '900 26px system-ui, -apple-system, sans-serif';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillText('MyLala • Active Recall', width / 2, brandPillY + 36);
+  ctx.fillText('⚡ MYLALA • ACTIVE RECALL', width / 2, pillY + pillH / 2);
 
   // ==========================================
-  // 3. USER HERO PROFILE & BADGE
+  // 3. USER HERO PROFILE
   // ==========================================
-  const heroY = isStory ? 340 : 210;
+  const heroY = isStory ? 320 : 190;
+  const avatarRadius = 76;
 
-  // Outer glowing ring for avatar
+  // Avatar shadow & border
   ctx.save();
   ctx.beginPath();
-  ctx.arc(width / 2, heroY, 78, 0, Math.PI * 2);
-  ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+  ctx.arc(width / 2 + 8, heroY + 8, avatarRadius, 0, Math.PI * 2);
+  ctx.fillStyle = '#000000';
   ctx.fill();
-  ctx.strokeStyle = theme.accent;
-  ctx.lineWidth = 6;
-  ctx.shadowColor = theme.accent;
-  ctx.shadowBlur = 25;
-  ctx.stroke();
   ctx.restore();
 
-  // Avatar inside circle (User Photo/Avatar if provided, else Tier Badge)
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(width / 2, heroY, avatarRadius, 0, Math.PI * 2);
+  ctx.fillStyle = '#FFFFFF';
+  ctx.fill();
+  ctx.strokeStyle = '#000000';
+  ctx.lineWidth = 6;
+  ctx.stroke();
+
   if (avatarImage && avatarImage.complete && avatarImage.naturalWidth > 0) {
-    ctx.save();
-    ctx.beginPath();
-    ctx.arc(width / 2, heroY, 74, 0, Math.PI * 2);
     ctx.clip();
-    ctx.drawImage(avatarImage, width / 2 - 74, heroY - 74, 148, 148);
-    ctx.restore();
+    ctx.drawImage(
+      avatarImage,
+      width / 2 - avatarRadius,
+      heroY - avatarRadius,
+      avatarRadius * 2,
+      avatarRadius * 2
+    );
   } else {
     ctx.font = '72px system-ui, sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText(theme.badge || '🌟', width / 2, heroY + 4);
   }
+  ctx.restore();
 
   // User Name
-  ctx.fillStyle = '#FFFFFF';
-  ctx.font = 'bold 54px system-ui, -apple-system, sans-serif';
+  ctx.fillStyle = '#000000';
+  ctx.font = '900 52px system-ui, -apple-system, sans-serif';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'alphabetic';
-  const nameY = heroY + 120;
+  const nameY = heroY + 115;
   ctx.fillText(name, width / 2, nameY);
 
-  // User Tagline / Campus identity
-  ctx.fillStyle = 'rgba(255, 255, 255, 0.75)';
-  ctx.font = '500 28px system-ui, -apple-system, sans-serif';
-  ctx.fillText(`@${username} • Active Language Learner`, width / 2, nameY + 44);
+  // Username Pill Badge
+  const userTagW = 380;
+  const userTagH = 46;
+  const userTagX = (width - userTagW) / 2;
+  const userTagY = nameY + 16;
+  drawNeoBox(ctx, userTagX, userTagY, userTagW, userTagH, 14, '#FFFFFF', 4, 3);
+
+  ctx.fillStyle = '#000000';
+  ctx.font = '800 22px system-ui, -apple-system, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(`@${username} • Language Achiever`, width / 2, userTagY + userTagH / 2);
 
   // ==========================================
   // 4. MAIN ACHIEVEMENT HIGHLIGHT CARD
   // ==========================================
-  const cardX = 90;
+  const cardX = 80;
   const cardW = width - cardX * 2;
-  const cardY = isStory ? 600 : 410;
-  const cardH = isStory ? 760 : 430;
+  const cardY = isStory ? 580 : 380;
+  const cardH = isStory ? 790 : 470;
 
-  ctx.save();
-  drawRoundedRect(ctx, cardX, cardY, cardW, cardH, 40);
-  ctx.fillStyle = 'rgba(255, 255, 255, 0.08)';
-  ctx.fill();
-  ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
-  ctx.lineWidth = 2.5;
-  ctx.stroke();
-  ctx.restore();
+  drawNeoBox(ctx, cardX, cardY, cardW, cardH, 36, '#FFFFFF', 10, 5);
 
-  // Tier Banner inside card
-  const bannerY = cardY + 60;
-  ctx.fillStyle = theme.accentLight;
-  ctx.font = 'bold 32px system-ui, -apple-system, sans-serif';
+  // League Sub-Badge
+  const bannerW = 460;
+  const bannerH = 50;
+  const bannerX = (width - bannerW) / 2;
+  const bannerY = cardY + 45;
+  drawNeoBox(ctx, bannerX, bannerY, bannerW, bannerH, 16, '#FFD166', 4, 3);
+
+  ctx.fillStyle = '#000000';
+  ctx.font = '900 22px system-ui, -apple-system, sans-serif';
   ctx.textAlign = 'center';
-  ctx.fillText('PENCAPAIAN LIGA MINGGUAN', width / 2, bannerY);
+  ctx.textBaseline = 'middle';
+  ctx.fillText('🏆 PENCAPAIAN LIGA MINGGUAN', width / 2, bannerY + bannerH / 2);
 
-  // Current League Title with Badge
-  ctx.fillStyle = '#FFFFFF';
-  ctx.font = 'extrabold 56px system-ui, -apple-system, sans-serif';
-  ctx.fillText(`${theme.badge} ${theme.title}`, width / 2, bannerY + 65);
+  // Big League Title
+  ctx.fillStyle = '#000000';
+  ctx.font = '900 58px system-ui, -apple-system, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'alphabetic';
+  ctx.fillText(`${theme.badge} ${theme.title}`, width / 2, bannerY + 120);
 
-  // Divider Line inside card
+  // Divider Line
   ctx.beginPath();
-  ctx.moveTo(cardX + 60, bannerY + 105);
-  ctx.lineTo(cardX + cardW - 60, bannerY + 105);
-  ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
-  ctx.lineWidth = 2;
+  ctx.moveTo(cardX + 50, bannerY + 155);
+  ctx.lineTo(cardX + cardW - 50, bannerY + 155);
+  ctx.strokeStyle = '#000000';
+  ctx.lineWidth = 3;
   ctx.stroke();
 
   // ==========================================
   // 5. STATS 4-GRID (Rank, Weekly XP, Streak, Mastered)
   // ==========================================
-  const statsStartY = bannerY + 140;
+  const statsStartY = bannerY + 185;
 
   if (isStory) {
     // 2x2 Grid for vertical 9:16 layout
-    const gridCols = [cardX + 50, cardX + cardW / 2 + 20];
-    const colW = cardW / 2 - 70;
-    const cellH = 175;
+    const gridCols = [cardX + 45, cardX + cardW / 2 + 15];
+    const colW = cardW / 2 - 60;
+    const cellH = 185;
 
     const statsList = [
-      { label: 'Peringkat', val: `#${rank}`, sub: 'di Klasemen', color: theme.accent, icon: '🏆' },
-      { label: 'XP Mingguan', val: `${weeklyXp}`, sub: 'Poin Belajar', color: '#38BDF8', icon: '⚡' },
-      { label: 'Daily Streak', val: `${streak} Hari`, sub: 'Belajar Konsisten', color: '#FB923C', icon: '🔥' },
-      { label: 'Kartu Dikuasai', val: `${masteredCards}`, sub: 'Active Recall SM-2', color: '#4ADE80', icon: '🧠' },
+      { label: 'Peringkat', val: `#${rank}`, sub: 'di Klasemen', bg: '#FFD166', icon: '🏆' },
+      { label: 'XP Mingguan', val: `${weeklyXp}`, sub: 'Poin Belajar', bg: '#70D6FF', icon: '⚡' },
+      { label: 'Daily Streak', val: `${streak} Hari`, sub: 'Belajar Konsisten', bg: '#FF85C0', icon: '🔥' },
+      { label: 'Kartu Dikuasai', val: `${masteredCards}`, sub: 'Active Recall SM-2', bg: '#D4F63D', icon: '🧠' },
     ];
 
     statsList.forEach((stat, idx) => {
       const colX = gridCols[idx % 2];
-      const rowY = statsStartY + Math.floor(idx / 2) * (cellH + 25);
+      const rowY = statsStartY + Math.floor(idx / 2) * (cellH + 24);
 
-      ctx.save();
-      drawRoundedRect(ctx, colX, rowY, colW, cellH, 24);
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.28)';
-      ctx.fill();
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
-      ctx.lineWidth = 1.5;
-      ctx.stroke();
-      ctx.restore();
+      drawNeoBox(ctx, colX, rowY, colW, cellH, 24, stat.bg, 6, 4);
 
       // Icon & Label
       ctx.textAlign = 'left';
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
-      ctx.font = '600 24px system-ui, sans-serif';
-      ctx.fillText(`${stat.icon} ${stat.label}`, colX + 28, rowY + 44);
+      ctx.textBaseline = 'alphabetic';
+      ctx.fillStyle = '#000000';
+      ctx.font = '800 24px system-ui, sans-serif';
+      ctx.fillText(`${stat.icon} ${stat.label}`, colX + 26, rowY + 46);
 
       // Value
-      ctx.fillStyle = stat.color;
-      ctx.font = 'extrabold 48px system-ui, -apple-system, sans-serif';
-      ctx.fillText(stat.val, colX + 28, rowY + 104);
+      ctx.fillStyle = '#000000';
+      ctx.font = '900 48px system-ui, -apple-system, sans-serif';
+      ctx.fillText(stat.val, colX + 26, rowY + 112);
 
       // Subtext
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.55)';
-      ctx.font = '500 20px system-ui, sans-serif';
-      ctx.fillText(stat.sub, colX + 28, rowY + 142);
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.75)';
+      ctx.font = '700 20px system-ui, sans-serif';
+      ctx.fillText(stat.sub, colX + 26, rowY + 152);
     });
   } else {
     // 4 Columns horizontal row for 1:1 Square layout
     const itemW = (cardW - 80) / 4;
     const statsList = [
-      { label: 'Peringkat', val: `#${rank}`, color: theme.accent },
-      { label: 'Weekly XP', val: `${weeklyXp}`, color: '#38BDF8' },
-      { label: 'Streak', val: `${streak} Hari`, color: '#FB923C' },
-      { label: 'Mastered', val: `${masteredCards}`, color: '#4ADE80' },
+      { label: 'Peringkat', val: `#${rank}`, bg: '#FFD166', icon: '🏆' },
+      { label: 'Weekly XP', val: `${weeklyXp}`, bg: '#70D6FF', icon: '⚡' },
+      { label: 'Streak', val: `${streak} Hari`, bg: '#FF85C0', icon: '🔥' },
+      { label: 'Mastered', val: `${masteredCards}`, bg: '#D4F63D', icon: '🧠' },
     ];
 
     statsList.forEach((stat, idx) => {
-      const itemX = cardX + 40 + idx * itemW;
-      const boxW = itemW - 16;
+      const itemX = cardX + 35 + idx * itemW;
+      const boxW = itemW - 14;
       const boxY = statsStartY + 10;
-      const boxH = 140;
+      const boxH = 150;
 
-      ctx.save();
-      drawRoundedRect(ctx, itemX, boxY, boxW, boxH, 20);
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.28)';
-      ctx.fill();
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
-      ctx.lineWidth = 1.5;
-      ctx.stroke();
-      ctx.restore();
+      drawNeoBox(ctx, itemX, boxY, boxW, boxH, 20, stat.bg, 5, 3.5);
 
       ctx.textAlign = 'center';
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
-      ctx.font = '600 22px system-ui, sans-serif';
-      ctx.fillText(stat.label, itemX + boxW / 2, boxY + 42);
+      ctx.textBaseline = 'alphabetic';
+      ctx.fillStyle = '#000000';
+      ctx.font = '800 22px system-ui, sans-serif';
+      ctx.fillText(`${stat.icon} ${stat.label}`, itemX + boxW / 2, boxY + 45);
 
-      ctx.fillStyle = stat.color;
-      ctx.font = 'extrabold 44px system-ui, -apple-system, sans-serif';
-      ctx.fillText(stat.val, itemX + boxW / 2, boxY + 102);
+      ctx.fillStyle = '#000000';
+      ctx.font = '900 42px system-ui, -apple-system, sans-serif';
+      ctx.fillText(stat.val, itemX + boxW / 2, boxY + 108);
     });
   }
 
@@ -324,48 +342,55 @@ export function drawShareCard(canvas, data) {
   // 6. MOTIVATIONAL QUOTE & CALL TO ACTION
   // ==========================================
   if (isStory) {
-    const quoteY = cardY + cardH + 75;
+    // Speech Bubble Quote
+    const quoteW = cardW;
+    const quoteH = 95;
+    const quoteX = cardX;
+    const quoteY = cardY + cardH + 45;
+
+    drawNeoBox(ctx, quoteX, quoteY, quoteW, quoteH, 24, '#FFFFFF', 6, 3.5);
+
     ctx.textAlign = 'center';
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
-    ctx.font = 'italic 30px system-ui, -apple-system, sans-serif';
-    ctx.fillText('“15 menit belajar aktif sehari, kuasai bahasa baru tanpa pusing.”', width / 2, quoteY);
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = '#000000';
+    ctx.font = 'italic 800 28px system-ui, -apple-system, sans-serif';
+    ctx.fillText('“15 menit belajar aktif sehari, kuasai bahasa tanpa pusing.”', width / 2, quoteY + quoteH / 2);
 
     // Call To Action Box (Bottom)
-    const ctaY = height - 240;
-    ctx.save();
-    drawRoundedRect(ctx, cardX, ctaY, cardW, 130, 32);
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
-    ctx.fill();
-    ctx.shadowColor = 'rgba(0, 0, 0, 0.35)';
-    ctx.shadowBlur = 30;
-    ctx.restore();
+    const ctaW = cardW;
+    const ctaH = 145;
+    const ctaX = cardX;
+    const ctaY = height - 260;
+
+    drawNeoBox(ctx, ctaX, ctaY, ctaW, ctaH, 28, '#D4F63D', 8, 4.5);
 
     ctx.textAlign = 'center';
-    ctx.fillStyle = '#0F172A';
-    ctx.font = 'extrabold 32px system-ui, -apple-system, sans-serif';
-    ctx.fillText('Ayo Saingan Belajar Bareng Aku! 🚀', width / 2, ctaY + 52);
+    ctx.textBaseline = 'alphabetic';
+    ctx.fillStyle = '#000000';
+    ctx.font = '900 36px system-ui, -apple-system, sans-serif';
+    ctx.fillText('Ayo Saingan Belajar Bareng Aku! 🚀', width / 2, ctaY + 62);
 
-    ctx.fillStyle = '#4F46E5';
-    ctx.font = 'bold 28px system-ui, -apple-system, sans-serif';
-    ctx.fillText('Kunjungi: mylala.vercel.app (Gratis & Offline)', width / 2, ctaY + 94);
+    ctx.fillStyle = '#000000';
+    ctx.font = '800 26px system-ui, -apple-system, sans-serif';
+    ctx.fillText('mylala.vercel.app • Gratis & Jalan Offline', width / 2, ctaY + 110);
 
     // Footer copyright / signature
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
-    ctx.font = '500 22px system-ui, sans-serif';
-    ctx.fillText('MyLala PWA • Active Recall & Spaced Repetition', width / 2, height - 55);
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
+    ctx.font = '700 22px system-ui, sans-serif';
+    ctx.fillText('MyLala PWA • Active Recall & Spaced Repetition', width / 2, height - 48);
   } else {
     // Square bottom bar
-    const ctaY = height - 140;
-    ctx.save();
-    drawRoundedRect(ctx, cardX, ctaY, cardW, 85, 24);
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
-    ctx.fill();
-    ctx.restore();
+    const ctaW = cardW;
+    const ctaH = 90;
+    const ctaX = cardX;
+    const ctaY = height - 135;
+
+    drawNeoBox(ctx, ctaX, ctaY, ctaW, ctaH, 22, '#D4F63D', 6, 4);
 
     ctx.textAlign = 'center';
-    ctx.fillStyle = '#0F172A';
-    ctx.font = 'extrabold 28px system-ui, -apple-system, sans-serif';
-    ctx.fillText('Kuasai Bahasa Asing di 👉 mylala.vercel.app', width / 2, ctaY + 48);
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = '#000000';
+    ctx.font = '900 30px system-ui, -apple-system, sans-serif';
+    ctx.fillText('Kuasai Bahasa Asing di 👉 mylala.vercel.app (Gratis & Offline)', width / 2, ctaY + ctaH / 2);
   }
 }
-

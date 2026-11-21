@@ -80,10 +80,10 @@ export default function ReadingPage() {
   };
 
   const stopAudio = () => {
-    ttsService.stop();
-    setActiveParagraphIndex(null);
-    setIsPlayingAll(false);
     isPlayingAllRef.current = false;
+    setIsPlayingAll(false);
+    setActiveParagraphIndex(null);
+    ttsService.stop();
   };
 
   const handleSpeakWord = (text) => {
@@ -91,56 +91,61 @@ export default function ReadingPage() {
     ttsService.speak(text);
   };
 
-  const speakParagraph = (text, index, onComplete) => {
-    stopAudio();
-    setActiveParagraphIndex(index);
-
-    ttsService
-      .speak(text, { speed: speechRate })
-      .then(() => {
-        setActiveParagraphIndex(null);
-        if (onComplete) onComplete();
-      })
-      .catch(() => {
-        setActiveParagraphIndex(null);
-        if (onComplete) onComplete();
-      });
-  };
-
-  const handleToggleParagraph = (text, index) => {
+  const handleToggleParagraph = async (text, index) => {
     if (activeParagraphIndex === index) {
       stopAudio();
     } else {
-      setIsPlayingAll(false);
-      speakParagraph(text, index);
+      stopAudio();
+      setActiveParagraphIndex(index);
+      try {
+        await ttsService.speak(text, { speed: speechRate });
+      } catch (err) {
+        console.error('TTS error on paragraph:', err);
+      } finally {
+        setActiveParagraphIndex((curr) => (curr === index ? null : curr));
+      }
     }
   };
 
-  const playSequence = (paragraphs, idx) => {
-    if (!isPlayingAllRef.current || idx >= paragraphs.length) {
+  const handleTogglePlayAll = async () => {
+    if (!activeArticle || !activeArticle.content_paragraphs?.length) return;
+
+    if (isPlayingAll) {
       stopAudio();
       return;
     }
 
-    speakParagraph(paragraphs[idx], idx, () => {
-      if (isPlayingAllRef.current) {
-        // Small pause between paragraphs
-        setTimeout(() => {
-          playSequence(paragraphs, idx + 1);
-        }, 600);
+    // Stop any existing single paragraph playback
+    ttsService.stop();
+    setIsPlayingAll(true);
+    isPlayingAllRef.current = true;
+
+    const paragraphs = activeArticle.content_paragraphs;
+
+    for (let i = 0; i < paragraphs.length; i++) {
+      if (!isPlayingAllRef.current) break;
+
+      setActiveParagraphIndex(i);
+
+      try {
+        await ttsService.speak(paragraphs[i], { speed: speechRate });
+      } catch (err) {
+        console.error(`Error playing paragraph ${i} in sequence:`, err);
       }
-    });
-  };
 
-  const handleTogglePlayAll = () => {
-    if (!activeArticle) return;
+      if (!isPlayingAllRef.current) break;
 
-    if (isPlayingAll) {
-      stopAudio();
-    } else {
-      setIsPlayingAll(true);
-      isPlayingAllRef.current = true;
-      playSequence(activeArticle.content_paragraphs, 0);
+      // Small natural breathing pause between paragraphs
+      if (i < paragraphs.length - 1) {
+        await new Promise((resolve) => setTimeout(resolve, 500));
+      }
+    }
+
+    // When the whole article finishes naturally or stopped
+    if (isPlayingAllRef.current) {
+      setIsPlayingAll(false);
+      isPlayingAllRef.current = false;
+      setActiveParagraphIndex(null);
     }
   };
 
@@ -179,7 +184,7 @@ export default function ReadingPage() {
               className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#D4F63D] text-black font-black text-xs border-2 border-black shadow-[3px_3px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 hover:bg-white transition cursor-pointer"
             >
               <Volume2 className="w-4 h-4 stroke-[2.5]" />
-              <span>Pengaturan Suara AI Kokoro</span>
+              <span>Pengaturan Suara AI Microsoft</span>
             </button>
           </div>
         </div>
@@ -374,7 +379,7 @@ export default function ReadingPage() {
                   type="button"
                   onClick={() => setShowVoiceModal(true)}
                   className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-xs font-black bg-[#FF85C0] text-black border-2 border-black shadow-[2px_2px_0px_#fff] active:translate-x-0.5 active:translate-y-0.5 transition cursor-pointer"
-                  title="Pilih Karakter Suara AI Kokoro"
+                  title="Pilih Karakter Suara AI Microsoft Azure Neural"
                 >
                   <Volume2 className="w-3.5 h-3.5 stroke-[2.5]" />
                   <span>Suara AI</span>

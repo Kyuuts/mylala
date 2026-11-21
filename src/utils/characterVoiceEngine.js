@@ -185,9 +185,12 @@ export function speakNaturalCharacterLine(text, scenarioId = 'cafe', voiceOverri
   const profile = CHARACTER_VOICE_PROFILES[scenarioId] || CHARACTER_VOICE_PROFILES.cafe;
 
   let targetVoice = profile.kokoroVoice || 'en-US-JennyNeural';
-  if (voiceOverride === 'british') targetVoice = 'en-GB-RyanNeural';
-  else if (voiceOverride === 'us_female') targetVoice = 'en-US-JennyNeural';
-  else if (voiceOverride === 'us_male') targetVoice = 'en-US-GuyNeural';
+  if (voiceOverride && voiceOverride !== 'auto') {
+    if (voiceOverride === 'british') targetVoice = 'en-GB-RyanNeural';
+    else if (voiceOverride === 'us_female') targetVoice = 'en-US-JennyNeural';
+    else if (voiceOverride === 'us_male') targetVoice = 'en-US-GuyNeural';
+    else targetVoice = voiceOverride; // Direct Microsoft Edge / Azure Neural voice ID (e.g. en-US-AriaNeural)
+  }
 
   ttsService.speak(text, {
     voice: targetVoice,

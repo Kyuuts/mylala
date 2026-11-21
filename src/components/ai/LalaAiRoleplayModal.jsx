@@ -35,6 +35,7 @@ import {
   findBestVoiceForCharacter,
   stopCharacterLine,
 } from '../../utils/characterVoiceEngine';
+import { EDGE_AZURE_VOICES } from '../../services/ttsService';
 
 export default function LalaAiRoleplayModal({ isOpen, onClose }) {
   const { user, cefrLevel, addXp, getEffectiveAiConfig } = useAppStore();
@@ -360,19 +361,37 @@ export default function LalaAiRoleplayModal({ isOpen, onClose }) {
               </div>
 
               <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
-                {/* Voice Preset Dropdown (Mobile & Desktop) */}
+                {/* Voice Preset Dropdown (Microsoft Edge / Azure Neural) */}
                 <div className="flex items-center gap-1 bg-white px-2 py-1 rounded-xl text-[10px] font-black text-black border-2 border-black shadow-[1px_1px_0px_#000] shrink-0">
                   <Volume2 className="w-3 h-3 text-black stroke-[2.5] shrink-0" />
                   <select
                     value={voiceMode}
                     onChange={(e) => setVoiceMode(e.target.value)}
-                    className="bg-transparent text-black font-black text-[10px] focus:outline-none cursor-pointer max-w-[60px] sm:max-w-none truncate"
-                    title="Pilih Karakter & Aksen Suara"
+                    className="bg-transparent text-black font-black text-[10px] focus:outline-none cursor-pointer max-w-[80px] sm:max-w-none truncate"
+                    title="Pilih Karakter & Aksen Suara Microsoft AI"
                   >
-                    <option value="auto">Auto 🎭</option>
-                    <option value="british">British 🇬🇧</option>
-                    <option value="us_female">US Wanita 🇺🇸</option>
-                    <option value="us_male">US Pria 🇺🇸</option>
+                    <option value="auto">Auto (Sesuai Karakter) 🎭</option>
+                    <optgroup label="🇺🇸 American English">
+                      {EDGE_AZURE_VOICES.filter((v) => v.locale === 'en-US').map((v) => (
+                        <option key={v.id} value={v.id}>
+                          {v.flag} {v.name} ({v.gender}) - {v.badge}
+                        </option>
+                      ))}
+                    </optgroup>
+                    <optgroup label="🇬🇧 British English">
+                      {EDGE_AZURE_VOICES.filter((v) => v.locale === 'en-GB').map((v) => (
+                        <option key={v.id} value={v.id}>
+                          {v.flag} {v.name} ({v.gender}) - {v.badge}
+                        </option>
+                      ))}
+                    </optgroup>
+                    <optgroup label="🇦🇺 Australian English">
+                      {EDGE_AZURE_VOICES.filter((v) => v.locale === 'en-AU').map((v) => (
+                        <option key={v.id} value={v.id}>
+                          {v.flag} {v.name} ({v.gender}) - {v.badge}
+                        </option>
+                      ))}
+                    </optgroup>
                   </select>
                 </div>
 
