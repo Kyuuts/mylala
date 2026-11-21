@@ -179,24 +179,24 @@ export default function AiSettingsModal({ isOpen, onClose }) {
   };
 
   return createPortal(
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-xs transition-opacity animate-in fade-in duration-150">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-xs transition-opacity animate-in fade-in duration-150">
       <div
-        className="w-full max-w-lg bg-white rounded-2xl shadow-2xl border border-slate-100 overflow-hidden flex flex-col max-h-[90vh] text-slate-800"
+        className="w-full max-w-lg bg-white rounded-3xl shadow-[8px_8px_0px_#000] border-3 border-black overflow-hidden flex flex-col max-h-[90vh] text-black"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="px-5 py-3.5 bg-gradient-to-r from-indigo-600 via-indigo-700 to-purple-700 text-white flex items-center justify-between shrink-0">
+        <div className="px-5 py-3.5 bg-[#FFD166] text-black border-b-2.5 border-black flex items-center justify-between shrink-0">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-white/20 backdrop-blur-xs flex items-center justify-center shrink-0">
-              <Sparkles className="w-4 h-4 text-amber-300" />
+            <div className="w-8 h-8 rounded-xl bg-white border-2 border-black shadow-[2px_2px_0px_#000] flex items-center justify-center shrink-0">
+              <Sparkles className="w-4 h-4 stroke-[2.5] text-black" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="font-extrabold text-sm sm:text-base leading-tight">
+                <h3 className="font-black text-sm sm:text-base leading-tight uppercase">
                   {isAdmin ? 'Pengaturan Lala AI (Admin Master Panel) 👑' : 'Asisten Belajar Lala AI ⚡'}
                 </h3>
               </div>
-              <p className="text-[11px] text-indigo-100 leading-tight">
+              <p className="text-[11px] text-black/70 font-bold leading-tight">
                 {isAdmin
                   ? 'Konfigurasikan Kunci API Terpusat untuk Semua Siswa'
                   : 'Bantuan Pintar Terjemahan & Tata Bahasa Otomatis'}
@@ -206,9 +206,9 @@ export default function AiSettingsModal({ isOpen, onClose }) {
           <button
             type="button"
             onClick={onClose}
-            className="p-1 rounded-lg text-white/80 hover:text-white hover:bg-white/10 transition cursor-pointer"
+            className="w-8 h-8 rounded-xl bg-[#FF85C0] border-2 border-black shadow-[2px_2px_0px_#000] flex items-center justify-center text-black font-black hover:bg-black hover:text-white transition cursor-pointer"
           >
-            <X className="w-4 h-4" />
+            <X className="w-4 h-4 stroke-[3]" />
           </button>
         </div>
 
@@ -535,19 +535,19 @@ export default function AiSettingsModal({ isOpen, onClose }) {
           )}
 
           {/* Modal Bottom Actions */}
-          <div className="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
+          <div className="pt-3 border-t-2 border-black flex items-center justify-end gap-2">
             <button
               type="button"
               onClick={onClose}
               disabled={isSaving || isTesting}
-              className="px-3.5 py-1.5 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100 transition cursor-pointer"
+              className="px-4 py-2 rounded-xl text-xs font-black text-black bg-white hover:bg-slate-100 border-2 border-black shadow-[2px_2px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 transition cursor-pointer"
             >
               Tutup
             </button>
             <button
               type="submit"
               disabled={isTesting || isSaving}
-              className="px-4 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-bold text-xs transition shadow-xs flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+              className="px-5 py-2 rounded-xl bg-[#80ED99] hover:bg-[#68d783] active:translate-x-0.5 active:translate-y-0.5 text-black font-black text-xs transition border-2 border-black shadow-[3px_3px_0px_#000] flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
             >
               {isSaved ? (
                 <>
@@ -556,17 +556,17 @@ export default function AiSettingsModal({ isOpen, onClose }) {
                 </>
               ) : isSaving ? (
                 <>
-                  <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                  <RefreshCw className="w-3.5 h-3.5 stroke-[2.5] animate-spin" />
                   <span>Menyimpan ke Cloud...</span>
                 </>
               ) : isAdmin ? (
                 <>
-                  <Globe className="w-3.5 h-3.5" />
+                  <Globe className="w-3.5 h-3.5 stroke-[2.5]" />
                   <span>Simpan & Terapkan ke Semua Pengguna</span>
                 </>
               ) : (
                 <>
-                  <Sparkles className="w-3.5 h-3.5" />
+                  <Sparkles className="w-3.5 h-3.5 stroke-[2.5]" />
                   <span>Simpan Pengaturan</span>
                 </>
               )}

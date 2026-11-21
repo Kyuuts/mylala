@@ -21,7 +21,7 @@ export default function Navbar() {
 
   return (
     <header className="sticky top-0 z-50 bg-white border-b-[2.5px] border-black shadow-[0px_3px_0px_#000] w-full max-w-full overflow-hidden">
-      <div className="max-w-5xl mx-auto px-2.5 sm:px-4 h-14 sm:h-16 flex items-center justify-between gap-1.5 sm:gap-2">
+      <div className="max-w-5xl mx-auto px-2 sm:px-4 h-14 sm:h-16 flex items-center justify-between gap-1 sm:gap-2">
         <div className="flex items-center gap-2 shrink-0 min-w-0">
           <Link to="/" className="flex items-center gap-1.5 sm:gap-2 font-black text-lg sm:text-xl text-black hover:opacity-90 transition shrink-0">
             <div className="border-2 border-black rounded-xl p-0.5 bg-[#D4F63D] shadow-[2px_2px_0px_#000]">
@@ -140,12 +140,12 @@ export default function Navbar() {
             </nav>
           )}
 
-          {/* Mobile + Modul Shortcut Button (Only if authenticated) */}
+          {/* Mobile + Modul Shortcut Button (Only if authenticated on sm screens) */}
           {isAuthenticated && (
             <NavLink
               to="/create"
               title="Buat Modul Baru"
-              className="md:hidden flex items-center justify-center p-1.5 rounded-xl bg-[#D4F63D] border-2 border-black shadow-[2px_2px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_#000] text-black transition w-8 h-8 shrink-0 cursor-pointer"
+              className="hidden sm:flex md:hidden items-center justify-center p-1.5 rounded-xl bg-[#D4F63D] border-2 border-black shadow-[2px_2px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_#000] text-black transition w-8 h-8 shrink-0 cursor-pointer"
             >
               <PlusCircle className="w-4 h-4 stroke-[2.5]" />
             </NavLink>
@@ -156,7 +156,7 @@ export default function Navbar() {
             type="button"
             onClick={() => setVoiceModalOpen(true)}
             title="Pengaturan Suara AI Kokoro"
-            className="inline-flex items-center gap-1 px-2 sm:px-2.5 py-1.5 rounded-xl text-xs font-black transition cursor-pointer h-8 sm:min-h-[38px] border-2 border-black shadow-[2px_2px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_#000] bg-[#FF85C0] text-black shrink-0"
+            className="inline-flex items-center justify-center gap-1 w-8 sm:w-auto px-0 sm:px-2.5 py-1.5 rounded-xl text-xs font-black transition cursor-pointer h-8 sm:min-h-[38px] border-2 border-black shadow-[2px_2px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_#000] bg-[#FF85C0] text-black shrink-0"
           >
             <Volume2 className="w-3.5 h-3.5 stroke-[2.5] text-black shrink-0" />
             <span className="hidden sm:inline font-black tracking-tight uppercase">Suara</span>
@@ -167,11 +167,11 @@ export default function Navbar() {
             type="button"
             onClick={() => setAiSettingsOpen(true)}
             title="Pengaturan Lala AI (Model LLM Gratis)"
-            className="inline-flex items-center gap-1 px-2 sm:px-2.5 py-1.5 rounded-xl text-xs font-black transition cursor-pointer h-8 sm:min-h-[38px] border-2 border-black shadow-[2px_2px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_#000] bg-[#FFD166] text-black shrink-0"
+            className="inline-flex items-center justify-center gap-1 w-8 sm:w-auto px-0 sm:px-2.5 py-1.5 rounded-xl text-xs font-black transition cursor-pointer h-8 sm:min-h-[38px] border-2 border-black shadow-[2px_2px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_#000] bg-[#FFD166] text-black shrink-0"
           >
             <Sparkles className="w-3.5 h-3.5 fill-black text-black shrink-0" />
             <span className="hidden sm:inline font-black tracking-tight uppercase">AI</span>
-            <span className="w-2 h-2 rounded-full bg-[#80ED99] border border-black shrink-0 animate-pulse"></span>
+            <span className="w-2 h-2 rounded-full bg-[#80ED99] border border-black shrink-0 animate-pulse hidden sm:inline-block"></span>
           </button>
 
           {/* User Profile & Auth Trigger */}
@@ -181,7 +181,7 @@ export default function Navbar() {
                 type="button"
                 onClick={() => setEditProfileOpen(true)}
                 title="Edit Profil & Avatar"
-                className="inline-flex items-center gap-1 sm:gap-1.5 text-xs font-black text-black bg-[#FF85C0] border-2 border-black shadow-[2px_2px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_#000] px-2 sm:px-3 py-1 h-8 sm:min-h-[38px] rounded-xl transition cursor-pointer max-w-[105px] sm:max-w-none shrink-0"
+                className="inline-flex items-center gap-1 sm:gap-1.5 text-xs font-black text-black bg-[#FF85C0] border-2 border-black shadow-[2px_2px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_#000] px-1.5 sm:px-3 py-1 h-8 sm:min-h-[38px] rounded-xl transition cursor-pointer shrink-0"
               >
                 <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-lg overflow-hidden shrink-0 flex items-center justify-center bg-white border border-black">
                   {user?.avatarUrl ? (
@@ -194,7 +194,7 @@ export default function Navbar() {
                     <User className="w-3 h-3 text-black stroke-[2.5]" />
                   )}
                 </div>
-                <span className="max-w-[45px] sm:max-w-[80px] md:max-w-none truncate font-black">{user?.name || user?.username || 'Siswa'}</span>
+                <span className="hidden sm:inline font-black max-w-[80px] md:max-w-none truncate">{user?.name || user?.username || 'Siswa'}</span>
                 {user?.cefrLevel && (
                   <span className="px-1.5 py-0.2 rounded-md bg-black text-white text-[9px] font-black shrink-0">
                     {user.cefrLevel}
@@ -202,10 +202,11 @@ export default function Navbar() {
                 )}
               </button>
 
+              {/* Standalone Logout on Tablet / Desktop */}
               <button
                 onClick={handleLogout}
                 title="Keluar dari Akun"
-                className="p-1 sm:p-2 h-8 w-8 sm:min-h-[38px] sm:min-w-[38px] rounded-xl bg-white border-2 border-black shadow-[2px_2px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_#000] hover:bg-rose-300 text-black transition cursor-pointer flex items-center justify-center shrink-0"
+                className="hidden sm:flex p-1 sm:p-2 h-8 w-8 sm:min-h-[38px] sm:min-w-[38px] rounded-xl bg-white border-2 border-black shadow-[2px_2px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_#000] hover:bg-rose-300 text-black transition cursor-pointer items-center justify-center shrink-0"
               >
                 <LogOut className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.5]" />
               </button>

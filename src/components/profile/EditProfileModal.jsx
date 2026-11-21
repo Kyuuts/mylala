@@ -1,12 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { X, Camera, Check, User, AtSign, AlertCircle, RefreshCw, Upload, RotateCcw, Sparkles } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { X, Camera, Check, User, AtSign, AlertCircle, RefreshCw, Upload, RotateCcw, Sparkles, LogOut } from 'lucide-react';
 import { useAppStore } from '../../store/useAppStore';
 import { PRESET_AVATARS, compressImageFile } from '../../utils/avatars';
 import AiSettingsModal from '../ai/AiSettingsModal';
 
 export default function EditProfileModal({ isOpen, onClose }) {
-  const { user, updateProfile, aiConfig } = useAppStore();
+  const navigate = useNavigate();
+  const { user, updateProfile, aiConfig, logout } = useAppStore();
 
   const [name, setName] = useState('');
   const [username, setUsername] = useState('');
@@ -141,9 +143,15 @@ export default function EditProfileModal({ isOpen, onClose }) {
     }
   };
 
+  const handleLogoutFromModal = () => {
+    logout();
+    onClose();
+    navigate('/login');
+  };
+
   // Render directly to document.body via Portal to escape any parent sticky/backdrop-blur containing blocks
   return createPortal(
-    <div className="fixed inset-0 z-[9999] overflow-y-auto bg-slate-900/75 backdrop-blur-sm p-4 flex items-center justify-center animate-in fade-in duration-150">
+    <div className="fixed inset-0 z-[9999] overflow-y-auto bg-black/75 p-4 flex items-center justify-center animate-in fade-in duration-150">
       
       {/* Click outside backdrop to close */}
       <div 
@@ -151,38 +159,38 @@ export default function EditProfileModal({ isOpen, onClose }) {
         onClick={() => { if (!isSaving) onClose(); }} 
       />
 
-      {/* Modal Dialog Card - Strictly centered horizontally & vertically */}
-      <div className="relative w-full max-w-[340px] bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden my-auto animate-in zoom-in-95 duration-150 flex flex-col">
+      {/* Modal Dialog Card - Neo-Brutalism Theme */}
+      <div className="relative w-full max-w-[360px] bg-white rounded-3xl border-3 border-black shadow-[6px_6px_0px_#000] overflow-hidden my-auto animate-in zoom-in-95 duration-150 flex flex-col">
         
         {/* Minimalist Top Bar */}
-        <div className="px-4 py-3 border-b border-slate-100 flex items-center justify-between shrink-0 bg-white">
+        <div className="px-5 py-3.5 border-b-2.5 border-black flex items-center justify-between shrink-0 bg-[#FF85C0] text-black">
           <div>
-            <h2 className="text-sm font-extrabold text-slate-900">Edit Profil</h2>
-            <p className="text-[11px] text-slate-500">Ubah foto atau nama tampilan</p>
+            <h2 className="text-sm font-black uppercase tracking-tight text-black">Edit Profil</h2>
+            <p className="text-[11px] font-bold text-black/70">Ubah foto atau nama tampilan</p>
           </div>
           <button
             type="button"
             onClick={onClose}
             disabled={isSaving}
-            className="w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center transition cursor-pointer"
+            className="w-8 h-8 rounded-xl bg-white border-2 border-black shadow-[2px_2px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 text-black flex items-center justify-center transition cursor-pointer"
             aria-label="Tutup"
           >
-            <X className="w-3.5 h-3.5" />
+            <X className="w-4 h-4 stroke-[2.5]" />
           </button>
         </div>
 
         {/* Compact Form Body */}
-        <form onSubmit={handleSave} className="p-4 space-y-3.5">
+        <form onSubmit={handleSave} className="p-4 sm:p-5 space-y-3.5">
           {error && (
-            <div className="p-2 rounded-lg bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-1.5">
-              <AlertCircle className="w-3.5 h-3.5 shrink-0 text-rose-500" />
+            <div className="p-2.5 rounded-xl bg-rose-100 border-2 border-black shadow-[2px_2px_0px_#000] text-black text-xs font-bold flex items-center gap-2">
+              <AlertCircle className="w-4 h-4 shrink-0 text-rose-600 stroke-[2.5]" />
               <span>{error}</span>
             </div>
           )}
 
           {successMsg && (
-            <div className="p-2 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold flex items-center gap-1.5">
-              <Check className="w-3.5 h-3.5 shrink-0 text-emerald-600" />
+            <div className="p-2.5 rounded-xl bg-[#80ED99] border-2 border-black shadow-[2px_2px_0px_#000] text-black text-xs font-black flex items-center gap-2">
+              <Check className="w-4 h-4 shrink-0 stroke-[2.5]" />
               <span>{successMsg}</span>
             </div>
           )}
@@ -192,7 +200,7 @@ export default function EditProfileModal({ isOpen, onClose }) {
             <div className="relative group cursor-pointer">
               {/* Visual Avatar */}
               <div 
-                className="w-16 h-16 rounded-full overflow-hidden border-2 border-indigo-600 shadow-sm bg-slate-100 flex items-center justify-center hover:opacity-90 transition"
+                className="w-16 h-16 rounded-2xl overflow-hidden border-2.5 border-black shadow-[3px_3px_0px_#000] bg-[#D4F63D] flex items-center justify-center hover:opacity-90 transition"
               >
                 {selectedAvatarUrl ? (
                   <img
@@ -201,27 +209,27 @@ export default function EditProfileModal({ isOpen, onClose }) {
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <User className="w-8 h-8 text-slate-400" />
+                  <User className="w-8 h-8 text-black stroke-[2.5]" />
                 )}
 
                 {/* Hover overlay hint */}
-                <div className="absolute inset-0 bg-black/30 rounded-full opacity-0 group-hover:opacity-100 flex items-center justify-center transition">
-                  <Camera className="w-5 h-5 text-white" />
+                <div className="absolute inset-0 bg-black/30 rounded-2xl opacity-0 group-hover:opacity-100 flex items-center justify-center transition">
+                  <Camera className="w-5 h-5 text-white stroke-[2.5]" />
                 </div>
               </div>
 
               {/* Camera Badge Trigger */}
               <div
-                className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-indigo-600 text-white shadow-xs border-2 border-white flex items-center justify-center pointer-events-none"
+                className="absolute -bottom-1 -right-1 w-6 h-6 rounded-xl bg-[#FFD166] text-black shadow-[1.5px_1.5px_0px_#000] border-2 border-black flex items-center justify-center pointer-events-none"
               >
                 {isUploading ? (
-                  <RefreshCw className="w-3 h-3 animate-spin" />
+                  <RefreshCw className="w-3 h-3 animate-spin stroke-[2.5]" />
                 ) : (
-                  <Camera className="w-3 h-3" />
+                  <Camera className="w-3 h-3 stroke-[2.5]" />
                 )}
               </div>
 
-              {/* Unclipped native input directly covering the entire 64x64 circle */}
+              {/* Unclipped native input directly covering the entire circle */}
               <input
                 ref={fileInputRef}
                 type="file"
@@ -234,9 +242,9 @@ export default function EditProfileModal({ isOpen, onClose }) {
             </div>
 
             {/* Upload / Reset Quick Actions */}
-            <div className="flex items-center gap-2 mt-2 text-[11px]">
-              <div className="relative inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 active:scale-95 text-indigo-700 font-bold border border-indigo-200 transition cursor-pointer">
-                <Upload className="w-3.5 h-3.5" />
+            <div className="flex items-center gap-2 mt-2.5 text-[11px]">
+              <div className="relative inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white hover:bg-slate-50 text-black font-black border-2 border-black shadow-[2px_2px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 transition cursor-pointer">
+                <Upload className="w-3.5 h-3.5 stroke-[2.5]" />
                 <span>{isUploading ? 'Mengompres...' : 'Pilih Foto dari HP'}</span>
                 <input
                   type="file"
@@ -250,7 +258,7 @@ export default function EditProfileModal({ isOpen, onClose }) {
 
               {selectedAvatarUrl && (
                 <>
-                  <span className="text-slate-300">•</span>
+                  <span className="text-black font-black">•</span>
                   <button
                     type="button"
                     onClick={async () => {
@@ -265,9 +273,9 @@ export default function EditProfileModal({ isOpen, onClose }) {
                       }
                     }}
                     disabled={isUploading || isSaving}
-                    className="inline-flex items-center gap-1 text-slate-500 hover:text-rose-600 transition cursor-pointer px-1.5 py-1"
+                    className="inline-flex items-center gap-1 text-black hover:text-rose-600 transition cursor-pointer px-2 py-1 rounded-lg border-2 border-black bg-white shadow-[1px_1px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 font-bold"
                   >
-                    <RotateCcw className="w-2.5 h-2.5" />
+                    <RotateCcw className="w-2.5 h-2.5 stroke-[2.5]" />
                     <span>Hapus</span>
                   </button>
                 </>
@@ -275,9 +283,9 @@ export default function EditProfileModal({ isOpen, onClose }) {
             </div>
           </div>
 
-          {/* 2. FIVE PRESET AVATARS (MINIMALIST CIRCLE ROW) */}
+          {/* 2. FIVE PRESET AVATARS */}
           <div className="space-y-1">
-            <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider text-center">
+            <label className="block text-[10px] font-black text-black uppercase tracking-wider text-center">
               Atau Pilih Avatar:
             </label>
 
@@ -290,10 +298,10 @@ export default function EditProfileModal({ isOpen, onClose }) {
                     type="button"
                     onClick={() => setSelectedAvatarUrl(avatar.svgDataUri)}
                     title={avatar.name}
-                    className={`relative w-8 h-8 rounded-full overflow-hidden transition active:scale-95 cursor-pointer shrink-0 border-2 ${
+                    className={`relative w-9 h-9 rounded-xl overflow-hidden transition active:translate-x-0.5 active:translate-y-0.5 cursor-pointer shrink-0 border-2 border-black ${
                       isSelected
-                        ? 'border-indigo-600 ring-2 ring-indigo-500 ring-offset-1 scale-105'
-                        : 'border-slate-200 hover:border-slate-400 bg-slate-50'
+                        ? 'bg-[#D4F63D] shadow-[2px_2px_0px_#000]'
+                        : 'hover:bg-slate-100 bg-white shadow-[1px_1px_0px_#000]'
                     }`}
                   >
                     <img
@@ -302,8 +310,8 @@ export default function EditProfileModal({ isOpen, onClose }) {
                       className="w-full h-full object-cover"
                     />
                     {isSelected && (
-                      <div className="absolute inset-0 bg-indigo-900/25 flex items-center justify-center">
-                        <Check className="w-3 h-3 text-white stroke-[3]" />
+                      <div className="absolute inset-0 bg-black/25 flex items-center justify-center">
+                        <Check className="w-3.5 h-3.5 text-white stroke-[3]" />
                       </div>
                     )}
                   </button>
@@ -313,14 +321,14 @@ export default function EditProfileModal({ isOpen, onClose }) {
           </div>
 
           {/* 3. NAME & USERNAME FIELDS */}
-          <div className="space-y-2.5 pt-0.5">
+          <div className="space-y-3 pt-0.5">
             <div>
-              <label className="block text-[11px] font-bold text-slate-700 mb-1">
+              <label className="block text-[11px] font-black uppercase text-black mb-1">
                 Nama Lengkap
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-slate-400">
-                  <User className="w-3.5 h-3.5" />
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-black">
+                  <User className="w-3.5 h-3.5 stroke-[2.5]" />
                 </div>
                 <input
                   type="text"
@@ -328,18 +336,18 @@ export default function EditProfileModal({ isOpen, onClose }) {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Nama kamu"
-                  className="w-full pl-8 pr-2.5 py-1.5 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-slate-50/60 text-slate-900"
+                  className="w-full pl-9 pr-3 py-2 text-xs font-bold rounded-xl border-2 border-black shadow-[2px_2px_0px_#000] focus:outline-none focus:bg-[#D4F63D]/10 bg-white text-black"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-[11px] font-bold text-slate-700 mb-1">
-                Username
+              <label className="block text-[11px] font-black uppercase text-black mb-1">
+                Username Akun
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-slate-400">
-                  <AtSign className="w-3.5 h-3.5" />
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-black">
+                  <AtSign className="w-3.5 h-3.5 stroke-[2.5]" />
                 </div>
                 <input
                   type="text"
@@ -347,25 +355,25 @@ export default function EditProfileModal({ isOpen, onClose }) {
                   value={username}
                   onChange={(e) => setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ''))}
                   placeholder="username_kamu"
-                  className="w-full pl-8 pr-2.5 py-1.5 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-slate-50/60 text-slate-900"
+                  className="w-full pl-9 pr-3 py-2 text-xs font-bold rounded-xl border-2 border-black shadow-[2px_2px_0px_#000] focus:outline-none focus:bg-[#D4F63D]/10 bg-white text-black"
                 />
               </div>
             </div>
 
             {/* AI Assistant Quick Config */}
-            <div className="p-2.5 rounded-xl bg-gradient-to-r from-indigo-50/70 to-purple-50/70 border border-indigo-100 flex items-center justify-between">
+            <div className="p-2.5 rounded-2xl bg-[#FFD166]/30 border-2 border-black shadow-[2px_2px_0px_#000] flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-lg bg-indigo-600 text-white flex items-center justify-center shrink-0">
-                  <Sparkles className="w-3.5 h-3.5" />
+                <div className="w-7 h-7 rounded-lg bg-[#D4F63D] border-2 border-black shadow-[1.5px_1.5px_0px_#000] text-black flex items-center justify-center shrink-0">
+                  <Sparkles className="w-3.5 h-3.5 stroke-[2.5]" />
                 </div>
                 <div>
                   <div className="flex items-center gap-1.5">
-                    <span className="text-[11px] font-extrabold text-slate-800">Asisten Lala AI</span>
-                    <span className="text-[9px] font-bold px-1.5 py-0.2 rounded-full bg-indigo-100 text-indigo-700">
+                    <span className="text-[11px] font-black text-black">Asisten Lala AI</span>
+                    <span className="text-[9px] font-black px-1.5 py-0.2 rounded-md bg-black text-white">
                       {aiConfig?.provider ? aiConfig.provider.toUpperCase() : 'GROQ'}
                     </span>
                   </div>
-                  <span className="text-[10px] text-slate-500">
+                  <span className="text-[10px] font-bold text-black/70">
                     {aiConfig?.status === 'ready' ? '🟢 Terhubung & Siap' : '⚡ Kelola API Key gratis'}
                   </span>
                 </div>
@@ -373,40 +381,52 @@ export default function EditProfileModal({ isOpen, onClose }) {
               <button
                 type="button"
                 onClick={() => setAiModalOpen(true)}
-                className="px-2.5 py-1 rounded-lg bg-white hover:bg-slate-50 active:scale-95 text-indigo-700 text-[11px] font-bold border border-indigo-200 transition shadow-2xs cursor-pointer"
+                className="px-2.5 py-1 rounded-xl bg-white hover:bg-slate-50 text-black text-[11px] font-black border-2 border-black shadow-[2px_2px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 transition cursor-pointer"
               >
                 Konfigurasi
               </button>
             </div>
           </div>
 
-          {/* Minimalist Bottom Actions */}
-          <div className="pt-2 flex items-center justify-end gap-2 border-t border-slate-100">
+          {/* Minimalist Bottom Actions with Mobile Logout Support */}
+          <div className="pt-2 flex items-center justify-between gap-2 border-t-2 border-black">
             <button
               type="button"
-              onClick={onClose}
-              disabled={isSaving}
-              className="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100 transition cursor-pointer"
+              onClick={handleLogoutFromModal}
+              title="Keluar dari akun Anda di perangkat ini"
+              className="px-3 py-2 rounded-xl text-xs font-black bg-rose-200 hover:bg-rose-300 text-black border-2 border-black shadow-[2px_2px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 transition cursor-pointer flex items-center gap-1.5"
             >
-              Batal
+              <LogOut className="w-3.5 h-3.5 stroke-[2.5]" />
+              <span>Keluar</span>
             </button>
-            <button
-              type="submit"
-              disabled={isSaving || isUploading}
-              className="px-3.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-bold text-xs transition shadow-xs flex items-center gap-1 cursor-pointer disabled:opacity-50"
-            >
-              {isSaving ? (
-                <>
-                  <RefreshCw className="w-3 h-3 animate-spin" />
-                  <span>Menyimpan...</span>
-                </>
-              ) : (
-                <>
-                  <Check className="w-3 h-3 stroke-[2.5]" />
-                  <span>Simpan</span>
-                </>
-              )}
-            </button>
+
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={onClose}
+                disabled={isSaving}
+                className="px-3 py-2 rounded-xl text-xs font-black bg-white hover:bg-slate-100 text-black border-2 border-black shadow-[2px_2px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 transition cursor-pointer"
+              >
+                Batal
+              </button>
+              <button
+                type="submit"
+                disabled={isSaving || isUploading}
+                className="px-3.5 py-2 rounded-xl bg-[#D4F63D] hover:bg-[#c2e42f] text-black font-black text-xs border-2 border-black shadow-[2px_2px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 transition flex items-center gap-1 cursor-pointer disabled:opacity-50"
+              >
+                {isSaving ? (
+                  <>
+                    <RefreshCw className="w-3.5 h-3.5 animate-spin stroke-[2.5]" />
+                    <span>Menyimpan...</span>
+                  </>
+                ) : (
+                  <>
+                    <Check className="w-3.5 h-3.5 stroke-[2.5]" />
+                    <span>Simpan</span>
+                  </>
+                )}
+              </button>
+            </div>
           </div>
         </form>
 

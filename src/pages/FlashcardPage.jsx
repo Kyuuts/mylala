@@ -333,15 +333,15 @@ export default function FlashcardPage() {
             setShowAiExplainer((prev) => !prev);
             if (!showAiExplainer) setShowVoiceShadowing(false);
           }}
-          className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-black transition-all shadow-xs cursor-pointer active:scale-95 ${
+          className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-black transition-all cursor-pointer active:translate-x-0.5 active:translate-y-0.5 border-2 border-black shadow-[2px_2px_0px_#000] ${
             showAiExplainer
-              ? 'bg-gradient-to-r from-indigo-600 via-indigo-700 to-purple-600 text-white shadow-md'
-              : 'bg-white hover:bg-indigo-50 text-indigo-700 border border-indigo-200'
+              ? 'bg-[#FFD166] text-black'
+              : 'bg-white hover:bg-[#FFD166]/30 text-black'
           }`}
         >
-          <Sparkles className={`w-3.5 h-3.5 ${showAiExplainer ? 'text-amber-300 fill-amber-300' : 'text-amber-500 fill-amber-400'}`} />
+          <Sparkles className="w-3.5 h-3.5 text-black stroke-[2.5]" />
           <span>{showAiExplainer ? 'Sembunyikan Lala AI' : '💡 Tanya Lala AI'}</span>
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse border border-black"></span>
         </button>
 
         <button
@@ -350,13 +350,13 @@ export default function FlashcardPage() {
             setShowVoiceShadowing((prev) => !prev);
             if (!showVoiceShadowing) setShowAiExplainer(false);
           }}
-          className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer active:scale-95 ${
+          className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-black transition-all cursor-pointer active:translate-x-0.5 active:translate-y-0.5 border-2 border-black shadow-[2px_2px_0px_#000] ${
             showVoiceShadowing
-              ? 'bg-indigo-600 text-white shadow-md'
-              : 'bg-white hover:bg-slate-50 text-slate-700 border border-slate-200'
+              ? 'bg-[#70D6FF] text-black'
+              : 'bg-white hover:bg-[#70D6FF]/30 text-black'
           }`}
         >
-          <Mic className={`w-3.5 h-3.5 ${showVoiceShadowing ? 'text-white' : 'text-indigo-600'}`} />
+          <Mic className="w-3.5 h-3.5 stroke-[2.5] text-black" />
           <span>{showVoiceShadowing ? 'Sembunyikan Pelafalan' : '🎙️ Latih Pelafalan'}</span>
         </button>
       </div>

@@ -240,56 +240,56 @@ Pertanyaan pengguna:
       </div>
 
       {/* Preset Action Tabs */}
-      <div className="p-2 sm:p-2.5 border-b border-indigo-100 bg-white flex items-center gap-1.5 overflow-x-auto scrollbar-none text-xs">
+      <div className="p-2 sm:p-2.5 border-b-2 border-black bg-white flex items-center gap-1.5 overflow-x-auto scrollbar-none text-xs">
         <button
           type="button"
           onClick={() => setActiveTab('nuance')}
-          className={`px-3 py-1.5 rounded-xl font-bold transition flex items-center gap-1.5 shrink-0 cursor-pointer text-xs ${
+          className={`px-3 py-1.5 rounded-xl font-black transition flex items-center gap-1.5 shrink-0 cursor-pointer text-xs border-2 border-black active:translate-x-0.5 active:translate-y-0.5 ${
             activeTab === 'nuance'
-              ? 'bg-indigo-600 text-white shadow-xs'
-              : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+              ? 'bg-[#FF85C0] text-black shadow-[2px_2px_0px_#000]'
+              : 'bg-white hover:bg-slate-100 text-black'
           }`}
         >
-          <BookOpen className="w-3.5 h-3.5" />
+          <BookOpen className="w-3.5 h-3.5 stroke-[2.5]" />
           <span>Nuansa & Aturan</span>
         </button>
 
         <button
           type="button"
           onClick={() => setActiveTab('dialogue')}
-          className={`px-3 py-1.5 rounded-xl font-bold transition flex items-center gap-1.5 shrink-0 cursor-pointer text-xs ${
+          className={`px-3 py-1.5 rounded-xl font-black transition flex items-center gap-1.5 shrink-0 cursor-pointer text-xs border-2 border-black active:translate-x-0.5 active:translate-y-0.5 ${
             activeTab === 'dialogue'
-              ? 'bg-indigo-600 text-white shadow-xs'
-              : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+              ? 'bg-[#70D6FF] text-black shadow-[2px_2px_0px_#000]'
+              : 'bg-white hover:bg-slate-100 text-black'
           }`}
         >
-          <MessageSquare className="w-3.5 h-3.5" />
+          <MessageSquare className="w-3.5 h-3.5 stroke-[2.5]" />
           <span>Contoh Percakapan</span>
         </button>
 
         <button
           type="button"
           onClick={() => setActiveTab('mnemonic')}
-          className={`px-3 py-1.5 rounded-xl font-bold transition flex items-center gap-1.5 shrink-0 cursor-pointer text-xs ${
+          className={`px-3 py-1.5 rounded-xl font-black transition flex items-center gap-1.5 shrink-0 cursor-pointer text-xs border-2 border-black active:translate-x-0.5 active:translate-y-0.5 ${
             activeTab === 'mnemonic'
-              ? 'bg-indigo-600 text-white shadow-xs'
-              : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+              ? 'bg-[#D4F63D] text-black shadow-[2px_2px_0px_#000]'
+              : 'bg-white hover:bg-slate-100 text-black'
           }`}
         >
-          <Lightbulb className="w-3.5 h-3.5 text-amber-500" />
+          <Lightbulb className="w-3.5 h-3.5 stroke-[2.5] text-black" />
           <span>Cara Cepat Ingat</span>
         </button>
 
         <button
           type="button"
           onClick={() => setActiveTab('custom')}
-          className={`px-3 py-1.5 rounded-xl font-bold transition flex items-center gap-1.5 shrink-0 cursor-pointer text-xs ${
+          className={`px-3 py-1.5 rounded-xl font-black transition flex items-center gap-1.5 shrink-0 cursor-pointer text-xs border-2 border-black active:translate-x-0.5 active:translate-y-0.5 ${
             activeTab === 'custom'
-              ? 'bg-indigo-600 text-white shadow-xs'
-              : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+              ? 'bg-[#B388FF] text-black shadow-[2px_2px_0px_#000]'
+              : 'bg-white hover:bg-slate-100 text-black'
           }`}
         >
-          <HelpCircle className="w-3.5 h-3.5" />
+          <HelpCircle className="w-3.5 h-3.5 stroke-[2.5]" />
           <span>Tanya Bebas</span>
         </button>
       </div>
@@ -330,7 +330,7 @@ Pertanyaan pengguna:
         {/* Fully Rendered Professional Markdown Presentation */}
         {!isLoading && !errorMsg && responseContent && (
           <div className="space-y-3">
-            <div className="bg-white p-4 sm:p-5 rounded-2xl border border-indigo-100/90 shadow-2xs max-w-full overflow-hidden break-words">
+            <div className="bg-white p-4 sm:p-5 rounded-2xl border-2 border-black shadow-[3px_3px_0px_#000] max-w-full overflow-hidden break-words">
               <ReactMarkdown
                 remarkPlugins={[remarkGfm]}
                 components={{
@@ -459,7 +459,7 @@ Pertanyaan pengguna:
         {/* Custom Question Input Form */}
         {activeTab === 'custom' && (
           <form onSubmit={handleCustomSubmit} className="pt-2">
-            <label className="block text-[11px] font-bold text-slate-700 mb-1">
+            <label className="block text-[11px] font-black text-black mb-1">
               Ajukan pertanyaan khusus seputar materi kartu ini:
             </label>
             <div className="flex items-center gap-2">
@@ -470,14 +470,14 @@ Pertanyaan pengguna:
                 onKeyDown={(e) => e.stopPropagation()}
                 placeholder="Contoh: Apa bedanya dengan kata 'happen'?"
                 disabled={isLoading}
-                className="flex-1 px-3 py-2 text-xs rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white text-slate-900"
+                className="flex-1 px-3 py-2 text-xs rounded-xl border-2 border-black focus:outline-none focus:ring-2 focus:ring-black bg-white text-black font-bold placeholder:text-black/50"
               />
               <button
                 type="submit"
                 disabled={isLoading || !customQuestion.trim()}
-                className="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-bold text-xs transition flex items-center gap-1 cursor-pointer disabled:opacity-50 shrink-0 shadow-xs"
+                className="px-3.5 py-2 rounded-xl bg-[#D4F63D] hover:bg-[#c2e42e] active:translate-x-0.5 active:translate-y-0.5 text-black font-black text-xs transition flex items-center gap-1 cursor-pointer disabled:opacity-50 shrink-0 border-2 border-black shadow-[2px_2px_0px_#000]"
               >
-                <Send className="w-3.5 h-3.5" />
+                <Send className="w-3.5 h-3.5 stroke-[2.5]" />
                 <span>Kirim</span>
               </button>
             </div>

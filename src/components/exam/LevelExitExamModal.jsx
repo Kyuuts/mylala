@@ -172,7 +172,7 @@ export default function LevelExitExamModal({ isOpen, onClose, levelCode = 'A1', 
     <div
       role="dialog"
       aria-modal="true"
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/85 backdrop-blur-md animate-fade-in"
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/75 animate-fade-in"
     >
       {/* Lightweight Festive Confetti Particles when Passed */}
       {confettiActive && (
@@ -180,32 +180,32 @@ export default function LevelExitExamModal({ isOpen, onClose, levelCode = 'A1', 
           {Array.from({ length: 45 }).map((_, i) => (
             <div
               key={i}
-              className="absolute w-2.5 h-2.5 rounded-full animate-bounce"
+              className="absolute w-2.5 h-2.5 rounded-md border border-black animate-bounce"
               style={{
                 top: `${(i * 19) % 95}%`,
                 left: `${(i * 23) % 98}%`,
-                backgroundColor: ['#10b981', '#f59e0b', '#6366f1', '#ec4899', '#3b82f6', '#14b8a6'][i % 6],
+                backgroundColor: ['#D4F63D', '#70D6FF', '#FF85C0', '#FFD166', '#80ED99', '#B388FF'][i % 6],
                 animationDuration: `${1.2 + (i % 5) * 0.4}s`,
                 animationDelay: `${(i % 10) * 0.1}s`,
-                opacity: 0.85,
+                opacity: 0.95,
               }}
             />
           ))}
         </div>
       )}
 
-      <div className="relative w-full max-w-xl bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[94vh] border border-slate-200 z-20">
-        {/* Top Header */}
-        <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-gradient-to-r from-slate-900 to-indigo-950 text-white">
+      <div className="relative w-full max-w-xl bg-white rounded-3xl border-3 border-black shadow-[8px_8px_0px_#000] overflow-hidden flex flex-col max-h-[94vh] z-20">
+        {/* Top Header - Neo-Brutalism */}
+        <div className="px-6 py-4 border-b-2.5 border-black flex items-center justify-between bg-[#B388FF] text-black">
           <div className="flex items-center gap-2.5">
-            <div className="p-2 rounded-xl bg-white/10 text-amber-300">
-              <Award className="w-5 h-5" />
+            <div className="p-2 rounded-xl bg-white border-2 border-black shadow-[2px_2px_0px_#000] text-black">
+              <Award className="w-5 h-5 stroke-[2.5]" />
             </div>
             <div>
-              <span className="text-[10px] font-extrabold uppercase tracking-wider text-amber-300 block">
+              <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md bg-black text-white inline-block mb-0.5">
                 Ujian Kelulusan Resmi • Exit Exam
               </span>
-              <h3 className="text-base font-extrabold text-white">
+              <h3 className="text-base font-black text-black uppercase">
                 {examData.title}
               </h3>
             </div>
@@ -213,9 +213,9 @@ export default function LevelExitExamModal({ isOpen, onClose, levelCode = 'A1', 
 
           <button
             onClick={onClose}
-            className="p-1 rounded-full text-slate-300 hover:text-white hover:bg-white/10 transition"
+            className="w-8 h-8 rounded-xl bg-white border-2 border-black shadow-[2px_2px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 text-black flex items-center justify-center transition cursor-pointer"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4 stroke-[2.5]" />
           </button>
         </div>
 
@@ -225,57 +225,57 @@ export default function LevelExitExamModal({ isOpen, onClose, levelCode = 'A1', 
           {step === 'intro' && (
             <div className="space-y-6 text-center py-2">
               <div className="relative inline-block">
-                <div className="w-20 h-20 rounded-3xl bg-gradient-to-tr from-amber-400 via-orange-500 to-indigo-600 text-white flex items-center justify-center mx-auto text-4xl shadow-lg shadow-orange-500/25">
+                <div className="w-20 h-20 rounded-2xl bg-[#FFD166] text-black border-2.5 border-black shadow-[4px_4px_0px_#000] flex items-center justify-center mx-auto text-4xl">
                   ⚔️
                 </div>
-                <span className="absolute -bottom-2 -right-2 px-2.5 py-0.5 rounded-full bg-emerald-500 text-white text-[10px] font-extrabold shadow-sm">
+                <span className="absolute -bottom-2 -right-2 px-2.5 py-0.5 rounded-lg bg-[#80ED99] text-black border-2 border-black text-[10px] font-black shadow-[1.5px_1.5px_0px_#000]">
                   +150 XP
                 </span>
               </div>
 
               <div className="space-y-2">
-                <h2 className="text-2xl font-black text-slate-900 tracking-tight">
+                <h2 className="text-2xl font-black text-black uppercase tracking-tight">
                   Ujian Kenaikan Level {levelCode}
                 </h2>
-                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed max-w-md mx-auto">
+                <p className="text-xs sm:text-sm text-black/80 font-bold leading-relaxed max-w-md mx-auto">
                   {examData.description}
                 </p>
               </div>
 
               {/* Rules Cards */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 text-left">
-                <div className="p-3 sm:p-3.5 rounded-2xl bg-slate-50 border border-slate-200">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase block">Jumlah Soal</span>
-                  <p className="text-sm font-extrabold text-slate-800 mt-0.5">{totalQuestions} Soal Mix</p>
-                  <span className="text-[10px] text-slate-500">Grammar &amp; Vocab</span>
+                <div className="p-3 sm:p-3.5 rounded-2xl bg-white border-2 border-black shadow-[2px_2px_0px_#000]">
+                  <span className="text-[10px] font-black text-black/70 uppercase block">Jumlah Soal</span>
+                  <p className="text-sm font-black text-black mt-0.5">{totalQuestions} Soal Mix</p>
+                  <span className="text-[10px] font-bold text-black/60">Grammar &amp; Vocab</span>
                 </div>
 
-                <div className="p-3 sm:p-3.5 rounded-2xl bg-slate-50 border border-slate-200">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase block">Batas Waktu</span>
-                  <p className="text-sm font-extrabold text-amber-600 mt-0.5">10 Menit</p>
-                  <span className="text-[10px] text-slate-500">Auto-submit</span>
+                <div className="p-3 sm:p-3.5 rounded-2xl bg-white border-2 border-black shadow-[2px_2px_0px_#000]">
+                  <span className="text-[10px] font-black text-black/70 uppercase block">Batas Waktu</span>
+                  <p className="text-sm font-black text-amber-600 mt-0.5">10 Menit</p>
+                  <span className="text-[10px] font-bold text-black/60">Auto-submit</span>
                 </div>
 
-                <div className="p-3 sm:p-3.5 rounded-2xl bg-slate-50 border border-slate-200">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase block">Passing Grade</span>
-                  <p className="text-sm font-extrabold text-emerald-600 mt-0.5">Minimal 80%</p>
-                  <span className="text-[10px] text-slate-500">{passingScore} dari {totalQuestions} benar</span>
+                <div className="p-3 sm:p-3.5 rounded-2xl bg-white border-2 border-black shadow-[2px_2px_0px_#000]">
+                  <span className="text-[10px] font-black text-black/70 uppercase block">Passing Grade</span>
+                  <p className="text-sm font-black text-emerald-600 mt-0.5">Minimal 80%</p>
+                  <span className="text-[10px] font-bold text-black/60">{passingScore} dari {totalQuestions} benar</span>
                 </div>
 
-                <div className="p-3 sm:p-3.5 rounded-2xl bg-slate-50 border border-slate-200">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase block">Hadiah Lulus</span>
-                  <p className="text-sm font-extrabold text-indigo-600 mt-0.5">+150 XP</p>
-                  <span className="text-[10px] text-slate-500">Promosi Level Akun</span>
+                <div className="p-3 sm:p-3.5 rounded-2xl bg-white border-2 border-black shadow-[2px_2px_0px_#000]">
+                  <span className="text-[10px] font-black text-black/70 uppercase block">Hadiah Lulus</span>
+                  <p className="text-sm font-black text-indigo-700 mt-0.5">+150 XP</p>
+                  <span className="text-[10px] font-bold text-black/60">Promosi Level Akun</span>
                 </div>
               </div>
 
               <div className="pt-2">
                 <button
                   onClick={handleStartExam}
-                  className="w-full py-3.5 px-6 rounded-2xl bg-gradient-to-r from-indigo-600 via-indigo-700 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-extrabold text-sm shadow-md transition active:scale-95 cursor-pointer flex items-center justify-center gap-2"
+                  className="w-full py-3.5 px-6 rounded-2xl bg-[#D4F63D] hover:bg-[#c2e42f] text-black font-black text-sm uppercase tracking-wider border-2.5 border-black shadow-[4px_4px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 transition cursor-pointer flex items-center justify-center gap-2"
                 >
                   <span>Mulai Ujian Sekarang</span>
-                  <ArrowRight className="w-4 h-4" />
+                  <ArrowRight className="w-4 h-4 stroke-[2.5]" />
                 </button>
               </div>
             </div>
@@ -287,50 +287,50 @@ export default function LevelExitExamModal({ isOpen, onClose, levelCode = 'A1', 
               {/* Progress Bar & Counter with Realtime Timer */}
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between text-xs">
-                  <span className="font-extrabold text-indigo-600">
-                    Soal {currentIndex + 1} dari {totalQuestions}
+                  <span className="font-black text-black uppercase">
+                    Soal {currentIndex + 1} / {totalQuestions}
                   </span>
 
                   {/* Countdown Timer Pill */}
                   <div
-                    className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-black border transition-all ${
+                    className={`flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-mono font-black border-2 border-black shadow-[2px_2px_0px_#000] transition-all ${
                       timeLeft <= 60
-                        ? 'bg-rose-50 text-rose-700 border-rose-300 animate-pulse'
+                        ? 'bg-rose-200 text-black animate-pulse'
                         : timeLeft <= 180
-                        ? 'bg-amber-50 text-amber-700 border-amber-300'
-                        : 'bg-indigo-50 text-indigo-700 border-indigo-200'
+                        ? 'bg-amber-200 text-black'
+                        : 'bg-white text-black'
                     }`}
                   >
-                    <Clock className={`w-3.5 h-3.5 ${timeLeft <= 60 ? 'text-rose-600' : 'text-indigo-600'}`} />
+                    <Clock className="w-3.5 h-3.5 stroke-[2.5]" />
                     <span>{formatTime(timeLeft)}</span>
                   </div>
 
-                  <span className="text-slate-400 font-bold">
+                  <span className="text-black font-black">
                     Benar: {correctAnswersCount}
                   </span>
                 </div>
-                <div className="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
+                <div className="w-full bg-white h-3.5 rounded-full border-2 border-black p-0.5 overflow-hidden">
                   <div
-                    className="h-full bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full transition-all duration-300"
+                    className="h-full bg-black rounded-full transition-all duration-300"
                     style={{ width: `${((currentIndex + 1) / totalQuestions) * 100}%` }}
                   />
                 </div>
               </div>
 
               {/* Question Box */}
-              <div className="space-y-3 p-5 rounded-2xl bg-slate-50 border border-slate-200/90">
+              <div className="space-y-3 p-5 rounded-2xl bg-[#70D6FF]/20 border-2.5 border-black shadow-[3px_3px_0px_#000]">
                 <div className="flex items-center justify-between gap-2">
-                  <span className="px-2.5 py-0.5 rounded-md text-[10px] font-extrabold uppercase tracking-wider bg-indigo-100 text-indigo-700">
+                  <span className="px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider bg-black text-white">
                     {currentQ.category}
                   </span>
                 </div>
 
-                <h4 className="text-sm sm:text-base font-extrabold text-slate-900 leading-snug">
+                <h4 className="text-sm sm:text-base font-black text-black leading-snug">
                   {currentQ.prompt}
                 </h4>
 
                 {currentQ.context && (
-                  <p className="text-xs sm:text-sm text-slate-700 font-serif italic p-3 rounded-xl bg-white border border-slate-200 leading-relaxed">
+                  <p className="text-xs sm:text-sm text-black font-serif italic p-3 rounded-xl bg-white border-2 border-black leading-relaxed">
                     {currentQ.context}
                   </p>
                 )}
@@ -340,15 +340,15 @@ export default function LevelExitExamModal({ isOpen, onClose, levelCode = 'A1', 
               <div className="space-y-2.5">
                 {currentQ.options.map((opt, idx) => {
                   const isSelected = selectedOption === idx;
-                  let btnStyle = 'bg-white border-slate-200 text-slate-800 hover:border-indigo-300 hover:bg-slate-50';
+                  let btnStyle = 'bg-white border-2 border-black text-black hover:bg-slate-100 shadow-[2px_2px_0px_#000]';
 
                   if (isAnswerSubmitted) {
                     if (opt.isCorrect) {
-                      btnStyle = 'bg-emerald-50 border-emerald-400 text-emerald-900 ring-2 ring-emerald-300/40';
+                      btnStyle = 'bg-[#80ED99] border-2 border-black text-black shadow-[2px_2px_0px_#000] font-black';
                     } else if (isSelected && !opt.isCorrect) {
-                      btnStyle = 'bg-rose-50 border-rose-400 text-rose-900 ring-2 ring-rose-300/40';
+                      btnStyle = 'bg-[#FF85C0] border-2 border-black text-black shadow-[2px_2px_0px_#000] font-black';
                     } else {
-                      btnStyle = 'bg-slate-50 border-slate-200 text-slate-400 opacity-60';
+                      btnStyle = 'bg-slate-100 border-2 border-black/30 text-black/40 opacity-60';
                     }
                   }
 
@@ -357,14 +357,14 @@ export default function LevelExitExamModal({ isOpen, onClose, levelCode = 'A1', 
                       key={idx}
                       onClick={() => handleSelectOption(idx)}
                       disabled={isAnswerSubmitted}
-                      className={`w-full p-4 rounded-2xl border text-left text-xs sm:text-sm font-semibold transition flex items-center justify-between gap-3 cursor-pointer ${btnStyle}`}
+                      className={`w-full p-4 rounded-2xl text-left text-xs sm:text-sm font-bold transition flex items-center justify-between gap-3 cursor-pointer active:translate-x-0.5 active:translate-y-0.5 ${btnStyle}`}
                     >
                       <span>{opt.text}</span>
                       {isAnswerSubmitted && opt.isCorrect && (
-                        <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                        <CheckCircle2 className="w-4 h-4 text-black stroke-[3] shrink-0" />
                       )}
                       {isAnswerSubmitted && isSelected && !opt.isCorrect && (
-                        <XCircle className="w-4 h-4 text-rose-600 shrink-0" />
+                        <XCircle className="w-4 h-4 text-black stroke-[3] shrink-0" />
                       )}
                     </button>
                   );
@@ -374,14 +374,14 @@ export default function LevelExitExamModal({ isOpen, onClose, levelCode = 'A1', 
               {/* Immediate Feedback Explanation */}
               {isAnswerSubmitted && currentQ.explanation && (
                 <div
-                  className={`p-4 rounded-2xl border text-xs sm:text-sm leading-relaxed ${
+                  className={`p-4 rounded-2xl border-2 border-black shadow-[2px_2px_0px_#000] text-xs sm:text-sm leading-relaxed ${
                     currentQ.options[selectedOption]?.isCorrect
-                      ? 'bg-emerald-50/80 border-emerald-200 text-emerald-900'
-                      : 'bg-amber-50/80 border-amber-200 text-amber-900'
+                      ? 'bg-[#80ED99]/40 text-black font-bold'
+                      : 'bg-[#FFD166]/50 text-black font-bold'
                   }`}
                 >
-                  <p className="font-bold flex items-center gap-1.5 mb-1">
-                    <Sparkles className="w-3.5 h-3.5" />
+                  <p className="font-black flex items-center gap-1.5 mb-1 uppercase tracking-tight text-black">
+                    <Sparkles className="w-3.5 h-3.5 stroke-[2.5]" />
                     <span>Pembahasan Kunci:</span>
                   </p>
                   <p>{currentQ.explanation}</p>
@@ -395,44 +395,44 @@ export default function LevelExitExamModal({ isOpen, onClose, levelCode = 'A1', 
             <div className="space-y-6 text-center py-2">
               <div className="relative inline-block">
                 <div
-                  className={`w-24 h-24 rounded-3xl text-white flex items-center justify-center mx-auto text-5xl shadow-xl ${
+                  className={`w-24 h-24 rounded-2xl text-black flex items-center justify-center mx-auto text-5xl border-3 border-black shadow-[4px_4px_0px_#000] ${
                     isPassed
-                      ? 'bg-gradient-to-tr from-amber-400 via-orange-500 to-indigo-600 shadow-orange-500/25 animate-pulse'
-                      : 'bg-slate-700 shadow-slate-500/20'
+                      ? 'bg-[#D4F63D] animate-pulse'
+                      : 'bg-white'
                   }`}
                 >
                   {isPassed ? '🏆' : '📖'}
                 </div>
                 {isPassed && (
-                  <span className="absolute -bottom-2 -right-2 px-3 py-1 rounded-full bg-emerald-500 text-white text-xs font-black shadow-md">
+                  <span className="absolute -bottom-2 -right-2 px-3 py-1 rounded-xl bg-[#80ED99] text-black text-xs font-black border-2 border-black shadow-[2px_2px_0px_#000]">
                     +150 XP
                   </span>
                 )}
               </div>
 
               {isTimeUp && (
-                <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-rose-50 border border-rose-200 text-rose-700 text-xs font-bold">
-                  <Clock className="w-4 h-4 text-rose-600" />
+                <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-rose-200 border-2 border-black text-black text-xs font-black shadow-[2px_2px_0px_#000]">
+                  <Clock className="w-4 h-4 stroke-[2.5]" />
                   <span>Batas Waktu 10 Menit Berakhir • Ujian Dikirim Otomatis</span>
                 </div>
               )}
 
               <div className="space-y-1.5">
-                <span className="text-[11px] font-extrabold uppercase tracking-wider text-indigo-600">
+                <span className="text-[11px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md bg-black text-white inline-block">
                   Hasil Evaluasi Ujian Akhir
                 </span>
-                <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+                <h2 className="text-2xl sm:text-3xl font-black text-black tracking-tight uppercase">
                   {isPassed ? '🎉 SELAMAT! KAMU LULUS!' : 'Belum Lulus, Coba Lagi!'}
                 </h2>
-                <p className="text-sm font-bold text-slate-500">
-                  Skor: <span className={isPassed ? 'text-emerald-600' : 'text-rose-600'}>{correctAnswersCount}</span> / {totalQuestions} Soal Benar ({percentScore}%)
+                <p className="text-sm font-black text-black/80">
+                  Skor: <span className={isPassed ? 'text-emerald-700' : 'text-rose-700'}>{correctAnswersCount}</span> / {totalQuestions} Soal Benar ({percentScore}%)
                 </p>
               </div>
 
-              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-xs sm:text-sm text-slate-600 leading-relaxed max-w-md mx-auto text-left space-y-2">
+              <div className="p-4 rounded-2xl bg-white border-2 border-black shadow-[3px_3px_0px_#000] text-xs sm:text-sm text-black font-bold leading-relaxed max-w-md mx-auto text-left space-y-2">
                 {isPassed ? (
                   <>
-                    <p className="font-bold text-slate-900">
+                    <p className="font-black text-black">
                       Luar biasa! Kamu telah membuktikan penguasaan materi di Level {levelCode}.
                     </p>
                     <p>
@@ -441,7 +441,7 @@ export default function LevelExitExamModal({ isOpen, onClose, levelCode = 'A1', 
                   </>
                 ) : (
                   <>
-                    <p className="font-bold text-rose-800">
+                    <p className="font-black text-rose-700">
                       Nilai kelulusan minimal adalah 80% ({passingScore} dari {totalQuestions} benar).
                     </p>
                     <p>
@@ -455,9 +455,9 @@ export default function LevelExitExamModal({ isOpen, onClose, levelCode = 'A1', 
               <div className="flex flex-col sm:flex-row gap-3 pt-2">
                 <button
                   onClick={handleStartExam}
-                  className="inline-flex items-center justify-center gap-2 py-3 px-5 rounded-2xl border border-slate-200 text-slate-700 hover:bg-slate-50 font-bold text-xs sm:text-sm transition cursor-pointer"
+                  className="inline-flex items-center justify-center gap-2 py-3 px-5 rounded-2xl border-2 border-black bg-white hover:bg-slate-100 text-black font-black text-xs sm:text-sm shadow-[2px_2px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 transition cursor-pointer"
                 >
-                  <RotateCcw className="w-4 h-4" />
+                  <RotateCcw className="w-4 h-4 stroke-[2.5]" />
                   <span>Ulangi Ujian</span>
                 </button>
 
@@ -471,14 +471,14 @@ export default function LevelExitExamModal({ isOpen, onClose, levelCode = 'A1', 
                     }
                     onClose();
                   }}
-                  className={`flex-1 inline-flex items-center justify-center gap-2 py-3.5 px-6 rounded-2xl text-white font-extrabold text-xs sm:text-sm shadow-md transition active:scale-95 cursor-pointer ${
+                  className={`flex-1 inline-flex items-center justify-center gap-2 py-3.5 px-6 rounded-2xl text-black font-black text-xs sm:text-sm border-2.5 border-black shadow-[3px_3px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 transition cursor-pointer ${
                     isPassed
-                      ? 'bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 shadow-emerald-500/20'
-                      : 'bg-indigo-600 hover:bg-indigo-700'
+                      ? 'bg-[#D4F63D] hover:bg-[#c2e42f]'
+                      : 'bg-[#FF85C0] hover:bg-[#ff70b3]'
                   }`}
                 >
                   <span>{isPassed ? 'Buka Level Baru 🚀' : 'Kembali Membaca Modul'}</span>
-                  <ArrowRight className="w-4 h-4" />
+                  <ArrowRight className="w-4 h-4 stroke-[2.5]" />
                 </button>
               </div>
             </div>
@@ -487,18 +487,18 @@ export default function LevelExitExamModal({ isOpen, onClose, levelCode = 'A1', 
 
         {/* Modal Footer (for quiz step navigation) */}
         {step === 'quiz' && (
-          <div className="px-6 py-4 border-t border-slate-100 bg-slate-50 flex items-center justify-between">
-            <span className="text-xs text-slate-400">
+          <div className="px-6 py-4 border-t-2 border-black bg-[#F8FAFC] flex items-center justify-between">
+            <span className="text-xs font-bold text-black/70">
               Pilih satu jawaban di atas untuk melihat pembahasan.
             </span>
 
             <button
               onClick={handleNext}
               disabled={!isAnswerSubmitted}
-              className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition shadow-xs disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-[#D4F63D] hover:bg-[#c2e42f] text-black text-xs font-black border-2 border-black shadow-[2px_2px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 transition disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
             >
               <span>{currentIndex === totalQuestions - 1 ? 'Selesai & Lihat Skor' : 'Soal Berikutnya'}</span>
-              <ArrowRight className="w-3.5 h-3.5" />
+              <ArrowRight className="w-3.5 h-3.5 stroke-[2.5]" />
             </button>
           </div>
         )}

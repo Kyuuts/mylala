@@ -163,59 +163,59 @@ export default function ShareCardModal({ isOpen, onClose, customStats = null }) 
     <div
       role="dialog"
       aria-modal="true"
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/80 backdrop-blur-md animate-fade-in"
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-xs animate-fade-in"
     >
-      <div className="relative w-full max-w-lg bg-slate-900 border border-slate-700/80 rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh]">
+      <div className="relative w-full max-w-lg bg-white border-3 border-black rounded-3xl shadow-[8px_8px_0px_#000] overflow-hidden flex flex-col max-h-[92vh] text-black">
         {/* Modal Header */}
-        <div className="px-5 py-4 border-b border-slate-800 flex items-center justify-between">
+        <div className="px-5 py-3.5 sm:py-4 border-b-2.5 border-black flex items-center justify-between bg-[#FF85C0]">
           <div className="flex items-center gap-2">
-            <div className="p-1.5 rounded-xl bg-indigo-500/20 text-indigo-400">
-              <Sparkles className="w-4 h-4" />
+            <div className="p-1.5 rounded-xl bg-white border-2 border-black shadow-[1px_1px_0px_#000] text-black">
+              <Sparkles className="w-4 h-4 stroke-[2.5]" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-white">Bagikan Pencapaian</h3>
-              <p className="text-xs text-slate-400">Pamerkan progres liga &amp; kartu belajar kamu</p>
+              <h3 className="text-base font-black text-black uppercase">Bagikan Pencapaian</h3>
+              <p className="text-xs text-black/70 font-bold">Pamerkan progres liga &amp; kartu belajar kamu</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-2 rounded-full text-slate-400 hover:text-white hover:bg-slate-800 transition"
+            className="w-8 h-8 rounded-xl bg-white border-2 border-black shadow-[2px_2px_0px_#000] flex items-center justify-center text-black font-black hover:bg-black hover:text-white transition cursor-pointer"
             title="Tutup"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4 stroke-[3]" />
           </button>
         </div>
 
         {/* Modal Body */}
-        <div className="p-4 sm:p-5 overflow-y-auto space-y-4 flex-1 flex flex-col items-center">
+        <div className="p-4 sm:p-5 overflow-y-auto space-y-4 flex-1 flex flex-col items-center bg-[#F8FAFC]">
           {/* Format Selector: Story (9:16) vs Square (1:1) */}
-          <div className="grid grid-cols-2 p-1 bg-slate-800/80 rounded-xl border border-slate-700/60 w-full max-w-xs text-xs font-bold">
+          <div className="grid grid-cols-2 p-1.5 bg-white rounded-2xl border-2 border-black shadow-[2px_2px_0px_#000] w-full max-w-xs text-xs font-black gap-1.5">
             <button
               onClick={() => setFormat('story')}
-              className={`flex items-center justify-center gap-1.5 py-2 rounded-lg transition-all ${
+              className={`flex items-center justify-center gap-1.5 py-2 rounded-xl transition-all cursor-pointer ${
                 format === 'story'
-                  ? 'bg-indigo-600 text-white shadow-xs'
-                  : 'text-slate-400 hover:text-slate-200'
+                  ? 'bg-[#D4F63D] text-black border-2 border-black shadow-[2px_2px_0px_#000]'
+                  : 'text-black/60 hover:text-black'
               }`}
             >
-              <Smartphone className="w-3.5 h-3.5" />
+              <Smartphone className="w-3.5 h-3.5 stroke-[2.5]" />
               <span>Story (9:16)</span>
             </button>
             <button
               onClick={() => setFormat('square')}
-              className={`flex items-center justify-center gap-1.5 py-2 rounded-lg transition-all ${
+              className={`flex items-center justify-center gap-1.5 py-2 rounded-xl transition-all cursor-pointer ${
                 format === 'square'
-                  ? 'bg-indigo-600 text-white shadow-xs'
-                  : 'text-slate-400 hover:text-slate-200'
+                  ? 'bg-[#D4F63D] text-black border-2 border-black shadow-[2px_2px_0px_#000]'
+                  : 'text-black/60 hover:text-black'
               }`}
             >
-              <Square className="w-3.5 h-3.5" />
+              <Square className="w-3.5 h-3.5 stroke-[2.5]" />
               <span>Persegi (1:1)</span>
             </button>
           </div>
 
           {/* Interactive Card Canvas Live Preview */}
-          <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-slate-700/60 bg-slate-950 flex items-center justify-center max-h-[50vh]">
+          <div className="relative rounded-2xl overflow-hidden border-3 border-black shadow-[4px_4px_0px_#000] bg-black flex items-center justify-center max-h-[50vh]">
             <canvas
               ref={canvasRef}
               className={`block max-h-[48vh] w-auto h-auto object-contain transition-all duration-300 ${
@@ -224,21 +224,21 @@ export default function ShareCardModal({ isOpen, onClose, customStats = null }) 
             />
           </div>
 
-          <p className="text-[11px] text-slate-400 text-center">
+          <p className="text-[11px] text-black/70 font-bold text-center">
             Format dioptimalkan untuk Instagram Story, WhatsApp Status, LinkedIn &amp; Telegram.
           </p>
         </div>
 
         {/* Modal Footer Actions */}
-        <div className="p-4 border-t border-slate-800 bg-slate-900/95 space-y-2.5">
+        <div className="p-4 border-t-2.5 border-black bg-white space-y-2.5">
           <div className="grid grid-cols-2 gap-2.5">
             {/* Download PNG Button */}
             <button
               onClick={handleDownload}
               disabled={downloading}
-              className="flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white font-bold text-xs sm:text-sm transition active:scale-95 cursor-pointer disabled:opacity-50"
+              className="flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-white hover:bg-slate-50 border-2 border-black shadow-[3px_3px_0px_#000] text-black font-black text-xs sm:text-sm active:translate-x-0.5 active:translate-y-0.5 transition cursor-pointer disabled:opacity-50"
             >
-              <Download className="w-4 h-4 text-emerald-400" />
+              <Download className="w-4 h-4 stroke-[2.5]" />
               <span>{downloading ? 'Mengunduh...' : 'Unduh PNG'}</span>
             </button>
 
@@ -246,9 +246,9 @@ export default function ShareCardModal({ isOpen, onClose, customStats = null }) 
             <button
               onClick={handleShare}
               disabled={sharing}
-              className="flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs sm:text-sm shadow-md transition active:scale-95 cursor-pointer disabled:opacity-50"
+              className="flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-[#70D6FF] hover:bg-[#5ac8f5] text-black font-black text-xs sm:text-sm border-2 border-black shadow-[3px_3px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 transition cursor-pointer disabled:opacity-50"
             >
-              <Share2 className="w-4 h-4 text-white" />
+              <Share2 className="w-4 h-4 stroke-[2.5]" />
               <span>{sharing ? 'Membagikan...' : 'Bagikan Status'}</span>
             </button>
           </div>
@@ -256,16 +256,16 @@ export default function ShareCardModal({ isOpen, onClose, customStats = null }) 
           {/* Copy Caption Button */}
           <button
             onClick={handleCopyText}
-            className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-slate-800/60 hover:bg-slate-800 border border-slate-700/50 text-slate-300 hover:text-white font-semibold text-xs transition"
+            className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-[#FFD166] hover:bg-[#f6c24b] border-2 border-black shadow-[2px_2px_0px_#000] text-black font-black text-xs active:translate-x-0.5 active:translate-y-0.5 transition cursor-pointer"
           >
             {copied ? (
               <>
-                <Check className="w-3.5 h-3.5 text-emerald-400" />
-                <span className="text-emerald-400">Teks Status Berhasil Disalin!</span>
+                <Check className="w-3.5 h-3.5 stroke-[3]" />
+                <span>Teks Status Berhasil Disalin!</span>
               </>
             ) : (
               <>
-                <Copy className="w-3.5 h-3.5 text-slate-400" />
+                <Copy className="w-3.5 h-3.5 stroke-[2.5]" />
                 <span>Salin Teks Status &amp; Link</span>
               </>
             )}

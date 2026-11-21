@@ -97,73 +97,67 @@ export default function ModuleDetailPage() {
       <div className="flex items-center justify-between">
         <Link
           to="/dashboard"
-          className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-slate-600 hover:text-slate-900 transition"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white text-black border-2 border-black shadow-[2px_2px_0px_#000] text-xs sm:text-sm font-black active:translate-x-0.5 active:translate-y-0.5 transition"
         >
-          <ArrowLeft className="w-4 h-4" /> Kembali ke Dashboard
+          <ArrowLeft className="w-4 h-4 stroke-[2.5]" /> Kembali ke Dashboard
         </Link>
 
         <div className="flex items-center gap-2">
           <button
             onClick={handleShare}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 text-xs font-semibold transition"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border-2 border-black shadow-[2px_2px_0px_#000] bg-white hover:bg-slate-50 text-black text-xs font-black active:translate-x-0.5 active:translate-y-0.5 transition cursor-pointer"
           >
-            {copied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Share2 className="w-3.5 h-3.5" />}
+            {copied ? <Check className="w-3.5 h-3.5 stroke-[2.5] text-emerald-600" /> : <Share2 className="w-3.5 h-3.5 stroke-[2.5]" />}
             <span>{copied ? 'Tersalin' : 'Bagikan'}</span>
           </button>
 
           <Link
             to={`/flashcards/${module.id}`}
-            className="inline-flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-semibold px-4 py-2 rounded-xl transition shadow-xs"
+            className="inline-flex items-center gap-1.5 bg-[#FF85C0] hover:bg-[#ff6fae] text-black text-xs sm:text-sm font-black px-4 py-1.5 rounded-xl border-2 border-black shadow-[2px_2px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 transition"
           >
-            <Layers className="w-4 h-4" /> Latihan Flashcard
+            <Layers className="w-4 h-4 stroke-[2.5]" /> Latihan Flashcard
           </Link>
         </div>
       </div>
 
       {/* Module Title Banner */}
-      <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200/80 shadow-xs space-y-3">
+      <div className="bg-[#70D6FF] p-6 sm:p-8 rounded-3xl border-3 border-black shadow-[6px_6px_0px_#000] space-y-3">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center gap-2">
-            <span
-              className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider border ${getCategoryBadge(
-                module.category
-              )}`}
-            >
+            <span className="px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-white text-black border-2 border-black shadow-[1px_1px_0px_#000]">
               {module.category}
             </span>
-            <span className="text-xs text-slate-400 font-medium hidden sm:inline">1-Page Active Cheat Sheet</span>
+            <span className="text-xs text-black/70 font-black hidden sm:inline">1-Page Active Cheat Sheet</span>
           </div>
 
           {/* Level Badge in Detail Banner */}
           {(() => {
             const levelInfo = getModuleLevel(module);
             return (
-              <span
-                className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border ${levelInfo.badgeClass}`}
-              >
-                <span className={`w-2 h-2 rounded-full ${levelInfo.dotClass} animate-pulse`} />
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black bg-[#FFD166] text-black border-2 border-black shadow-[1px_1px_0px_#000]">
+                <span className="w-2 h-2 rounded-full bg-black animate-pulse" />
                 {levelInfo.display}
               </span>
             );
           })()}
         </div>
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+        <h1 className="text-2xl sm:text-3xl font-black text-black tracking-tight">
           {module.title}
         </h1>
       </div>
 
       {/* Markdown Cheat Sheet Content */}
-      <article className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200/80 shadow-xs">
+      <article className="bg-white p-6 sm:p-8 rounded-3xl border-3 border-black shadow-[6px_6px_0px_#000]">
         <MarkdownViewer content={module.content_markdown} />
       </article>
 
       {/* Bottom Practice & Completion Action Banner */}
-      <div className="bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-100 rounded-3xl p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div className="bg-[#D4F63D] border-3 border-black shadow-[6px_6px_0px_#000] rounded-3xl p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="space-y-1 text-center sm:text-left">
-          <h3 className="font-bold text-slate-900 text-base sm:text-lg">
+          <h3 className="font-black text-black text-base sm:text-lg uppercase">
             Siap Menguji Pemahaman Anda?
           </h3>
-          <p className="text-xs sm:text-sm text-slate-600">
+          <p className="text-xs sm:text-sm text-black/80 font-bold">
             {isCompleted
               ? 'Materi ini telah Anda tandai selesai dibaca. Latih retensi jangka panjang dengan flashcard di samping!'
               : 'Tandai materi ini selesai dibaca untuk memenuhi syarat Ujian Kelulusan Level.'}
@@ -172,21 +166,21 @@ export default function ModuleDetailPage() {
         <div className="flex flex-col sm:flex-row items-center gap-2.5 shrink-0 w-full sm:w-auto">
           <button
             onClick={() => toggleModuleCompleted(id)}
-            className={`w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl text-xs sm:text-sm font-extrabold transition shadow-xs cursor-pointer ${
+            className={`w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl text-xs sm:text-sm font-black border-2 border-black shadow-[3px_3px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 transition cursor-pointer ${
               isCompleted
-                ? 'bg-emerald-600 text-white hover:bg-emerald-700'
-                : 'bg-white border border-slate-300 text-slate-700 hover:bg-slate-50'
+                ? 'bg-[#80ED99] text-black'
+                : 'bg-white text-black hover:bg-slate-50'
             }`}
           >
-            <Check className="w-4 h-4" />
-            <span>{isCompleted ? '✓ Selesai Dibaca' : 'Tandai Selesai Dibaca (+20 XP)'}</span>
+            <Check className="w-4 h-4 stroke-[2.5]" />
+            <span>{isCompleted ? '✓ Selesai Dibaca' : 'Tandai Selesai (+20 XP)'}</span>
           </button>
 
           <Link
             to={`/flashcards/${module.id}`}
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-bold shadow-md transition active:scale-95 shrink-0"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-2xl bg-[#FF85C0] hover:bg-[#ff6fae] text-black text-xs sm:text-sm font-black border-2 border-black shadow-[3px_3px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 transition shrink-0"
           >
-            <Layers className="w-4 h-4" /> Latihan Flashcard
+            <Layers className="w-4 h-4 stroke-[2.5]" /> Latihan Flashcard
           </Link>
         </div>
       </div>

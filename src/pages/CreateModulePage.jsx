@@ -149,40 +149,40 @@ export default function CreateModulePage() {
   };
 
   return (
-    <div className="space-y-8 max-w-3xl mx-auto py-2">
+    <div className="space-y-6 sm:space-y-8 max-w-3xl mx-auto py-2">
       {/* Top Header */}
       <div className="flex items-center justify-between">
         <Link
           to="/dashboard"
-          className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-slate-600 hover:text-slate-900 transition"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white text-black border-2 border-black shadow-[2px_2px_0px_#000] text-xs sm:text-sm font-black active:translate-x-0.5 active:translate-y-0.5 transition"
         >
-          <ArrowLeft className="w-4 h-4" /> Kembali ke Dashboard
+          <ArrowLeft className="w-4 h-4 stroke-[2.5]" /> Kembali ke Dashboard
         </Link>
       </div>
 
-      <div>
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight flex items-center gap-2.5">
-          <Sparkles className="w-7 h-7 text-indigo-600" />
+      <div className="bg-[#70D6FF] p-6 sm:p-8 rounded-3xl border-3 border-black shadow-[6px_6px_0px_#000]">
+        <h1 className="text-2xl sm:text-3xl font-black text-black tracking-tight flex items-center gap-2.5 uppercase">
+          <Sparkles className="w-7 h-7 stroke-[2.5] text-black" />
           <span>Buat Modul &amp; Flashcard Baru</span>
         </h1>
-        <p className="text-sm text-slate-600 mt-1">
+        <p className="text-xs sm:text-sm text-black/80 font-bold mt-1">
           Tambahkan ringkasan materi 1 halaman dan kartu active recall khusus untuk target belajar Anda.
         </p>
       </div>
 
       {/* In-app Validation Error Banner */}
       {formError && (
-        <div className="p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-xs sm:text-sm font-semibold flex items-center justify-between gap-3 shadow-xs animate-fade-in">
+        <div className="p-4 rounded-2xl bg-[#FF85C0] border-2 border-black text-black text-xs sm:text-sm font-black flex items-center justify-between gap-3 shadow-[3px_3px_0px_#000] animate-fade-in">
           <div className="flex items-center gap-2.5">
-            <AlertCircle className="w-5 h-5 text-rose-600 shrink-0" />
+            <AlertCircle className="w-5 h-5 stroke-[2.5] text-black shrink-0" />
             <span>{formError}</span>
           </div>
           <button
             type="button"
             onClick={() => setFormError(null)}
-            className="p-1 rounded-lg text-rose-400 hover:text-rose-700 hover:bg-rose-100 transition cursor-pointer"
+            className="p-1 rounded-lg bg-white border border-black hover:bg-black hover:text-white transition cursor-pointer"
           >
-            <X className="w-4 h-4" />
+            <X className="w-4 h-4 stroke-[2.5]" />
           </button>
         </div>
       )}
@@ -190,18 +190,18 @@ export default function CreateModulePage() {
       {/* Main Form Card */}
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Module Metadata Box */}
-        <div className="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-xs space-y-5">
-          <h2 className="text-base font-bold text-slate-900 border-b border-slate-100 pb-3">
+        <div className="bg-white p-6 rounded-3xl border-3 border-black shadow-[6px_6px_0px_#000] space-y-5">
+          <h2 className="text-base font-black text-black uppercase border-b-2 border-black pb-3">
             1. Informasi Dasar Modul
           </h2>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-slate-700">Kategori</label>
+              <label className="text-xs font-black text-black uppercase">Kategori</label>
               <select
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm font-semibold text-slate-800 focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
+                className="w-full bg-white border-2 border-black rounded-xl px-3.5 py-2.5 text-sm font-black text-black focus:outline-hidden"
               >
                 <option value="Grammar">Grammar (Tata Bahasa)</option>
                 <option value="Vocab">Vocab (Kosakata/Idiom)</option>
@@ -210,13 +210,13 @@ export default function CreateModulePage() {
             </div>
 
             <div className="sm:col-span-2 space-y-1.5">
-              <label className="text-xs font-semibold text-slate-700">Judul Modul</label>
+              <label className="text-xs font-black text-black uppercase">Judul Modul</label>
               <input
                 type="text"
                 placeholder="Contoh: Collocations with 'Make' and 'Do'"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm text-slate-800 focus:outline-hidden focus:ring-2 focus:ring-indigo-500 placeholder:text-slate-400"
+                className="w-full bg-white border-2 border-black rounded-xl px-3.5 py-2.5 text-sm font-bold text-black focus:outline-hidden placeholder:text-black/40"
                 required
               />
             </div>
@@ -225,23 +225,23 @@ export default function CreateModulePage() {
           {/* Markdown Content Editor */}
           <div className="space-y-2 pt-2">
             <div className="flex items-center justify-between">
-              <label className="text-xs font-semibold text-slate-700 flex items-center gap-1.5">
-                <FileText className="w-3.5 h-3.5 text-indigo-600" />
+              <label className="text-xs font-black text-black uppercase flex items-center gap-1.5">
+                <FileText className="w-3.5 h-3.5 stroke-[2.5]" />
                 <span>Isi Cheat Sheet (Markdown 1 Halaman)</span>
               </label>
 
               <button
                 type="button"
                 onClick={() => setIsPreview(!isPreview)}
-                className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition"
+                className="inline-flex items-center gap-1 text-xs font-black px-3 py-1 rounded-xl bg-white border-2 border-black shadow-[2px_2px_0px_#000] text-black active:translate-x-0.5 active:translate-y-0.5 transition"
               >
-                {isPreview ? <Edit3 className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                {isPreview ? <Edit3 className="w-3.5 h-3.5 stroke-[2.5]" /> : <Eye className="w-3.5 h-3.5 stroke-[2.5]" />}
                 <span>{isPreview ? 'Edit Teks' : 'Pratinjau'}</span>
               </button>
             </div>
 
             {isPreview ? (
-              <div className="bg-slate-50 rounded-2xl p-5 border border-slate-200 min-h-[160px]">
+              <div className="bg-[#F8FAFC] rounded-2xl p-5 border-2 border-black shadow-[2px_2px_0px_#000] min-h-[160px]">
                 <MarkdownViewer
                   content={
                     markdownContent ||
@@ -255,32 +255,32 @@ export default function CreateModulePage() {
                 placeholder="# Judul Rangkuman&#10;&#10;## 1. Aturan Penggunaan&#10;* Poin 1...&#10;* Poin 2...&#10;&#10;| Kolom 1 | Kolom 2 |&#10;| --- | --- |&#10;| Make | A mistake |"
                 value={markdownContent}
                 onChange={(e) => setMarkdownContent(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 text-xs sm:text-sm font-mono text-slate-800 focus:outline-hidden focus:ring-2 focus:ring-indigo-500 placeholder:text-slate-400 leading-relaxed"
+                className="w-full bg-white border-2 border-black rounded-2xl p-4 text-xs sm:text-sm font-mono font-medium text-black focus:outline-hidden placeholder:text-black/40 leading-relaxed shadow-[2px_2px_0px_#000]"
               ></textarea>
             )}
-            <p className="text-[11px] text-slate-400">
+            <p className="text-[11px] text-black/60 font-bold">
               Mendukung format heading (#), tabel (| a | b |), poin (*), dan teks tebal (**tebal**).
             </p>
           </div>
         </div>
 
         {/* Flashcards Builder Box */}
-        <div className="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-xs space-y-5">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
+        <div className="bg-white p-6 rounded-3xl border-3 border-black shadow-[6px_6px_0px_#000] space-y-5">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b-2 border-black pb-3">
             <div>
-              <h2 className="text-base font-bold text-slate-900">
+              <h2 className="text-base font-black text-black uppercase">
                 2. Kartu Flashcard Active Recall ({flashcards.length})
               </h2>
-              <p className="text-xs text-slate-500">Pasangan pertanyaan bahasa Inggris dan terjemahan bahasa Indonesia.</p>
+              <p className="text-xs text-black/70 font-bold">Pasangan pertanyaan bahasa Inggris dan terjemahan bahasa Indonesia.</p>
             </div>
 
             <div className="flex items-center gap-2">
               <button
                 type="button"
                 onClick={() => setActiveTab(activeTab === 'manual' ? 'bulk' : 'manual')}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold transition"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border-2 border-black bg-white hover:bg-[#D4F63D] text-black text-xs font-black shadow-[2px_2px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 transition"
               >
-                <Upload className="w-3.5 h-3.5 text-indigo-600" />
+                <Upload className="w-3.5 h-3.5 stroke-[2.5]" />
                 <span>{activeTab === 'manual' ? 'Import Cepat (Bulk)' : 'Mode Manual'}</span>
               </button>
             </div>
@@ -288,11 +288,11 @@ export default function CreateModulePage() {
 
           {/* BULK IMPORT VIEW */}
           {activeTab === 'bulk' && (
-            <div className="bg-indigo-50/50 p-5 rounded-2xl border border-indigo-100 space-y-3 animate-fade-in">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-indigo-700">
+            <div className="bg-[#D4F63D]/20 p-5 rounded-2xl border-2 border-black shadow-[3px_3px_0px_#000] space-y-3 animate-fade-in">
+              <h3 className="text-xs font-black uppercase tracking-wider text-black">
                 Paste / Tempel Kartu Sekaligus
               </h3>
-              <p className="text-xs text-slate-600">
+              <p className="text-xs text-black/70 font-bold">
                 Format per baris: <code>Depan (English) | Belakang (Arti) | Contoh Kalimat</code> (atau format JSON Array).
               </p>
               <textarea
@@ -300,15 +300,15 @@ export default function CreateModulePage() {
                 placeholder="Make a decision | Mengambil keputusan | She finally made a decision.&#10;Do your best | Lakukan yang terbaik | Always do your best in exams."
                 value={bulkText}
                 onChange={(e) => setBulkText(e.target.value)}
-                className="w-full bg-white border border-slate-200 rounded-xl p-3 text-xs sm:text-sm font-mono text-slate-800 focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
+                className="w-full bg-white border-2 border-black rounded-xl p-3 text-xs sm:text-sm font-mono text-black focus:outline-hidden"
               ></textarea>
 
-              {bulkError && <p className="text-xs text-rose-600 font-semibold">{bulkError}</p>}
+              {bulkError && <p className="text-xs text-rose-600 font-black">{bulkError}</p>}
 
               <button
                 type="button"
                 onClick={handleParseBulk}
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-indigo-600 text-white font-bold text-xs shadow-xs hover:bg-indigo-700 transition"
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#D4F63D] hover:bg-[#c2e42e] text-black font-black text-xs border-2 border-black shadow-[2px_2px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 transition"
               >
                 Konversi Menjadi Kartu
               </button>
@@ -320,10 +320,10 @@ export default function CreateModulePage() {
             {flashcards.map((card, idx) => (
               <div
                 key={idx}
-                className="p-4 rounded-2xl border border-slate-200 bg-slate-50/50 space-y-3 relative group"
+                className="p-4 rounded-2xl border-2 border-black bg-[#F8FAFC] shadow-[2px_2px_0px_#000] space-y-3 relative group"
               >
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-indigo-600 bg-indigo-100/60 px-2.5 py-0.5 rounded-full">
+                  <span className="text-xs font-black text-black bg-[#FFD166] border border-black px-2.5 py-0.5 rounded-lg">
                     Kartu #{idx + 1}
                   </span>
 
@@ -331,16 +331,16 @@ export default function CreateModulePage() {
                     <button
                       type="button"
                       onClick={() => handleRemoveCard(idx)}
-                      className="p-1 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition"
+                      className="p-1.5 rounded-lg bg-white border border-black text-black hover:bg-[#FF85C0] transition cursor-pointer"
                     >
-                      <Trash2 className="w-4 h-4" />
+                      <Trash2 className="w-4 h-4 stroke-[2.5]" />
                     </button>
                   )}
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="space-y-1">
-                    <label className="text-[11px] font-semibold text-slate-600">
+                    <label className="text-[11px] font-black text-black uppercase">
                       Sisi Depan (English Active Recall) *
                     </label>
                     <input
@@ -348,13 +348,13 @@ export default function CreateModulePage() {
                       placeholder="e.g. Call off"
                       value={card.front_text}
                       onChange={(e) => handleCardChange(idx, 'front_text', e.target.value)}
-                      className="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs sm:text-sm text-slate-800 focus:ring-2 focus:ring-indigo-500 focus:outline-hidden"
+                      className="w-full bg-white border-2 border-black rounded-xl px-3 py-2 text-xs sm:text-sm text-black font-bold focus:outline-hidden"
                       required
                     />
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-[11px] font-semibold text-slate-600">
+                    <label className="text-[11px] font-black text-black uppercase">
                       Sisi Belakang (Arti / Penjelasan) *
                     </label>
                     <input
@@ -362,14 +362,14 @@ export default function CreateModulePage() {
                       placeholder="e.g. Membatalkan (Cancel)"
                       value={card.back_text}
                       onChange={(e) => handleCardChange(idx, 'back_text', e.target.value)}
-                      className="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs sm:text-sm text-slate-800 focus:ring-2 focus:ring-indigo-500 focus:outline-hidden"
+                      className="w-full bg-white border-2 border-black rounded-xl px-3 py-2 text-xs sm:text-sm text-black font-bold focus:outline-hidden"
                       required
                     />
                   </div>
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-[11px] font-semibold text-slate-600">
+                  <label className="text-[11px] font-black text-black uppercase">
                     Contoh Kalimat / Konteks (Opsional)
                   </label>
                   <input
@@ -377,7 +377,7 @@ export default function CreateModulePage() {
                     placeholder="e.g. The meeting was called off due to heavy snow."
                     value={card.example_sentence}
                     onChange={(e) => handleCardChange(idx, 'example_sentence', e.target.value)}
-                    className="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs sm:text-sm text-slate-800 focus:ring-2 focus:ring-indigo-500 focus:outline-hidden"
+                    className="w-full bg-white border-2 border-black rounded-xl px-3 py-2 text-xs sm:text-sm text-black font-bold focus:outline-hidden"
                   />
                 </div>
               </div>
@@ -386,9 +386,9 @@ export default function CreateModulePage() {
             <button
               type="button"
               onClick={handleAddCard}
-              className="w-full py-3 rounded-2xl border-2 border-dashed border-indigo-200 hover:border-indigo-400 bg-indigo-50/30 hover:bg-indigo-50 text-indigo-700 text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 transition"
+              className="w-full py-3 rounded-2xl border-2 border-dashed border-black bg-white hover:bg-[#D4F63D]/30 text-black text-xs sm:text-sm font-black flex items-center justify-center gap-1.5 transition active:translate-x-0.5 active:translate-y-0.5 cursor-pointer shadow-[2px_2px_0px_#000]"
             >
-              <Plus className="w-4 h-4" /> Tambah Kartu Berikutnya
+              <Plus className="w-4 h-4 stroke-[3]" /> Tambah Kartu Berikutnya
             </button>
           </div>
         </div>
@@ -397,7 +397,7 @@ export default function CreateModulePage() {
         <div className="flex items-center justify-end gap-3 pt-2">
           <Link
             to="/dashboard"
-            className="px-5 py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-semibold text-sm transition"
+            className="px-5 py-2.5 rounded-xl border-2 border-black bg-white hover:bg-slate-50 text-black font-black text-sm active:translate-x-0.5 active:translate-y-0.5 transition shadow-[2px_2px_0px_#000]"
           >
             Batal
           </Link>
@@ -405,9 +405,9 @@ export default function CreateModulePage() {
           <button
             type="submit"
             disabled={submitting}
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm shadow-md transition active:scale-95 disabled:opacity-50"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-[#D4F63D] hover:bg-[#c2e42e] text-black font-black text-sm border-2 border-black shadow-[4px_4px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 transition disabled:opacity-50 cursor-pointer"
           >
-            <Sparkles className="w-4 h-4" />
+            <Sparkles className="w-4 h-4 stroke-[2.5]" />
             <span>{submitting ? 'Menyimpan...' : 'Simpan Modul & Flashcards'}</span>
           </button>
         </div>

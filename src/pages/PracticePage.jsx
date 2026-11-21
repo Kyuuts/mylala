@@ -269,18 +269,18 @@ export default function PracticePage() {
 
   return (
     <div className="space-y-8 py-2">
-      {/* 1. Header Banner */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 text-white p-6 sm:p-8 shadow-md">
+      {/* 1. Header Banner - Neo-Brutalism */}
+      <div className="relative overflow-hidden rounded-3xl bg-[#FF85C0] text-black p-6 sm:p-8 border-3 border-black shadow-[6px_6px_0px_#000]">
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-3 max-w-xl">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-white/20 backdrop-blur-md">
-              <Zap className="w-3.5 h-3.5 text-yellow-200" />
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-black bg-white border-2 border-black shadow-[2px_2px_0px_#000] text-black uppercase">
+              <Zap className="w-3.5 h-3.5 stroke-[2.5]" />
               <span>Arena Latihan • 6 Mode Interaktif Penuh</span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
+            <h1 className="text-2xl sm:text-3xl font-black text-black tracking-tight uppercase">
               Pusat Pelatihan &amp; Pengasahan Skill
             </h1>
-            <p className="text-xs sm:text-sm text-orange-100 leading-relaxed">
+            <p className="text-xs sm:text-sm text-black/80 font-bold leading-relaxed">
               Ubah pengetahuan pasif menjadi kemampuan aktif. Pilih salah satu mode latihan di bawah untuk melatih ingatan kartu, kejelian detektif, telinga dikte, menulis, hingga simulasi dialog!
             </p>
 
@@ -297,19 +297,19 @@ export default function PracticePage() {
           </div>
 
           {/* Quick Metrics Badge */}
-          <div className="bg-black/20 backdrop-blur-md rounded-2xl p-4 border border-white/20 flex items-center justify-around gap-5 text-center shrink-0">
+          <div className="bg-white rounded-2xl p-4 border-2 border-black shadow-[3px_3px_0px_#000] flex items-center justify-around gap-5 text-center shrink-0">
             <div>
-              <span className="text-[10px] font-bold uppercase tracking-wider text-white/80">Streak</span>
-              <p className="text-2xl font-extrabold text-white flex items-center justify-center gap-1">
-                <Flame className="w-5 h-5 text-amber-300 fill-current" />
+              <span className="text-[10px] font-black uppercase tracking-wider text-black/70">Streak</span>
+              <p className="text-2xl font-black text-black flex items-center justify-center gap-1">
+                <Flame className="w-5 h-5 text-amber-500 fill-current" />
                 {streak || 1} Hari
               </p>
             </div>
-            <div className="w-px h-10 bg-white/20" />
+            <div className="w-0.5 h-10 bg-black/20" />
             <div>
-              <span className="text-[10px] font-bold uppercase tracking-wider text-white/80">XP Latihan</span>
-              <p className="text-2xl font-extrabold text-amber-200 flex items-center justify-center gap-1">
-                <Trophy className="w-5 h-5 text-amber-300" />
+              <span className="text-[10px] font-black uppercase tracking-wider text-black/70">XP Latihan</span>
+              <p className="text-2xl font-black text-black flex items-center justify-center gap-1">
+                <Trophy className="w-5 h-5 text-amber-500 stroke-[2.5]" />
                 {weeklyXp || 0}
               </p>
             </div>
@@ -324,48 +324,48 @@ export default function PracticePage() {
           return (
             <div
               key={mode.id}
-              className="bg-white rounded-3xl border border-slate-200/90 p-5 sm:p-6 shadow-2xs hover:shadow-md hover:border-indigo-300 transition-all flex flex-col justify-between group"
+              className="bg-white rounded-3xl border-2.5 border-black p-5 sm:p-6 shadow-[4px_4px_0px_#000] hover:shadow-[6px_6px_0px_#000] hover:-translate-y-0.5 transition-all flex flex-col justify-between group"
             >
               <div className="space-y-3.5">
                 <div className="flex items-center justify-between">
-                  <div className="w-12 h-12 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center text-indigo-600 group-hover:scale-105 group-hover:bg-indigo-50 transition-all">
-                    <Icon className="w-6 h-6 stroke-[2]" />
+                  <div className="w-12 h-12 rounded-2xl bg-[#D4F63D] border-2 border-black shadow-[2px_2px_0px_#000] flex items-center justify-center text-black font-black group-hover:scale-105 transition-all">
+                    <Icon className="w-6 h-6 stroke-[2.5]" />
                   </div>
-                  <span className={`px-2.5 py-1 rounded-full text-[10px] font-extrabold border ${mode.badgeClass}`}>
+                  <span className="px-2.5 py-1 rounded-xl text-[10px] font-black border-2 border-black shadow-[1.5px_1.5px_0px_#000] bg-[#FFD166] text-black">
                     {mode.badge}
                   </span>
                 </div>
 
                 <div>
-                  <h2 className="text-base font-extrabold text-slate-900 group-hover:text-indigo-600 transition">
+                  <h2 className="text-base font-black text-black group-hover:text-indigo-600 transition">
                     {mode.title}
                   </h2>
-                  <p className="text-xs font-semibold text-slate-400 mt-0.5">
+                  <p className="text-xs font-bold text-black/60 mt-0.5">
                     {mode.tagline}
                   </p>
                 </div>
 
-                <p className="text-xs text-slate-600 leading-relaxed">
+                <p className="text-xs text-black/80 font-medium leading-relaxed">
                   {mode.description}
                 </p>
               </div>
 
-              <div className="pt-5 mt-4 border-t border-slate-100">
+              <div className="pt-5 mt-4 border-t-2 border-black/15">
                 {mode.actionUrl ? (
                   <Link
                     to={mode.actionUrl}
-                    className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition shadow-xs active:scale-95 cursor-pointer"
+                    className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-[#D4F63D] hover:bg-[#c2e42f] text-black text-xs font-black border-2 border-black shadow-[2px_2px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 transition cursor-pointer"
                   >
                     <span>{mode.actionText}</span>
-                    <ArrowRight className="w-4 h-4" />
+                    <ArrowRight className="w-4 h-4 stroke-[2.5]" />
                   </Link>
                 ) : (
                   <button
                     onClick={mode.onClick}
-                    className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition shadow-xs active:scale-95 cursor-pointer"
+                    className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-white hover:bg-slate-100 text-black text-xs font-black border-2 border-black shadow-[2px_2px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 transition cursor-pointer"
                   >
                     <span>{mode.actionText}</span>
-                    <ArrowRight className="w-4 h-4" />
+                    <ArrowRight className="w-4 h-4 stroke-[2.5]" />
                   </button>
                 )}
               </div>
@@ -375,45 +375,47 @@ export default function PracticePage() {
       </div>
 
       {/* ======================================================== */}
-      {/* 3. INTERACTIVE MODAL ENGINES (TAHAP 3 FULL IMPLEMENTATION) */}
+      {/* 3. INTERACTIVE MODAL ENGINES (NEO-BRUTALISM THEMED) */}
       {/* ======================================================== */}
 
       {/* A. GRAMMAR DETECTIVE MODAL */}
       {activeModal === 'detective' && detQuestions[detIndex] && (
-        <div role="dialog" className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/80 backdrop-blur-md animate-fade-in">
-          <div className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl overflow-hidden p-6 space-y-5">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div role="dialog" className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/75 animate-fade-in">
+          <div className="relative w-full max-w-lg bg-white rounded-3xl border-3 border-black shadow-[8px_8px_0px_#000] overflow-hidden p-6 space-y-5">
+            <div className="flex items-center justify-between border-b-2.5 border-black pb-3">
               <div className="flex items-center gap-2">
-                <span className="p-2 rounded-xl bg-amber-100 text-amber-700">
-                  <Search className="w-4 h-4" />
+                <span className="p-2 rounded-xl bg-[#FFD166] border-2 border-black shadow-[2px_2px_0px_#000] text-black">
+                  <Search className="w-4 h-4 stroke-[2.5]" />
                 </span>
                 <div>
-                  <span className="text-[10px] font-extrabold uppercase text-amber-700">Soal {detIndex + 1} dari {detQuestions.length}</span>
-                  <h3 className="font-extrabold text-slate-900 text-base">Grammar Detective 🕵️‍♂️</h3>
+                  <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md bg-black text-white inline-block mb-0.5">
+                    Soal {detIndex + 1} / {detQuestions.length}
+                  </span>
+                  <h3 className="font-black text-black text-base uppercase">Grammar Detective 🕵️‍♂️</h3>
                 </div>
               </div>
-              <button onClick={handleCloseModal} className="p-1 text-slate-400 hover:text-slate-600">
-                <X className="w-5 h-5" />
+              <button onClick={handleCloseModal} className="w-8 h-8 rounded-xl bg-white border-2 border-black shadow-[2px_2px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 text-black flex items-center justify-center transition cursor-pointer">
+                <X className="w-4 h-4 stroke-[2.5]" />
               </button>
             </div>
 
-            <p className="text-xs text-slate-500">
+            <p className="text-xs font-bold text-black/80">
               Temukan 1 bagian kata di bawah yang <strong>merusak tata bahasa kalimat</strong>:
             </p>
 
-            <div className="p-4 rounded-2xl bg-amber-50/70 border border-amber-200 text-slate-900 font-medium text-sm sm:text-base leading-relaxed">
+            <div className="p-4 rounded-2xl bg-[#FFD166]/25 border-2 border-black shadow-[2px_2px_0px_#000] text-black font-black text-sm sm:text-base leading-relaxed">
               "{detQuestions[detIndex].sentence}"
             </div>
 
             <div className="grid grid-cols-2 gap-2.5">
               {detQuestions[detIndex].options.map((opt) => {
                 const isCorrect = opt === detQuestions[detIndex].correct;
-                let style = 'border-slate-200 hover:border-amber-400 hover:bg-amber-50 text-slate-800';
+                let style = 'bg-white border-2 border-black text-black hover:bg-slate-100 shadow-[2px_2px_0px_#000]';
 
                 if (detSubmitted) {
-                  if (isCorrect) style = 'border-emerald-500 bg-emerald-50 text-emerald-900 font-bold';
-                  else if (detSelected === opt) style = 'border-rose-500 bg-rose-50 text-rose-900 font-bold';
-                  else style = 'border-slate-200 text-slate-400 opacity-60';
+                  if (isCorrect) style = 'border-2 border-black bg-[#80ED99] text-black font-black shadow-[2px_2px_0px_#000]';
+                  else if (detSelected === opt) style = 'border-2 border-black bg-[#FF85C0] text-black font-black shadow-[2px_2px_0px_#000]';
+                  else style = 'border-2 border-black/30 text-black/40 opacity-60 bg-slate-100';
                 }
 
                 return (
@@ -429,7 +431,7 @@ export default function PracticePage() {
                       }
                     }}
                     disabled={detSubmitted}
-                    className={`p-3 rounded-2xl border text-xs font-bold transition text-left cursor-pointer ${style}`}
+                    className={`p-3.5 rounded-2xl border text-xs font-bold transition text-left cursor-pointer active:translate-x-0.5 active:translate-y-0.5 ${style}`}
                   >
                     "{opt}"
                   </button>
@@ -438,18 +440,18 @@ export default function PracticePage() {
             </div>
 
             {detSubmitted && (
-              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-xs space-y-1.5 animate-fade-in">
-                <span className="font-bold text-slate-800">
+              <div className="p-4 rounded-2xl bg-white border-2 border-black shadow-[2px_2px_0px_#000] text-xs space-y-1.5 animate-fade-in">
+                <span className="font-black text-black block text-sm">
                   {detSelected === detQuestions[detIndex].correct ? '🎉 Analisis Tepat (+15 XP)!' : '❌ Belum Tepat'}
                 </span>
-                <p className="text-slate-600 leading-relaxed">
+                <p className="text-black/80 font-medium leading-relaxed">
                   {detQuestions[detIndex].explanation}
                 </p>
               </div>
             )}
 
-            <div className="flex items-center justify-between pt-2 border-t border-slate-100">
-              <span className="text-xs font-bold text-slate-500">Skor: {detScore} Benar</span>
+            <div className="flex items-center justify-between pt-2 border-t-2 border-black">
+              <span className="text-xs font-black text-black">Skor: {detScore} Benar</span>
               {detSubmitted && (
                 <button
                   onClick={() => {
@@ -461,7 +463,7 @@ export default function PracticePage() {
                       handleCloseModal();
                     }
                   }}
-                  className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold transition cursor-pointer"
+                  className="px-4 py-2 rounded-xl bg-[#D4F63D] hover:bg-[#c2e42f] text-black text-xs font-black border-2 border-black shadow-[2px_2px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 transition cursor-pointer"
                 >
                   {detIndex === detQuestions.length - 1 ? 'Selesai Tantangan' : 'Soal Berikutnya ➔'}
                 </button>
@@ -473,40 +475,42 @@ export default function PracticePage() {
 
       {/* B. BRIDGE BUILDER (CONJUNCTION) MODAL */}
       {activeModal === 'conjunction' && bbQuestions[bbIndex] && (
-        <div role="dialog" className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/80 backdrop-blur-md animate-fade-in">
-          <div className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl overflow-hidden p-6 space-y-5">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div role="dialog" className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/75 animate-fade-in">
+          <div className="relative w-full max-w-lg bg-white rounded-3xl border-3 border-black shadow-[8px_8px_0px_#000] overflow-hidden p-6 space-y-5">
+            <div className="flex items-center justify-between border-b-2.5 border-black pb-3">
               <div className="flex items-center gap-2">
-                <span className="p-2 rounded-xl bg-teal-100 text-teal-700">
-                  <GitCommit className="w-4 h-4" />
+                <span className="p-2 rounded-xl bg-[#70D6FF] border-2 border-black shadow-[2px_2px_0px_#000] text-black">
+                  <GitCommit className="w-4 h-4 stroke-[2.5]" />
                 </span>
                 <div>
-                  <span className="text-[10px] font-extrabold uppercase text-teal-700">Tantangan {bbIndex + 1} dari {bbQuestions.length}</span>
-                  <h3 className="font-extrabold text-slate-900 text-base">Bridge Builder 🌉</h3>
+                  <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md bg-black text-white inline-block mb-0.5">
+                    Tantangan {bbIndex + 1} / {bbQuestions.length}
+                  </span>
+                  <h3 className="font-black text-black text-base uppercase">Bridge Builder 🌉</h3>
                 </div>
               </div>
-              <button onClick={handleCloseModal} className="p-1 text-slate-400 hover:text-slate-600">
-                <X className="w-5 h-5" />
+              <button onClick={handleCloseModal} className="w-8 h-8 rounded-xl bg-white border-2 border-black shadow-[2px_2px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 text-black flex items-center justify-center transition cursor-pointer">
+                <X className="w-4 h-4 stroke-[2.5]" />
               </button>
             </div>
 
-            <p className="text-xs text-slate-500">
+            <p className="text-xs font-bold text-black/80">
               Pilih kata hubung (konektor) yang paling tepat untuk mengisi bagian rumpang:
             </p>
 
-            <div className="p-4 rounded-2xl bg-teal-50/70 border border-teal-200 text-slate-900 font-medium text-sm sm:text-base leading-relaxed">
+            <div className="p-4 rounded-2xl bg-[#70D6FF]/20 border-2 border-black shadow-[2px_2px_0px_#000] text-black font-black text-sm sm:text-base leading-relaxed">
               "{bbQuestions[bbIndex].context}"
             </div>
 
             <div className="grid grid-cols-2 gap-2.5">
               {bbQuestions[bbIndex].options.map((opt) => {
                 const isCorrect = opt === bbQuestions[bbIndex].correct;
-                let style = 'border-slate-200 hover:border-teal-400 hover:bg-teal-50 text-slate-800';
+                let style = 'bg-white border-2 border-black text-black hover:bg-slate-100 shadow-[2px_2px_0px_#000]';
 
                 if (bbSubmitted) {
-                  if (isCorrect) style = 'border-emerald-500 bg-emerald-50 text-emerald-900 font-bold';
-                  else if (bbSelected === opt) style = 'border-rose-500 bg-rose-50 text-rose-900 font-bold';
-                  else style = 'border-slate-200 text-slate-400 opacity-60';
+                  if (isCorrect) style = 'border-2 border-black bg-[#80ED99] text-black font-black shadow-[2px_2px_0px_#000]';
+                  else if (bbSelected === opt) style = 'border-2 border-black bg-[#FF85C0] text-black font-black shadow-[2px_2px_0px_#000]';
+                  else style = 'border-2 border-black/30 text-black/40 opacity-60 bg-slate-100';
                 }
 
                 return (
@@ -522,7 +526,7 @@ export default function PracticePage() {
                       }
                     }}
                     disabled={bbSubmitted}
-                    className={`p-3 rounded-2xl border text-xs font-bold transition text-center cursor-pointer ${style}`}
+                    className={`p-3.5 rounded-2xl border text-xs font-bold transition text-center cursor-pointer active:translate-x-0.5 active:translate-y-0.5 ${style}`}
                   >
                     {opt}
                   </button>
@@ -531,18 +535,18 @@ export default function PracticePage() {
             </div>
 
             {bbSubmitted && (
-              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-xs space-y-1.5 animate-fade-in">
-                <span className="font-bold text-slate-800">
+              <div className="p-4 rounded-2xl bg-white border-2 border-black shadow-[2px_2px_0px_#000] text-xs space-y-1.5 animate-fade-in">
+                <span className="font-black text-black block text-sm">
                   {bbSelected === bbQuestions[bbIndex].correct ? '🎉 Jembatan Logika Benar (+15 XP)!' : '❌ Belum Tepat'}
                 </span>
-                <p className="text-slate-600 leading-relaxed">
+                <p className="text-black/80 font-medium leading-relaxed">
                   {bbQuestions[bbIndex].explanation}
                 </p>
               </div>
             )}
 
-            <div className="flex items-center justify-between pt-2 border-t border-slate-100">
-              <span className="text-xs font-bold text-slate-500">Skor: {bbScore} Benar</span>
+            <div className="flex items-center justify-between pt-2 border-t-2 border-black">
+              <span className="text-xs font-black text-black">Skor: {bbScore} Benar</span>
               {bbSubmitted && (
                 <button
                   onClick={() => {
@@ -554,7 +558,7 @@ export default function PracticePage() {
                       handleCloseModal();
                     }
                   }}
-                  className="px-4 py-2 rounded-xl bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold transition cursor-pointer"
+                  className="px-4 py-2 rounded-xl bg-[#D4F63D] hover:bg-[#c2e42f] text-black text-xs font-black border-2 border-black shadow-[2px_2px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 transition cursor-pointer"
                 >
                   {bbIndex === bbQuestions.length - 1 ? 'Selesai Tantangan' : 'Tantangan Berikutnya ➔'}
                 </button>
@@ -566,47 +570,49 @@ export default function PracticePage() {
 
       {/* C. DICTATION (EAR MASTER) MODAL */}
       {activeModal === 'dictation' && dtQuestions[dtIndex] && (
-        <div role="dialog" className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/80 backdrop-blur-md animate-fade-in">
-          <div className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl overflow-hidden p-6 space-y-5">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div role="dialog" className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/75 animate-fade-in">
+          <div className="relative w-full max-w-lg bg-white rounded-3xl border-3 border-black shadow-[8px_8px_0px_#000] overflow-hidden p-6 space-y-5">
+            <div className="flex items-center justify-between border-b-2.5 border-black pb-3">
               <div className="flex items-center gap-2">
-                <span className="p-2 rounded-xl bg-sky-100 text-sky-700">
-                  <Headphones className="w-4 h-4" />
+                <span className="p-2 rounded-xl bg-[#80ED99] border-2 border-black shadow-[2px_2px_0px_#000] text-black">
+                  <Headphones className="w-4 h-4 stroke-[2.5]" />
                 </span>
                 <div>
-                  <span className="text-[10px] font-extrabold uppercase text-sky-700">Dikte {dtIndex + 1} dari {dtQuestions.length}</span>
-                  <h3 className="font-extrabold text-slate-900 text-base">Ear Master (Dikte) 🎧</h3>
+                  <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md bg-black text-white inline-block mb-0.5">
+                    Dikte {dtIndex + 1} / {dtQuestions.length}
+                  </span>
+                  <h3 className="font-black text-black text-base uppercase">Ear Master (Dikte) 🎧</h3>
                 </div>
               </div>
-              <button onClick={handleCloseModal} className="p-1 text-slate-400 hover:text-slate-600">
-                <X className="w-5 h-5" />
+              <button onClick={handleCloseModal} className="w-8 h-8 rounded-xl bg-white border-2 border-black shadow-[2px_2px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 text-black flex items-center justify-center transition cursor-pointer">
+                <X className="w-4 h-4 stroke-[2.5]" />
               </button>
             </div>
 
             {/* Audio Triggers */}
-            <div className="p-5 rounded-2xl bg-sky-50/70 border border-sky-200 text-center space-y-3">
-              <span className="text-xs text-sky-800 font-semibold block">
+            <div className="p-5 rounded-2xl bg-[#D4F63D]/25 border-2 border-black shadow-[2px_2px_0px_#000] text-center space-y-3">
+              <span className="text-xs text-black font-black block">
                 Dengarkan audio penutur asli di bawah, lalu ketik yang kamu dengar:
               </span>
 
               <div className="flex items-center justify-center gap-3">
                 <button
                   onClick={() => handleSpeak(dtQuestions[dtIndex].targetSentence, 1.0)}
-                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold shadow-xs active:scale-95 transition cursor-pointer"
+                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#D4F63D] hover:bg-[#c2e42f] text-black text-xs font-black border-2 border-black shadow-[2px_2px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 transition cursor-pointer"
                 >
-                  <Volume2 className="w-4 h-4" />
+                  <Volume2 className="w-4 h-4 stroke-[2.5]" />
                   <span>Putar Normal (1.0x)</span>
                 </button>
 
                 <button
                   onClick={() => handleSpeak(dtQuestions[dtIndex].targetSentence, 0.75)}
-                  className="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-white hover:bg-sky-100 text-sky-800 text-xs font-bold border border-sky-200 active:scale-95 transition cursor-pointer"
+                  className="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-white hover:bg-slate-100 text-black text-xs font-black border-2 border-black shadow-[2px_2px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 transition cursor-pointer"
                 >
                   <span>🐢 Santai (0.75x)</span>
                 </button>
               </div>
 
-              <p className="text-[11px] text-slate-400">
+              <p className="text-[11px] text-black/70 font-bold">
                 Petunjuk konteks: <em>{dtQuestions[dtIndex].hint}</em>
               </p>
             </div>
@@ -619,35 +625,36 @@ export default function PracticePage() {
                 disabled={dtEvaluated}
                 placeholder="Ketik kalimat bahasa Inggris yang kamu dengar di sini..."
                 rows={3}
-                className="w-full p-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-sm text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-sky-500 focus:bg-white transition"
+                className="w-full p-3.5 rounded-2xl bg-white border-2 border-black shadow-[2px_2px_0px_#000] text-sm font-bold text-black focus:outline-hidden focus:bg-[#D4F63D]/10 transition"
               />
             </div>
 
             {/* Evaluation Results */}
             {dtEvaluated && (
-              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2 text-xs animate-fade-in">
+              <div className="p-4 rounded-2xl bg-white border-2 border-black shadow-[2px_2px_0px_#000] space-y-2 text-xs animate-fade-in">
                 <div className="flex items-center justify-between">
-                  <span className="font-extrabold text-slate-800">Hasil Evaluasi Dikte:</span>
-                  <span className="px-2.5 py-0.5 rounded-full bg-sky-100 text-sky-800 font-extrabold text-xs">
+                  <span className="font-black text-black">Hasil Evaluasi Dikte:</span>
+                  <span className="px-2.5 py-0.5 rounded-md bg-[#80ED99] text-black border border-black font-black text-xs">
                     {dtAccuracy}% Akurat
                   </span>
                 </div>
 
                 <div className="space-y-1">
-                  <span className="text-slate-400 block text-[10px] uppercase font-bold">Kalimat Sasaran:</span>
-                  <p className="font-bold text-slate-900 text-sm">
+                  <span className="text-black/60 block text-[10px] uppercase font-black">Kalimat Sasaran:</span>
+                  <p className="font-black text-black text-sm">
                     "{dtQuestions[dtIndex].targetSentence}"
                   </p>
                 </div>
               </div>
             )}
 
-            <div className="flex items-center justify-between pt-2 border-t border-slate-100">
+            <div className="flex items-center justify-between pt-2 border-t-2 border-black">
               <button
                 onClick={() => handleSpeak(dtQuestions[dtIndex].targetSentence, 1.0)}
-                className="text-xs text-sky-700 font-bold hover:underline"
+                className="text-xs text-black font-black hover:underline flex items-center gap-1"
               >
-                Putar Ulang 🔊
+                <span>Putar Ulang</span>
+                <Volume2 className="w-3.5 h-3.5 stroke-[2.5]" />
               </button>
 
               {!dtEvaluated ? (
@@ -671,7 +678,7 @@ export default function PracticePage() {
                     }
                   }}
                   disabled={!dtInput.trim()}
-                  className="px-5 py-2.5 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold shadow-xs transition disabled:opacity-40 cursor-pointer"
+                  className="px-5 py-2.5 rounded-xl bg-[#D4F63D] hover:bg-[#c2e42f] text-black text-xs font-black border-2 border-black shadow-[2px_2px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 transition cursor-pointer disabled:opacity-50"
                 >
                   Periksa Ejaan ➔
                 </button>
@@ -686,7 +693,7 @@ export default function PracticePage() {
                       handleCloseModal();
                     }
                   }}
-                  className="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold shadow-xs transition cursor-pointer"
+                  className="px-4 py-2 rounded-xl bg-black text-white text-xs font-black border-2 border-black shadow-[2px_2px_0px_#fff] active:translate-x-0.5 active:translate-y-0.5 transition cursor-pointer"
                 >
                   {dtIndex === dtQuestions.length - 1 ? 'Selesai Sesi' : 'Dikte Berikutnya ➔'}
                 </button>
@@ -698,21 +705,23 @@ export default function PracticePage() {
 
       {/* D. ROLEPLAY LOUNGE MODAL */}
       {activeModal === 'roleplay' && rpScenarios[rpScenarioIndex] && (
-        <div role="dialog" className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/80 backdrop-blur-md animate-fade-in">
-          <div className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl overflow-hidden p-6 space-y-4 flex flex-col max-h-[92vh]">
+        <div role="dialog" className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/75 animate-fade-in">
+          <div className="relative w-full max-w-lg bg-white rounded-3xl border-3 border-black shadow-[8px_8px_0px_#000] overflow-hidden p-6 space-y-4 flex flex-col max-h-[92vh]">
             {/* Header */}
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+            <div className="flex items-center justify-between border-b-2.5 border-black pb-3">
               <div className="flex items-center gap-2">
-                <span className="p-2 rounded-xl bg-emerald-100 text-emerald-700 text-lg">
+                <span className="p-2 rounded-xl bg-[#FF85C0] border-2 border-black shadow-[2px_2px_0px_#000] text-black text-lg">
                   {rpScenarios[rpScenarioIndex].avatar}
                 </span>
                 <div>
-                  <span className="text-[10px] font-extrabold uppercase text-emerald-700">Simulasi Dialog Interaktif</span>
-                  <h3 className="font-extrabold text-slate-900 text-base">{rpScenarios[rpScenarioIndex].title}</h3>
+                  <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md bg-black text-white inline-block mb-0.5">
+                    Simulasi Dialog Interaktif
+                  </span>
+                  <h3 className="font-black text-black text-base uppercase">{rpScenarios[rpScenarioIndex].title}</h3>
                 </div>
               </div>
-              <button onClick={handleCloseModal} className="p-1 text-slate-400 hover:text-slate-600">
-                <X className="w-5 h-5" />
+              <button onClick={handleCloseModal} className="w-8 h-8 rounded-xl bg-white border-2 border-black shadow-[2px_2px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 text-black flex items-center justify-center transition cursor-pointer">
+                <X className="w-4 h-4 stroke-[2.5]" />
               </button>
             </div>
 
@@ -724,10 +733,10 @@ export default function PracticePage() {
                   className={`flex flex-col ${item.sender === 'user' ? 'items-end' : 'items-start'} space-y-1`}
                 >
                   <div
-                    className={`p-3.5 rounded-2xl text-xs sm:text-sm max-w-[85%] leading-relaxed ${
+                    className={`p-3.5 rounded-2xl text-xs sm:text-sm max-w-[85%] leading-relaxed border-2 border-black shadow-[2px_2px_0px_#000] ${
                       item.sender === 'user'
-                        ? 'bg-indigo-600 text-white rounded-br-xs'
-                        : 'bg-slate-100 text-slate-900 rounded-bl-xs'
+                        ? 'bg-[#B388FF] text-black font-bold'
+                        : 'bg-[#F8FAFC] text-black font-medium'
                     }`}
                   >
                     <div className="flex items-start justify-between gap-2">
@@ -735,17 +744,17 @@ export default function PracticePage() {
                       {item.sender === 'npc' && (
                         <button
                           onClick={() => handleSpeak(item.text)}
-                          className="text-slate-400 hover:text-indigo-600 p-0.5 rounded shrink-0"
+                          className="text-black hover:opacity-70 p-0.5 rounded shrink-0 cursor-pointer"
                           title="Dengar suara"
                         >
-                          <Volume2 className="w-3.5 h-3.5" />
+                          <Volume2 className="w-3.5 h-3.5 stroke-[2.5]" />
                         </button>
                       )}
                     </div>
                   </div>
 
                   {item.feedback && (
-                    <span className="text-[10px] text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded-md">
+                    <span className="text-[10px] text-black font-black bg-[#80ED99] border border-black px-2 py-0.5 rounded-md shadow-xs">
                       💡 {item.feedback}
                     </span>
                   )}
@@ -755,19 +764,17 @@ export default function PracticePage() {
 
             {/* Response Options */}
             {!rpCompleted ? (
-              <div className="space-y-2 pt-2 border-t border-slate-100">
-                <span className="text-[11px] font-bold text-slate-500 block">Pilih respons balasan Anda:</span>
+              <div className="space-y-2 pt-2 border-t-2 border-black">
+                <span className="text-[11px] font-black text-black block uppercase tracking-wider">Pilih respons balasan Anda:</span>
                 {rpScenarios[rpScenarioIndex].turns[rpTurnIndex]?.options.map((opt, oIdx) => (
                   <button
                     key={oIdx}
                     onClick={() => {
-                      // 1. Add user message
                       const newHistory = [
                         ...rpHistory,
                         { sender: 'user', text: opt.text, feedback: opt.feedback },
                       ];
 
-                      // 2. Add NPC reply
                       if (opt.npcReply) {
                         newHistory.push({ sender: 'npc', text: opt.npcReply });
                       }
@@ -775,29 +782,28 @@ export default function PracticePage() {
                       setRpHistory(newHistory);
                       addXp(15, 'Roleplay Dialogue');
 
-                      // 3. Check if more turns exist
                       if (rpTurnIndex < rpScenarios[rpScenarioIndex].turns.length - 1) {
                         setRpTurnIndex((t) => t + 1);
                       } else {
                         setRpCompleted(true);
                       }
                     }}
-                    className="w-full p-3 rounded-2xl border border-slate-200 hover:border-emerald-500 hover:bg-emerald-50/50 text-left text-xs font-semibold text-slate-800 transition active:scale-95 cursor-pointer leading-snug"
+                    className="w-full p-3 rounded-2xl border-2 border-black bg-white hover:bg-[#D4F63D] text-left text-xs font-bold text-black shadow-[2px_2px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 transition cursor-pointer leading-snug"
                   >
                     "{opt.text}"
                   </button>
                 ))}
               </div>
             ) : (
-              <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-center space-y-2 animate-fade-in">
-                <span className="text-xl">🏆</span>
-                <h4 className="font-extrabold text-emerald-900 text-sm">Skenario Percakapan Tuntas!</h4>
-                <p className="text-xs text-emerald-700">
+              <div className="p-4 rounded-2xl bg-[#80ED99] border-2 border-black shadow-[3px_3px_0px_#000] text-center space-y-2 animate-fade-in text-black">
+                <span className="text-2xl">🏆</span>
+                <h4 className="font-black text-black text-sm uppercase">Skenario Percakapan Tuntas!</h4>
+                <p className="text-xs font-bold text-black/80">
                   Kamu telah menyelesaikan percakapan dengan lancar dan sopan. Bonus +25 XP telah ditambahkan!
                 </p>
                 <button
                   onClick={handleCloseModal}
-                  className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition shadow-xs cursor-pointer"
+                  className="px-5 py-2.5 rounded-xl bg-black text-white text-xs font-black border-2 border-black shadow-[2px_2px_0px_#fff] active:translate-x-0.5 active:translate-y-0.5 transition cursor-pointer"
                 >
                   Selesai &amp; Keluar Lounge
                 </button>
@@ -809,50 +815,51 @@ export default function PracticePage() {
 
       {/* E. SENTENCE BUILDER MODAL */}
       {activeModal === 'builder' && sbChallenges[sbIndex] && (
-        <div role="dialog" className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/80 backdrop-blur-md animate-fade-in">
-          <div className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl overflow-hidden p-6 space-y-5">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div role="dialog" className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/75 animate-fade-in">
+          <div className="relative w-full max-w-lg bg-white rounded-3xl border-3 border-black shadow-[8px_8px_0px_#000] overflow-hidden p-6 space-y-5">
+            <div className="flex items-center justify-between border-b-2.5 border-black pb-3">
               <div className="flex items-center gap-2">
-                <span className="p-2 rounded-xl bg-purple-100 text-purple-700">
-                  <PenTool className="w-4 h-4" />
+                <span className="p-2 rounded-xl bg-[#B388FF] border-2 border-black shadow-[2px_2px_0px_#000] text-black">
+                  <PenTool className="w-4 h-4 stroke-[2.5]" />
                 </span>
                 <div>
-                  <span className="text-[10px] font-extrabold uppercase text-purple-700">Level {sbIndex + 1} dari {sbChallenges.length}</span>
-                  <h3 className="font-extrabold text-slate-900 text-base">Sentence Builder ✍️</h3>
+                  <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md bg-black text-white inline-block mb-0.5">
+                    Level {sbIndex + 1} / {sbChallenges.length}
+                  </span>
+                  <h3 className="font-black text-black text-base uppercase">Sentence Builder ✍️</h3>
                 </div>
               </div>
-              <button onClick={handleCloseModal} className="p-1 text-slate-400 hover:text-slate-600">
-                <X className="w-5 h-5" />
+              <button onClick={handleCloseModal} className="w-8 h-8 rounded-xl bg-white border-2 border-black shadow-[2px_2px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 text-black flex items-center justify-center transition cursor-pointer">
+                <X className="w-4 h-4 stroke-[2.5]" />
               </button>
             </div>
 
             {/* Target Meaning */}
-            <div className="p-4 rounded-2xl bg-purple-50/70 border border-purple-200 space-y-1">
-              <span className="text-[10px] font-extrabold uppercase tracking-wider text-purple-700">
+            <div className="p-4 rounded-2xl bg-[#B388FF]/20 border-2 border-black shadow-[2px_2px_0px_#000] space-y-1">
+              <span className="text-[10px] font-black uppercase tracking-wider text-black block">
                 Susun ke Kalimat Bahasa Inggris:
               </span>
-              <p className="font-bold text-slate-900 text-sm sm:text-base leading-snug">
+              <p className="font-black text-black text-sm sm:text-base leading-snug">
                 "{sbChallenges[sbIndex].indonesianMeaning}"
               </p>
             </div>
 
             {/* Placement Workspace */}
             <div className="space-y-1.5">
-              <span className="text-[11px] font-bold text-slate-400">Area Susunan Kalimat (Ketuk balok untuk melepas):</span>
-              <div className="min-h-16 p-3 rounded-2xl border-2 border-dashed border-slate-300 bg-slate-50 flex flex-wrap gap-2 items-center">
+              <span className="text-[11px] font-black text-black uppercase">Area Susunan Kalimat (Ketuk balok untuk melepas):</span>
+              <div className="min-h-16 p-3 rounded-2xl border-2 border-dashed border-black bg-[#F8FAFC] flex flex-wrap gap-2 items-center">
                 {sbPlacedTokens.length === 0 ? (
-                  <span className="text-xs text-slate-400 italic">Ketuk balok kata di bawah untuk menyusun kalimat...</span>
+                  <span className="text-xs text-black/50 font-bold italic">Ketuk balok kata di bawah untuk menyusun kalimat...</span>
                 ) : (
                   sbPlacedTokens.map((token, tIdx) => (
                     <button
                       key={tIdx}
                       onClick={() => {
                         if (sbSubmitted) return;
-                        // Remove from placed, return to available
                         setSbPlacedTokens(sbPlacedTokens.filter((_, i) => i !== tIdx));
                         setSbAvailableTokens([...sbAvailableTokens, token]);
                       }}
-                      className="px-3 py-1.5 rounded-xl bg-indigo-600 text-white font-extrabold text-xs shadow-xs hover:bg-rose-600 transition cursor-pointer"
+                      className="px-3 py-1.5 rounded-xl bg-[#D4F63D] text-black font-black text-xs border-2 border-black shadow-[2px_2px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 hover:bg-rose-300 transition cursor-pointer"
                     >
                       {token}
                     </button>
@@ -863,8 +870,8 @@ export default function PracticePage() {
 
             {/* Available Tokens Pool */}
             <div className="space-y-1.5">
-              <span className="text-[11px] font-bold text-slate-400">Pilihan Balok Kata:</span>
-              <div className="flex flex-wrap gap-2 p-2 bg-slate-100 rounded-2xl min-h-12 items-center">
+              <span className="text-[11px] font-black text-black uppercase">Pilihan Balok Kata:</span>
+              <div className="flex flex-wrap gap-2 p-2.5 bg-white border-2 border-black shadow-[2px_2px_0px_#000] rounded-2xl min-h-12 items-center">
                 {sbAvailableTokens.map((token, aIdx) => (
                   <button
                     key={aIdx}
@@ -873,7 +880,7 @@ export default function PracticePage() {
                       setSbPlacedTokens([...sbPlacedTokens, token]);
                       setSbAvailableTokens(sbAvailableTokens.filter((_, i) => i !== aIdx));
                     }}
-                    className="px-3 py-1.5 rounded-xl bg-white border border-slate-200 hover:border-indigo-400 text-slate-800 font-bold text-xs shadow-2xs hover:scale-105 active:scale-95 transition cursor-pointer"
+                    className="px-3 py-1.5 rounded-xl bg-white border-2 border-black text-black font-black text-xs shadow-[2px_2px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 hover:bg-[#70D6FF] transition cursor-pointer"
                   >
                     {token}
                   </button>
@@ -883,26 +890,26 @@ export default function PracticePage() {
 
             {/* Submit Feedback */}
             {sbSubmitted && (
-              <div className={`p-4 rounded-2xl text-xs space-y-1.5 animate-fade-in ${sbIsCorrect ? 'bg-emerald-50 text-emerald-900 border border-emerald-200' : 'bg-rose-50 text-rose-900 border border-rose-200'}`}>
-                <span className="font-extrabold">
+              <div className={`p-4 rounded-2xl text-xs space-y-1.5 animate-fade-in border-2 border-black shadow-[2px_2px_0px_#000] ${sbIsCorrect ? 'bg-[#80ED99] text-black font-bold' : 'bg-[#FF85C0] text-black font-bold'}`}>
+                <span className="font-black block text-sm">
                   {sbIsCorrect ? '🎉 Susunan Sempurna (+20 XP)!' : '❌ Susunan Belum Pas'}
                 </span>
-                <p className="leading-relaxed text-slate-600">
+                <p className="leading-relaxed text-black/80 font-medium">
                   {sbChallenges[sbIndex].explanation}
                 </p>
               </div>
             )}
 
-            <div className="flex items-center justify-between pt-2 border-t border-slate-100">
+            <div className="flex items-center justify-between pt-2 border-t-2 border-black">
               <button
                 onClick={() => {
                   setSbPlacedTokens([]);
                   setSbAvailableTokens([...sbChallenges[sbIndex].scrambled]);
                   setSbSubmitted(false);
                 }}
-                className="inline-flex items-center gap-1 text-xs font-bold text-slate-500 hover:text-slate-800"
+                className="inline-flex items-center gap-1 text-xs font-black text-black hover:underline cursor-pointer"
               >
-                <RotateCcw className="w-3.5 h-3.5" />
+                <RotateCcw className="w-3.5 h-3.5 stroke-[2.5]" />
                 <span>Reset Susunan</span>
               </button>
 
@@ -920,7 +927,7 @@ export default function PracticePage() {
                     }
                   }}
                   disabled={sbPlacedTokens.length === 0}
-                  className="px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold shadow-xs transition disabled:opacity-40 cursor-pointer"
+                  className="px-5 py-2.5 rounded-xl bg-[#D4F63D] hover:bg-[#c2e42f] text-black text-xs font-black border-2 border-black shadow-[2px_2px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 transition disabled:opacity-40 cursor-pointer"
                 >
                   Periksa Susunan ➔
                 </button>
@@ -938,7 +945,7 @@ export default function PracticePage() {
                       handleCloseModal();
                     }
                   }}
-                  className="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold shadow-xs transition cursor-pointer"
+                  className="px-5 py-2.5 rounded-xl bg-black text-white text-xs font-black border-2 border-black shadow-[2px_2px_0px_#fff] active:translate-x-0.5 active:translate-y-0.5 transition cursor-pointer"
                 >
                   {sbIndex === sbChallenges.length - 1 ? 'Selesai Tantangan' : 'Level Berikutnya ➔'}
                 </button>

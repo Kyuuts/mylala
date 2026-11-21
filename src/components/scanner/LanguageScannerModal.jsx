@@ -104,20 +104,20 @@ export default function LanguageScannerModal({ isOpen, onClose, onSelectLevel })
     <div
       role="dialog"
       aria-modal="true"
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/80 backdrop-blur-md animate-fade-in"
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-xs animate-fade-in"
     >
-      <div className="relative w-full max-w-xl bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[94vh]">
+      <div className="relative w-full max-w-xl bg-white rounded-3xl border-3 border-black shadow-[8px_8px_0px_#000] overflow-hidden flex flex-col max-h-[94vh]">
         {/* Top Header */}
-        <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/70">
+        <div className="px-5 sm:px-6 py-3.5 sm:py-4 border-b-2.5 border-black flex items-center justify-between bg-[#70D6FF]">
           <div className="flex items-center gap-2.5">
-            <div className="p-2 rounded-xl bg-indigo-50 text-indigo-600">
-              <Compass className="w-5 h-5" />
+            <div className="p-2 rounded-xl bg-white border-2 border-black shadow-[2px_2px_0px_#000] text-black">
+              <Compass className="w-5 h-5 stroke-[2.5]" />
             </div>
             <div>
-              <span className="text-[10px] font-extrabold uppercase tracking-wider text-indigo-600">
+              <span className="text-[10px] font-black uppercase tracking-wider text-black">
                 The Language Scanner • CEFR Diagnostic
               </span>
-              <h3 className="text-base font-extrabold text-slate-900">
+              <h3 className="text-base font-black text-black">
                 Tes Penempatan Level Bahasa
               </h3>
             </div>
@@ -125,36 +125,36 @@ export default function LanguageScannerModal({ isOpen, onClose, onSelectLevel })
 
           <button
             onClick={onClose}
-            className="p-1 rounded-full text-slate-400 hover:text-slate-600 hover:bg-slate-200 transition"
+            className="w-8 h-8 rounded-xl bg-[#FF85C0] border-2 border-black shadow-[2px_2px_0px_#000] flex items-center justify-center text-black font-black hover:bg-black hover:text-white transition cursor-pointer"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4 stroke-[3]" />
           </button>
         </div>
 
         {/* Modal Body */}
-        <div className="p-6 sm:p-8 overflow-y-auto flex-1">
+        <div className="p-5 sm:p-8 overflow-y-auto flex-1">
           {/* STEP 1: INTRO */}
           {step === 'intro' && (
             <div className="space-y-6 text-center max-w-md mx-auto py-2">
-              <div className="w-20 h-20 rounded-3xl bg-gradient-to-tr from-indigo-500 to-purple-600 text-white flex items-center justify-center mx-auto shadow-lg shadow-indigo-500/25">
-                <Compass className="w-10 h-10 animate-spin-slow" />
+              <div className="w-20 h-20 rounded-3xl bg-[#FFD166] border-3 border-black shadow-[4px_4px_0px_#000] text-black flex items-center justify-center mx-auto">
+                <Compass className="w-10 h-10 stroke-[2.5] animate-spin-slow" />
               </div>
 
               <div className="space-y-2">
-                <h2 className="text-2xl font-extrabold text-slate-900 tracking-tight">
+                <h2 className="text-2xl font-black text-black tracking-tight uppercase">
                   Temukan Posisi Level Bahasa Inggrismu
                 </h2>
-                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                <p className="text-xs sm:text-sm text-black/70 font-bold leading-relaxed">
                   Jawab <strong>8 pertanyaan diagnostik cepat</strong> (dipilih acak dari <strong>5 Gerbong Soal / total 40 soal CEFR</strong>) untuk mendeteksi apakah kamu berada di level <strong>A1, A2, B1, B2</strong>, atau <strong>C1</strong>.
                 </p>
               </div>
 
-              <div className="p-4 rounded-2xl bg-indigo-50/60 border border-indigo-100 text-left space-y-2 text-xs">
-                <div className="flex items-center gap-2 font-bold text-indigo-900">
-                  <Sparkles className="w-4 h-4 text-indigo-600" />
+              <div className="p-4 rounded-2xl bg-[#F8FAFC] border-2 border-black shadow-[3px_3px_0px_#000] text-left space-y-2 text-xs">
+                <div className="flex items-center gap-2 font-black text-black">
+                  <Sparkles className="w-4 h-4 text-black stroke-[2.5]" />
                   <span>Apa yang Akan Kamu Dapatkan?</span>
                 </div>
-                <ul className="space-y-1 text-slate-600 list-disc list-inside">
+                <ul className="space-y-1.5 text-black/80 font-bold list-disc list-inside">
                   <li>Lencana resmi CEFR untuk profilmu</li>
                   <li>Rekomendasi modul &amp; artikel bacaan pertama yang paling pas</li>
                   <li>Bank soal adaptif 5 gerbong teruji agar tiap pengujian ulang selalu segar</li>
@@ -164,7 +164,7 @@ export default function LanguageScannerModal({ isOpen, onClose, onSelectLevel })
 
               <button
                 onClick={handleStart}
-                className="w-full py-3.5 px-6 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-sm shadow-md transition active:scale-95 cursor-pointer"
+                className="w-full py-3.5 px-6 rounded-2xl bg-[#D4F63D] hover:bg-[#c2e42e] text-black font-black text-sm border-2 border-black shadow-[4px_4px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 transition cursor-pointer"
               >
                 Mulai Scanner Level (3 Menit) 🚀
               </button>
@@ -176,32 +176,32 @@ export default function LanguageScannerModal({ isOpen, onClose, onSelectLevel })
             <div className="space-y-5">
               {/* Progress Bar & Header */}
               <div className="space-y-2">
-                <div className="flex items-center justify-between text-xs font-bold text-slate-500 gap-2 flex-wrap">
+                <div className="flex items-center justify-between text-xs font-black text-black gap-2 flex-wrap">
                   <div className="flex items-center gap-1.5 flex-wrap">
-                    <span className="px-2 py-0.5 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-700 font-extrabold text-[10px]">
+                    <span className="px-2.5 py-0.5 rounded-lg bg-[#FFD166] border-2 border-black shadow-[1px_1px_0px_#000] text-black font-black text-[10px]">
                       Gerbong {currentGerbongIndex + 1} dari 5 • {currentSet.badge}
                     </span>
                     <span>Pertanyaan {currentIndex + 1} dari {totalQuestions}</span>
                   </div>
-                  <span className="text-indigo-600 font-extrabold">{currentQuestion.levelLabel}</span>
+                  <span className="px-2 py-0.5 rounded-lg bg-[#D4F63D] border border-black text-black font-black">{currentQuestion.levelLabel}</span>
                 </div>
 
-                <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+                <div className="w-full bg-white rounded-full h-3 border-2 border-black p-0.5 overflow-hidden">
                   <div
-                    className="bg-gradient-to-r from-indigo-500 to-purple-600 h-2 rounded-full transition-all duration-300"
+                    className="bg-[#B388FF] h-full rounded-full transition-all duration-300 border border-black"
                     style={{ width: `${progressPercent}%` }}
                   />
                 </div>
               </div>
 
               {/* Question Prompt */}
-              <div className="space-y-3">
-                <p className="text-sm font-bold text-slate-700">
+              <div className="space-y-2.5">
+                <p className="text-sm font-black text-black">
                   {currentQuestion.prompt}
                 </p>
 
                 {currentQuestion.context && (
-                  <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-slate-900 font-medium text-sm sm:text-base leading-relaxed">
+                  <div className="p-4 rounded-2xl bg-[#F8FAFC] border-2 border-black shadow-[2px_2px_0px_#000] text-black font-bold text-sm sm:text-base leading-relaxed">
                     {currentQuestion.context}
                   </div>
                 )}
@@ -210,15 +210,15 @@ export default function LanguageScannerModal({ isOpen, onClose, onSelectLevel })
               {/* Options Grid */}
               <div className="space-y-2.5 pt-1">
                 {currentQuestion.options.map((option, idx) => {
-                  let btnStyle = 'border-slate-200 hover:border-indigo-400 hover:bg-indigo-50/40 text-slate-800';
+                  let btnStyle = 'border-black bg-white hover:bg-[#D4F63D]/30 text-black shadow-[2px_2px_0px_#000]';
 
                   if (isAnswerSubmitted) {
                     if (option.isCorrect) {
-                      btnStyle = 'border-emerald-500 bg-emerald-50 text-emerald-900 font-bold';
+                      btnStyle = 'border-black bg-[#80ED99] text-black font-black shadow-[3px_3px_0px_#000]';
                     } else if (selectedOption === idx) {
-                      btnStyle = 'border-rose-500 bg-rose-50 text-rose-900 font-bold';
+                      btnStyle = 'border-black bg-[#FF85C0] text-black font-black shadow-[3px_3px_0px_#000]';
                     } else {
-                      btnStyle = 'border-slate-200 text-slate-400 opacity-60';
+                      btnStyle = 'border-black bg-white text-black/40 opacity-60 shadow-none';
                     }
                   }
 
@@ -227,14 +227,14 @@ export default function LanguageScannerModal({ isOpen, onClose, onSelectLevel })
                       key={idx}
                       onClick={() => handleSelectOption(idx)}
                       disabled={isAnswerSubmitted}
-                      className={`w-full p-3.5 rounded-2xl border text-left text-xs sm:text-sm transition-all flex items-center justify-between gap-3 ${btnStyle} cursor-pointer`}
+                      className={`w-full p-3.5 rounded-2xl border-2 text-left text-xs sm:text-sm font-bold transition-all flex items-center justify-between gap-3 ${btnStyle} cursor-pointer active:translate-x-0.5 active:translate-y-0.5`}
                     >
                       <span className="leading-snug">{option.text}</span>
                       {isAnswerSubmitted && option.isCorrect && (
-                        <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                        <CheckCircle2 className="w-5 h-5 text-black stroke-[2.5] shrink-0" />
                       )}
                       {isAnswerSubmitted && selectedOption === idx && !option.isCorrect && (
-                        <XCircle className="w-4 h-4 text-rose-600 shrink-0" />
+                        <XCircle className="w-5 h-5 text-black stroke-[2.5] shrink-0" />
                       )}
                     </button>
                   );
@@ -243,19 +243,19 @@ export default function LanguageScannerModal({ isOpen, onClose, onSelectLevel })
 
               {/* Feedback Explanation */}
               {isAnswerSubmitted && (
-                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2 text-xs animate-fade-in">
-                  <div className="flex items-center gap-1.5 font-bold">
+                <div className="p-4 rounded-2xl bg-[#FFD166] border-2 border-black shadow-[3px_3px_0px_#000] space-y-1.5 text-xs animate-fade-in text-black">
+                  <div className="flex items-center gap-1.5 font-black">
                     {currentQuestion.options[selectedOption]?.isCorrect ? (
-                      <span className="text-emerald-700 flex items-center gap-1">
-                        <CheckCircle2 className="w-3.5 h-3.5" /> Jawaban Tepat!
+                      <span className="text-black flex items-center gap-1">
+                        <CheckCircle2 className="w-4 h-4 stroke-[2.5]" /> Jawaban Tepat!
                       </span>
                     ) : (
-                      <span className="text-rose-700 flex items-center gap-1">
-                        <XCircle className="w-3.5 h-3.5" /> Belum Tepat
+                      <span className="text-black flex items-center gap-1">
+                        <XCircle className="w-4 h-4 stroke-[2.5]" /> Belum Tepat
                       </span>
                     )}
                   </div>
-                  <p className="text-slate-600 leading-relaxed">
+                  <p className="font-bold leading-relaxed">
                     {currentQuestion.explanation}
                   </p>
                 </div>
@@ -268,73 +268,73 @@ export default function LanguageScannerModal({ isOpen, onClose, onSelectLevel })
             <div className="space-y-6 text-center max-w-md mx-auto py-2">
               {/* Badge Icon */}
               <div className="relative inline-block">
-                <div className="w-24 h-24 rounded-3xl bg-gradient-to-tr from-amber-400 via-orange-500 to-indigo-600 text-white flex items-center justify-center mx-auto text-5xl shadow-xl shadow-orange-500/20">
+                <div className="w-24 h-24 rounded-3xl bg-[#FFD166] border-3 border-black shadow-[5px_5px_0px_#000] text-black flex items-center justify-center mx-auto text-5xl">
                   {finalResult.badge}
                 </div>
-                <span className="absolute -bottom-2 -right-2 px-2.5 py-0.5 rounded-full bg-emerald-500 text-white text-[10px] font-extrabold shadow-sm">
+                <span className="absolute -bottom-2 -right-2 px-3 py-1 rounded-full bg-[#80ED99] text-black border-2 border-black text-[10px] font-black shadow-[2px_2px_0px_#000]">
                   +50 XP
                 </span>
               </div>
 
               {/* Level Title */}
               <div className="space-y-1.5">
-                <span className="text-[11px] font-extrabold uppercase tracking-wider text-indigo-600">
+                <span className="text-[11px] font-black uppercase tracking-wider text-black">
                   Hasil Penempatan CEFR Resmi
                 </span>
-                <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+                <h2 className="text-2xl sm:text-3xl font-black text-black tracking-tight uppercase">
                   {finalResult.levelCode} • {finalResult.title}
                 </h2>
-                <p className="text-xs font-bold text-slate-500">
+                <p className="text-xs font-black text-black/70">
                   {finalResult.role} &bull; {finalResult.accuracyPercent}% Akurasi ({correctAnswersCount} / 8 Benar)
                 </p>
               </div>
 
               {/* Summary */}
-              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed p-4 rounded-2xl bg-slate-50 border border-slate-200">
+              <p className="text-xs sm:text-sm text-black font-bold leading-relaxed p-4 rounded-2xl bg-[#F8FAFC] border-2 border-black shadow-[3px_3px_0px_#000]">
                 {finalResult.summary}
               </p>
 
               {/* Recommendation Cards */}
               <div className="space-y-2.5 text-left">
-                <span className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+                <span className="text-xs font-black text-black uppercase tracking-wider">
                   Rekomendasi Pertama Untukmu:
                 </span>
 
                 <Link
                   to={`/module/${finalResult.recommendedModuleId}`}
                   onClick={onClose}
-                  className="p-3.5 rounded-2xl border border-indigo-100 bg-indigo-50/50 hover:bg-indigo-100/60 hover:border-indigo-300 transition flex items-center justify-between gap-3 group"
+                  className="p-3.5 rounded-2xl border-2 border-black bg-white hover:bg-[#D4F63D]/30 shadow-[3px_3px_0px_#000] transition flex items-center justify-between gap-3 group active:translate-x-0.5 active:translate-y-0.5"
                 >
                   <div className="flex items-center gap-2.5 min-w-0">
-                    <BookOpen className="w-4 h-4 text-indigo-600 shrink-0" />
+                    <BookOpen className="w-4 h-4 text-black stroke-[2.5] shrink-0" />
                     <div className="min-w-0 text-left">
-                      <span className="text-[10px] font-bold text-indigo-600 uppercase">Modul Belajar</span>
-                      <p className="text-xs font-bold text-slate-900 truncate group-hover:text-indigo-700 transition">
+                      <span className="text-[10px] font-black text-black/60 uppercase">Modul Belajar</span>
+                      <p className="text-xs font-black text-black truncate group-hover:underline">
                         {finalResult.recommendedModuleTitle}
                       </p>
                     </div>
                   </div>
-                  <span className="p-1.5 rounded-xl bg-indigo-600 text-white group-hover:bg-indigo-700 shrink-0 transition">
-                    <ArrowRight className="w-3.5 h-3.5" />
+                  <span className="p-1.5 rounded-xl bg-[#D4F63D] border border-black text-black shrink-0 transition">
+                    <ArrowRight className="w-3.5 h-3.5 stroke-[2.5]" />
                   </span>
                 </Link>
 
                 <Link
                   to={`/reading?article=${finalResult.recommendedArticleId}`}
                   onClick={onClose}
-                  className="p-3.5 rounded-2xl border border-sky-100 bg-sky-50/50 hover:bg-sky-100/60 hover:border-sky-300 transition flex items-center justify-between gap-3 group"
+                  className="p-3.5 rounded-2xl border-2 border-black bg-white hover:bg-[#70D6FF]/30 shadow-[3px_3px_0px_#000] transition flex items-center justify-between gap-3 group active:translate-x-0.5 active:translate-y-0.5"
                 >
                   <div className="flex items-center gap-2.5 min-w-0">
-                    <Newspaper className="w-4 h-4 text-sky-600 shrink-0" />
+                    <Newspaper className="w-4 h-4 text-black stroke-[2.5] shrink-0" />
                     <div className="min-w-0 text-left">
-                      <span className="text-[10px] font-bold text-sky-600 uppercase">Artikel Bacaan</span>
-                      <p className="text-xs font-bold text-slate-900 truncate group-hover:text-sky-700 transition">
+                      <span className="text-[10px] font-black text-black/60 uppercase">Artikel Bacaan</span>
+                      <p className="text-xs font-black text-black truncate group-hover:underline">
                         {finalResult.recommendedArticleTitle}
                       </p>
                     </div>
                   </div>
-                  <span className="p-1.5 rounded-xl bg-sky-600 text-white group-hover:bg-sky-700 shrink-0 transition">
-                    <ArrowRight className="w-3.5 h-3.5" />
+                  <span className="p-1.5 rounded-xl bg-[#70D6FF] border border-black text-black shrink-0 transition">
+                    <ArrowRight className="w-3.5 h-3.5 stroke-[2.5]" />
                   </span>
                 </Link>
               </div>
@@ -343,10 +343,10 @@ export default function LanguageScannerModal({ isOpen, onClose, onSelectLevel })
               <div className="flex gap-2.5 pt-2">
                 <button
                   onClick={handleStart}
-                  className="inline-flex items-center justify-center gap-1.5 px-4 py-3 rounded-2xl border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs font-bold transition cursor-pointer"
+                  className="inline-flex items-center justify-center gap-1.5 px-4 py-3 rounded-2xl border-2 border-black bg-white text-black hover:bg-slate-50 text-xs font-black shadow-[3px_3px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 transition cursor-pointer"
                   title="Uji ulang kemampuan dengan paket gerbong soal baru"
                 >
-                  <RotateCcw className="w-3.5 h-3.5" />
+                  <RotateCcw className="w-3.5 h-3.5 stroke-[2.5]" />
                   <span>Ulangi (Gerbong Baru)</span>
                 </button>
 
@@ -360,7 +360,7 @@ export default function LanguageScannerModal({ isOpen, onClose, onSelectLevel })
                     }
                     onClose();
                   }}
-                  className="flex-1 py-3 px-5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-xs sm:text-sm shadow-md transition active:scale-95 cursor-pointer"
+                  className="flex-1 py-3 px-5 rounded-2xl bg-[#D4F63D] hover:bg-[#c2e42e] text-black font-black text-xs sm:text-sm border-2 border-black shadow-[3px_3px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 transition cursor-pointer"
                 >
                   Terapkan Level &amp; Lanjut Belajar 🚀
                 </button>
@@ -371,18 +371,18 @@ export default function LanguageScannerModal({ isOpen, onClose, onSelectLevel })
 
         {/* Modal Footer (for quiz step) */}
         {step === 'quiz' && (
-          <div className="px-6 py-4 border-t border-slate-100 bg-slate-50 flex items-center justify-between">
-            <span className="text-xs text-slate-400">
+          <div className="px-5 sm:px-6 py-3.5 border-t-2.5 border-black bg-white flex items-center justify-between">
+            <span className="text-xs text-black/60 font-bold">
               Pilih satu jawaban terbaik di atas.
             </span>
 
             <button
               onClick={handleNextQuestion}
               disabled={!isAnswerSubmitted}
-              className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition shadow-xs disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-[#D4F63D] hover:bg-[#c2e42e] text-black text-xs font-black border-2 border-black shadow-[2px_2px_0px_#000] transition active:translate-x-0.5 active:translate-y-0.5 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
             >
               <span>{currentIndex === totalQuestions - 1 ? 'Lihat Hasil Scanner' : 'Pertanyaan Berikutnya'}</span>
-              <ArrowRight className="w-3.5 h-3.5" />
+              <ArrowRight className="w-3.5 h-3.5 stroke-[2.5]" />
             </button>
           </div>
         )}

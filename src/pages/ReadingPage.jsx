@@ -158,17 +158,17 @@ export default function ReadingPage() {
 
   return (
     <div className="space-y-8 py-2">
-      {/* 1. Header Banner */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-sky-600 via-indigo-600 to-purple-600 text-white p-6 sm:p-8 shadow-md">
+      {/* 1. Header Banner - Neo-Brutalism Theme */}
+      <div className="relative overflow-hidden rounded-3xl bg-[#70D6FF] text-black p-6 sm:p-8 border-3 border-black shadow-[6px_6px_0px_#000]">
         <div className="relative z-10 max-w-2xl space-y-3">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-white/20 backdrop-blur-md">
-            <BookOpen className="w-3.5 h-3.5 text-sky-200" />
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-black bg-white border-2 border-black shadow-[2px_2px_0px_#000] text-black uppercase">
+            <BookOpen className="w-3.5 h-3.5 stroke-[2.5]" />
             <span>Pilar Bacaan • Graded Readers CEFR</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
-            Bacaan Kontekstual Sesuai Level Bahasa Anda
+          <h1 className="text-2xl sm:text-3xl font-black text-black tracking-tight uppercase">
+            BACAAN KONTEKSTUAL SESUAI LEVEL BAHASA ANDA
           </h1>
-          <p className="text-xs sm:text-sm text-sky-100 leading-relaxed">
+          <p className="text-xs sm:text-sm text-black/80 font-bold leading-relaxed">
             Tingkatkan pemahaman bahasa secara alami lewat artikel pilihan. Dilengkapi <strong>audio native per paragraf</strong> dan fitur ketuk kata untuk simpan langsung ke kartu hafalan!
           </p>
 
@@ -188,10 +188,10 @@ export default function ReadingPage() {
       {/* 2. CEFR Level Filter Pills */}
       <div className="space-y-3">
         <div className="flex items-center justify-between">
-          <h2 className="text-sm font-bold text-slate-700 uppercase tracking-wider">
-            Pilih Level Kemampuan
+          <h2 className="text-xs sm:text-sm font-black text-black uppercase tracking-wider">
+            PILIH LEVEL KEMAMPUAN
           </h2>
-          <span className="text-xs font-semibold text-slate-500">
+          <span className="text-xs font-black px-2 py-0.5 rounded-md bg-black text-white">
             {filteredArticles.length} Artikel Tersedia
           </span>
         </div>
@@ -199,10 +199,10 @@ export default function ReadingPage() {
         <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
           <button
             onClick={() => setSelectedLevel('ALL')}
-            className={`px-3.5 py-2 rounded-2xl text-xs font-bold transition whitespace-nowrap cursor-pointer ${
+            className={`px-3.5 py-2 rounded-xl text-xs font-black transition whitespace-nowrap cursor-pointer border-2 border-black ${
               selectedLevel === 'ALL'
-                ? 'bg-slate-900 text-white shadow-xs'
-                : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'
+                ? 'bg-black text-white shadow-[2px_2px_0px_#000]'
+                : 'bg-white text-black hover:bg-slate-100 shadow-[2px_2px_0px_#000]'
             }`}
           >
             🌟 Semua Level
@@ -214,10 +214,10 @@ export default function ReadingPage() {
               <button
                 key={lvl.code}
                 onClick={() => setSelectedLevel(lvl.code)}
-                className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-2xl text-xs font-bold transition whitespace-nowrap cursor-pointer ${
+                className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-black transition whitespace-nowrap cursor-pointer border-2 border-black ${
                   isSelected
-                    ? `${lvl.badgeClass} ring-2 ring-indigo-500 shadow-xs font-extrabold`
-                    : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'
+                    ? 'bg-[#D4F63D] text-black shadow-[2px_2px_0px_#000]'
+                    : 'bg-white text-black hover:bg-slate-100 shadow-[2px_2px_0px_#000]'
                 }`}
               >
                 <span>{lvl.badge}</span>
@@ -236,43 +236,43 @@ export default function ReadingPage() {
             <article
               key={article.id}
               onClick={() => setActiveArticle(article)}
-              className="bg-white rounded-3xl border border-slate-200/90 p-5 sm:p-6 shadow-2xs hover:shadow-md hover:border-indigo-300 transition-all flex flex-col justify-between group cursor-pointer"
+              className="bg-white rounded-3xl border-2.5 border-black p-5 sm:p-6 shadow-[4px_4px_0px_#000] hover:shadow-[6px_6px_0px_#000] hover:-translate-y-0.5 transition-all flex flex-col justify-between group cursor-pointer"
             >
               <div className="space-y-3">
                 <div className="flex items-center justify-between gap-2">
-                  <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-extrabold border ${lvlInfo.badgeClass}`}>
+                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl text-[11px] font-black border-2 border-black shadow-[1.5px_1.5px_0px_#000] bg-[#FFD166] text-black">
                     <span>{lvlInfo.badge}</span>
                     <span>{lvlInfo.code} • {lvlInfo.role}</span>
                   </span>
 
-                  <div className="flex items-center gap-3 text-xs text-slate-400 font-medium">
+                  <div className="flex items-center gap-2 text-xs text-black/70 font-black">
                     <span className="flex items-center gap-1">
-                      <Clock className="w-3.5 h-3.5" />
+                      <Clock className="w-3.5 h-3.5 stroke-[2.5]" />
                       {article.read_time}
                     </span>
-                    <span className="hidden sm:inline">&bull;</span>
-                    <span className="hidden sm:inline">{article.words_count} kata</span>
+                    <span>&bull;</span>
+                    <span>{article.words_count} kata</span>
                   </div>
                 </div>
 
-                <h3 className="text-lg font-bold text-slate-900 group-hover:text-indigo-600 transition leading-snug">
+                <h3 className="text-lg font-black text-black group-hover:text-indigo-600 transition leading-snug">
                   {article.title}
                 </h3>
 
-                <p className="text-xs sm:text-sm text-slate-600 line-clamp-2 leading-relaxed">
+                <p className="text-xs sm:text-sm text-black/80 font-bold line-clamp-2 leading-relaxed">
                   {article.excerpt}
                 </p>
               </div>
 
-              <div className="pt-4 mt-4 border-t border-slate-100 flex items-center justify-between">
-                <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1">
-                  <Tag className="w-3 h-3" />
+              <div className="pt-4 mt-4 border-t-2 border-black/15 flex items-center justify-between">
+                <span className="text-[11px] font-black text-black/70 uppercase tracking-wider flex items-center gap-1">
+                  <Tag className="w-3.5 h-3.5 stroke-[2.5]" />
                   {article.category}
                 </span>
 
-                <span className="inline-flex items-center gap-1 text-xs font-bold text-indigo-600 group-hover:translate-x-1 transition-transform">
+                <span className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-[#D4F63D] text-black border-2 border-black shadow-[2px_2px_0px_#000] text-xs font-black group-hover:translate-x-0.5 transition-transform">
                   <span>Baca &amp; Dengar</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
+                  <ArrowRight className="w-3.5 h-3.5 stroke-[2.5]" />
                 </span>
               </div>
             </article>
@@ -285,20 +285,20 @@ export default function ReadingPage() {
         <div
           role="dialog"
           aria-modal="true"
-          className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-slate-950/75 backdrop-blur-md animate-fade-in"
+          className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/75 animate-fade-in"
         >
-          <div className="relative w-full max-w-2xl bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh]">
+          <div className="relative w-full max-w-2xl bg-white rounded-3xl border-3 border-black shadow-[8px_8px_0px_#000] overflow-hidden flex flex-col max-h-[92vh]">
             {/* Modal Header */}
-            <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/70">
+            <div className="px-6 py-4 border-b-2.5 border-black flex items-center justify-between bg-[#FFD166] text-black">
               <div className="flex items-center gap-2.5 min-w-0">
-                <span className="text-xl shrink-0">
+                <span className="text-2xl shrink-0">
                   {CEFR_LEVELS[activeArticle.cefr_level]?.badge || '📖'}
                 </span>
                 <div className="min-w-0">
-                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-indigo-600">
+                  <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md bg-black text-white inline-block mb-1">
                     Level {activeArticle.cefr_level} • {activeArticle.category}
                   </span>
-                  <h3 className="text-base sm:text-lg font-extrabold text-slate-900 truncate">
+                  <h3 className="text-base sm:text-lg font-black text-black truncate">
                     {activeArticle.title}
                   </h3>
                 </div>
@@ -306,31 +306,31 @@ export default function ReadingPage() {
 
               <button
                 onClick={handleCloseModal}
-                className="p-1.5 rounded-full hover:bg-slate-200 text-slate-500 transition shrink-0"
+                className="w-8 h-8 rounded-xl bg-white border-2 border-black shadow-[2px_2px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 text-black flex items-center justify-center transition cursor-pointer shrink-0"
               >
-                <X className="w-5 h-5" />
+                <X className="w-4 h-4 stroke-[2.5]" />
               </button>
             </div>
 
             {/* Audio Master Control Toolbar */}
-            <div className="px-6 py-3 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white flex flex-wrap items-center justify-between gap-3 border-b border-slate-800">
+            <div className="px-5 sm:px-6 py-3 bg-[#18181B] text-white flex flex-wrap items-center justify-between gap-3 border-b-2 border-black">
               <div className="flex items-center gap-2">
                 <button
                   onClick={handleTogglePlayAll}
-                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition shadow-xs cursor-pointer ${
+                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-black transition border-2 border-black shadow-[2px_2px_0px_#fff] active:translate-x-0.5 active:translate-y-0.5 cursor-pointer ${
                     isPlayingAll
-                      ? 'bg-amber-400 text-slate-950 hover:bg-amber-300'
-                      : 'bg-indigo-600 text-white hover:bg-indigo-500'
+                      ? 'bg-[#FF85C0] text-black'
+                      : 'bg-[#D4F63D] text-black'
                   }`}
                 >
                   {isPlayingAll ? (
                     <>
-                      <Pause className="w-3.5 h-3.5 fill-current" />
+                      <Pause className="w-3.5 h-3.5 fill-current stroke-[2.5]" />
                       <span>Jeda Pembacaan</span>
                     </>
                   ) : (
                     <>
-                      <Play className="w-3.5 h-3.5 fill-current" />
+                      <Play className="w-3.5 h-3.5 fill-current stroke-[2.5]" />
                       <span>Putar Seluruh Artikel</span>
                     </>
                   )}
@@ -339,7 +339,7 @@ export default function ReadingPage() {
                 {(isPlayingAll || activeParagraphIndex !== null) && (
                   <button
                     onClick={stopAudio}
-                    className="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-slate-300 transition"
+                    className="p-1.5 rounded-xl bg-white text-black border-2 border-black shadow-[2px_2px_0px_#fff] active:translate-x-0.5 active:translate-y-0.5 transition cursor-pointer"
                     title="Hentikan Audio"
                   >
                     <Square className="w-3.5 h-3.5 fill-current" />
@@ -349,8 +349,8 @@ export default function ReadingPage() {
 
               {/* Speed Selector & Voice Modal Trigger */}
               <div className="flex items-center gap-2">
-                <div className="flex items-center gap-1 text-[11px] font-bold">
-                  <span className="text-slate-400 mr-1">Tempo:</span>
+                <div className="flex items-center gap-1 text-[11px] font-black">
+                  <span className="text-white/70 mr-1 uppercase">Tempo:</span>
                   {[
                     { rate: 0.85, label: '0.85x' },
                     { rate: 1.0, label: '1.0x' },
@@ -359,10 +359,10 @@ export default function ReadingPage() {
                     <button
                       key={s.rate}
                       onClick={() => setSpeechRate(s.rate)}
-                      className={`px-2 py-0.5 rounded-md transition ${
+                      className={`px-2 py-0.5 rounded-md border text-xs font-black transition cursor-pointer ${
                         speechRate === s.rate
-                          ? 'bg-indigo-600 text-white font-extrabold'
-                          : 'bg-white/10 text-slate-300 hover:bg-white/20'
+                          ? 'bg-[#70D6FF] text-black border-white'
+                          : 'bg-white/10 text-white border-transparent hover:bg-white/20'
                       }`}
                     >
                       {s.label}
@@ -373,7 +373,7 @@ export default function ReadingPage() {
                 <button
                   type="button"
                   onClick={() => setShowVoiceModal(true)}
-                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-xs font-black bg-[#FF85C0] text-black border border-black shadow-[1px_1px_0px_#000] hover:bg-[#D4F63D] transition cursor-pointer"
+                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-xs font-black bg-[#FF85C0] text-black border-2 border-black shadow-[2px_2px_0px_#fff] active:translate-x-0.5 active:translate-y-0.5 transition cursor-pointer"
                   title="Pilih Karakter Suara AI Kokoro"
                 >
                   <Volume2 className="w-3.5 h-3.5 stroke-[2.5]" />
@@ -383,37 +383,37 @@ export default function ReadingPage() {
             </div>
 
             {/* Modal Body: Article Content with Per-Paragraph Audio */}
-            <div className="p-6 sm:p-8 overflow-y-auto space-y-5 text-slate-800 leading-relaxed text-sm sm:text-base">
+            <div className="p-6 sm:p-8 overflow-y-auto space-y-4 text-black leading-relaxed text-sm sm:text-base">
               {activeArticle.content_paragraphs.map((paragraph, idx) => {
                 const isPlayingThis = activeParagraphIndex === idx;
 
                 return (
                   <div
                     key={idx}
-                    className={`p-4 rounded-2xl transition-all relative ${
+                    className={`p-4 rounded-2xl transition-all relative border-2 ${
                       isPlayingThis
-                        ? 'bg-indigo-50/80 border-2 border-indigo-500 shadow-xs'
-                        : 'bg-slate-50/50 border border-transparent hover:border-slate-200'
+                        ? 'bg-[#D4F63D]/30 border-black shadow-[3px_3px_0px_#000]'
+                        : 'bg-[#F8FAFC] border-black/15 hover:border-black'
                     }`}
                   >
                     <div className="flex items-start justify-between gap-4">
-                      <p className="leading-relaxed font-serif text-slate-800 text-base sm:text-lg flex-1">
+                      <p className="leading-relaxed font-bold text-black text-base sm:text-lg flex-1">
                         {paragraph}
                       </p>
 
                       <button
                         onClick={() => handleToggleParagraph(paragraph, idx)}
-                        className={`p-2 rounded-xl transition shrink-0 cursor-pointer ${
+                        className={`p-2 rounded-xl transition shrink-0 cursor-pointer border-2 border-black shadow-[2px_2px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 ${
                           isPlayingThis
-                            ? 'bg-indigo-600 text-white shadow-sm'
-                            : 'bg-white text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 border border-slate-200'
+                            ? 'bg-[#D4F63D] text-black'
+                            : 'bg-white text-black hover:bg-slate-100'
                         }`}
                         title={isPlayingThis ? 'Hentikan audio' : 'Dengarkan paragraf ini'}
                       >
                         {isPlayingThis ? (
-                          <Volume2 className="w-4 h-4 animate-pulse text-white" />
+                          <Volume2 className="w-4 h-4 animate-pulse stroke-[2.5]" />
                         ) : (
-                          <Volume2 className="w-4 h-4" />
+                          <Volume2 className="w-4 h-4 stroke-[2.5]" />
                         )}
                       </button>
                     </div>
@@ -422,14 +422,14 @@ export default function ReadingPage() {
               })}
 
               {/* Vocabulary Vault Section */}
-              <div className="mt-8 pt-6 border-t border-slate-200 space-y-4">
+              <div className="mt-8 pt-6 border-t-2 border-black space-y-4">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2 text-indigo-600 font-extrabold text-sm sm:text-base">
-                    <Sparkles className="w-4 h-4" />
-                    <span>Kosakata Kunci di Artikel Ini (Tap to Save)</span>
+                  <div className="flex items-center gap-2 text-black font-black text-sm sm:text-base uppercase tracking-tight">
+                    <Sparkles className="w-4 h-4 stroke-[2.5]" />
+                    <span>Kosakata Kunci (Tap to Save)</span>
                   </div>
-                  <span className="text-xs text-slate-400 font-medium">
-                    {activeArticle.vocabulary.length} Kata Kunci
+                  <span className="text-xs font-black px-2 py-0.5 rounded-md bg-[#FFD166] text-black border border-black">
+                    {activeArticle.vocabulary.length} Kata
                   </span>
                 </div>
 
@@ -439,47 +439,47 @@ export default function ReadingPage() {
                     return (
                       <div
                         key={v.word}
-                        className="p-3.5 rounded-2xl border border-slate-200 bg-slate-50/80 hover:bg-indigo-50/40 hover:border-indigo-200 transition space-y-2"
+                        className="p-3.5 rounded-2xl border-2 border-black bg-white shadow-[3px_3px_0px_#000] space-y-2"
                       >
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2">
-                            <span className="font-extrabold text-slate-900 text-sm">{v.word}</span>
+                            <span className="font-black text-black text-sm">{v.word}</span>
                             <button
                               onClick={() => handleSpeakWord(v.word)}
                               title="Dengar pelafalan"
-                              className="text-slate-400 hover:text-indigo-600 p-0.5 rounded transition cursor-pointer"
+                              className="text-black hover:text-indigo-600 p-0.5 transition cursor-pointer"
                             >
-                              <Volume2 className="w-3.5 h-3.5" />
+                              <Volume2 className="w-3.5 h-3.5 stroke-[2.5]" />
                             </button>
                           </div>
 
                           <button
                             onClick={() => handleSaveVocab(v, activeArticle.title)}
                             disabled={isSaved}
-                            className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-xl text-xs font-bold transition cursor-pointer ${
+                            className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-xl text-xs font-black transition cursor-pointer border-2 border-black shadow-[2px_2px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 ${
                               isSaved
-                                ? 'bg-emerald-100 text-emerald-800'
-                                : 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-2xs'
+                                ? 'bg-[#80ED99] text-black'
+                                : 'bg-[#FF85C0] text-black hover:bg-[#D4F63D]'
                             }`}
                           >
                             {isSaved ? (
                               <>
-                                <Check className="w-3 h-3 text-emerald-600" />
+                                <Check className="w-3 h-3 stroke-[2.5]" />
                                 <span>Tersimpan</span>
                               </>
                             ) : (
                               <>
-                                <BookmarkPlus className="w-3 h-3" />
+                                <BookmarkPlus className="w-3 h-3 stroke-[2.5]" />
                                 <span>+ Kartu</span>
                               </>
                             )}
                           </button>
                         </div>
 
-                        <p className="text-xs font-semibold text-slate-600">
+                        <p className="text-xs font-bold text-black/80">
                           {v.meaning}
                         </p>
-                        <p className="text-[11px] text-slate-500 italic">
+                        <p className="text-[11px] font-medium text-black/60 italic">
                           "{v.example}"
                         </p>
                       </div>
@@ -490,13 +490,13 @@ export default function ReadingPage() {
             </div>
 
             {/* Modal Footer */}
-            <div className="px-6 py-4 border-t border-slate-100 bg-slate-50 flex items-center justify-between">
-              <span className="text-xs text-slate-500">
+            <div className="px-6 py-4 border-t-2 border-black bg-[#F8FAFC] flex items-center justify-between">
+              <span className="text-xs font-bold text-black/70">
                 Selesai membaca? Kosakata tersimpan siap dilatih di menu <strong>Latihan</strong>.
               </span>
               <button
                 onClick={handleCloseModal}
-                className="px-4 py-2 rounded-xl bg-slate-900 text-white text-xs font-bold hover:bg-slate-800 transition cursor-pointer"
+                className="px-4 py-2 rounded-xl bg-black text-white text-xs font-black border-2 border-black shadow-[2px_2px_0px_#fff] active:translate-x-0.5 active:translate-y-0.5 transition cursor-pointer"
               >
                 Tutup Bacaan
               </button>
