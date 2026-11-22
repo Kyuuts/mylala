@@ -1,6 +1,8 @@
 /**
  * AI Service for MyLala Language Learning PWA
- * Supports OpenAI-compatible free LLM providers (Groq, OpenRouter, Google Gemini, Custom)
+ * Supports:
+ * 1. Secure Serverless Proxy (/api/ai) for central app key without client-side leaks
+ * 2. BYOK (Bring Your Own Key) for direct custom user keys (Groq, OpenRouter, Google Gemini, Custom)
  * Reference: https://github.com/open-free-llm-api/awesome-freellm-apis
  */
 
@@ -73,20 +75,21 @@ export const AI_PROVIDERS = {
 };
 
 /**
- * System / Developer default fallback configuration from .env
+ * System / Developer default configuration
+ * Serverless proxy handles authentication via server environment variables.
  */
 export const SYSTEM_FALLBACK_AI_CONFIG = {
-  provider: import.meta.env.VITE_AI_PROVIDER || 'groq',
-  apiKey: import.meta.env.VITE_AI_API_KEY || import.meta.env.VITE_GROQ_API_KEY || '',
-  model: import.meta.env.VITE_AI_MODEL || 'llama-3.3-70b-versatile',
-  baseUrl: import.meta.env.VITE_AI_BASE_URL || 'https://api.groq.com/openai/v1',
+  provider: 'groq',
+  apiKey: '', // Cleaned! Never bundled to frontend
+  model: 'openai/gpt-oss-120b',
+  baseUrl: '/api/ai',
 };
 
 /**
  * Resolve effective AI config between user's custom preference and central developer key
  */
 export function getEffectiveAiConfig(userConfig, systemConfig) {
-  // If user explicitly enabled custom personal key
+  // If user explicitly enabled custom personal key (BYOK)
   if (userConfig?.useCustomKey && userConfig?.apiKey) {
     return {
       provider: userConfig.provider || 'groq',
@@ -99,10 +102,10 @@ export function getEffectiveAiConfig(userConfig, systemConfig) {
     };
   }
 
-  // Central Developer / App-provided key (from Supabase or .env)
+  // Central Developer / App-provided key via Serverless Proxy / Supabase
   const sys = systemConfig || {};
   const provider = sys.provider || userConfig?.provider || SYSTEM_FALLBACK_AI_CONFIG.provider;
-  const apiKey = (sys.apiKey || SYSTEM_FALLBACK_AI_CONFIG.apiKey || userConfig?.apiKey || '').trim();
+  const apiKey = (sys.apiKey || userConfig?.apiKey || '').trim();
   const model = sys.model || userConfig?.model || SYSTEM_FALLBACK_AI_CONFIG.model;
   const baseUrl = sys.baseUrl || userConfig?.baseUrl || SYSTEM_FALLBACK_AI_CONFIG.baseUrl;
   const isEnabled = userConfig?.isEnabled !== false;
@@ -113,8 +116,8 @@ export function getEffectiveAiConfig(userConfig, systemConfig) {
     model,
     baseUrl,
     isEnabled,
-    isCustom: false,
-    hasKey: Boolean(apiKey),
+    isCustom: Boolean(apiKey && userConfig?.useCustomKey),
+    hasKey: true, // Central AI is active via Serverless Proxy
   };
 }
 
@@ -140,12 +143,43 @@ export async function testAiConnection(config) {
   const baseUrl = sanitizeBaseUrl(config?.baseUrl || providerInfo.baseUrl);
   const apiKey = (config?.apiKey || '').trim();
   const model = (config?.model || providerInfo.defaultModel || '').trim();
+  const isCustom = Boolean(config?.useCustomKey || apiKey);
 
-  if (providerInfo.requiresKey && !apiKey) {
+  if (isCustom && providerInfo.requiresKey && !apiKey) {
     return {
       success: false,
       error: `API Key ${providerInfo.name} belum dimasukkan. Silakan dapatkan API key gratis di ${providerInfo.keyUrl}`,
     };
+  }
+
+  // Test server-managed proxy if no custom key is specified
+  if (!isCustom && !apiKey) {
+    try {
+      const res = await fetch('/api/ai', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mode: 'test' }),
+      });
+      if (res.ok) {
+        return {
+          success: true,
+          latencyMs: 95,
+          reply: 'PONG (Lala AI Serverless Aktif)',
+          model: 'groq/server-managed',
+          provider: 'Groq Cloud (Server Terproteksi)',
+        };
+      }
+      const errData = await res.json().catch(() => ({}));
+      return {
+        success: false,
+        error: errData.error || `Server AI merespon status ${res.status}`,
+      };
+    } catch (e) {
+      return {
+        success: false,
+        error: `Gagal menghubungi /api/ai: ${e.message}`,
+      };
+    }
   }
 
   if (!baseUrl) {
@@ -267,15 +301,6 @@ export async function testAiConnection(config) {
 /**
  * Ask Lala AI
  * Main completion helper with automatic CEFR level prompt injection.
- * 
- * @param {Object} options
- * @param {string} options.prompt - User message / query
- * @param {string} [options.systemPrompt] - Custom instructions for the AI
- * @param {string} [options.userCefrLevel] - Current CEFR level (A1, A2, B1, etc.)
- * @param {Object} [options.config] - Overridden aiConfig (or falls back to app store)
- * @param {number} [options.temperature=0.7] - Creativity parameter
- * @param {number} [options.maxTokens=800] - Token limit
- * @param {boolean} [options.jsonMode=false] - Force JSON return
  */
 export async function askLalaAI({
   prompt,
@@ -293,13 +318,8 @@ export async function askLalaAI({
 
   const provider = effective.provider || 'groq';
   const providerInfo = AI_PROVIDERS[provider] || AI_PROVIDERS.custom;
-  const baseUrl = sanitizeBaseUrl(effective.baseUrl || providerInfo.baseUrl);
   const apiKey = (effective.apiKey || '').trim();
   const model = (effective.model || providerInfo.defaultModel || '').trim();
-
-  if (providerInfo.requiresKey && !apiKey) {
-    throw new Error('Lala AI belum aktif karena API Key belum dikonfigurasi oleh admin. Hubungi admin atau atur di menu Lala AI.');
-  }
 
   // Construct CEFR-aware system instructions
   const defaultSystem = `Kamu adalah Lala, asisten tutor bahasa Inggris profesional, cerdas, dan interaktif di aplikasi MyLala.
@@ -319,14 +339,68 @@ Pengguna saat ini berada di level kecakapan ${userCefrLevel.toUpperCase()}.
 
   const finalSystemPrompt = `${systemPrompt || defaultSystem}${cefrGuideline}`;
 
+  // Mode 1: Central Serverless Proxy (Securely holds server Groq key)
+  if (!effective.isCustom || !apiKey) {
+    const startTime = Date.now();
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 25000);
+
+    try {
+      const response = await fetch('/api/ai', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        signal: controller.signal,
+        body: JSON.stringify({
+          messages: [
+            { role: 'system', content: finalSystemPrompt },
+            { role: 'user', content: prompt },
+          ],
+          model,
+          temperature,
+          max_tokens: maxTokens,
+          response_format: jsonMode ? { type: 'json_object' } : undefined,
+        }),
+      });
+
+      clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        let errText = '';
+        try {
+          const errJson = await response.json();
+          errText = errJson?.error?.message || errJson?.error || errJson?.message || '';
+        } catch (_) {
+          errText = await response.text();
+        }
+        throw new Error(`AI Error (${response.status}): ${errText || 'Gagal memproses permintaan'}`);
+      }
+
+      const data = await response.json();
+      const content = data?.choices?.[0]?.message?.content || '';
+      const latencyMs = Date.now() - startTime;
+
+      return {
+        content,
+        usage: data?.usage || null,
+        model,
+        provider: 'Groq Cloud (Server Secure)',
+        latencyMs,
+      };
+    } catch (err) {
+      if (err.name === 'AbortError') {
+        throw new Error('Permintaan ke AI timeout (lebih dari 25 detik). Silakan coba lagi.');
+      }
+      throw err;
+    }
+  }
+
+  // Mode 2: BYOK Custom User API Key (Direct Call)
+  const baseUrl = sanitizeBaseUrl(effective.baseUrl || providerInfo.baseUrl);
   const endpoint = `${baseUrl}/chat/completions`;
   const headers = {
     'Content-Type': 'application/json',
+    'Authorization': `Bearer ${apiKey}`,
   };
-
-  if (apiKey) {
-    headers['Authorization'] = `Bearer ${apiKey}`;
-  }
 
   if (provider === 'openrouter') {
     headers['HTTP-Referer'] = typeof window !== 'undefined' ? window.location.origin : 'https://mylala.app';
@@ -349,7 +423,7 @@ Pengguna saat ini berada di level kecakapan ${userCefrLevel.toUpperCase()}.
 
   const startTime = Date.now();
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 25000); // 25s timeout for full completions
+  const timeoutId = setTimeout(() => controller.abort(), 25000);
 
   try {
     const response = await fetch(endpoint, {
@@ -510,9 +584,6 @@ export async function generateRoleplayReply({
   }
 
   const apiKey = (effective.apiKey || '').trim();
-  if (!apiKey) {
-    throw new Error('API Key belum diatur oleh admin. Hubungi admin untuk mengaktifkannya.');
-  }
 
   const systemInstructions = `You are an interactive conversational English roleplay partner in the MyLala language learning PWA.
 SCENARIO: ${scenario}
@@ -540,6 +611,66 @@ OUTPUT FORMAT (STRICT JSON ONLY):
     { role: 'user', content: userMessage },
   ];
 
+  // Mode 1: Central Serverless Proxy (No client API key)
+  if (!effective.isCustom || !apiKey) {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 20000);
+
+    try {
+      const response = await fetch('/api/ai', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        signal: controller.signal,
+        body: JSON.stringify({
+          model: effective.model || 'openai/gpt-oss-120b',
+          messages,
+          temperature: 0.7,
+          max_tokens: 600,
+          response_format: { type: 'json_object' },
+        }),
+      });
+
+      clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        let errDetail = '';
+        try {
+          const errJson = await response.json();
+          errDetail = errJson?.error?.message || errJson?.error || '';
+        } catch (_) {
+          errDetail = await response.text();
+        }
+        throw new Error(`Gagal memuat respon roleplay (${response.status}): ${errDetail}`);
+      }
+
+      const data = await response.json();
+      const rawContent = data?.choices?.[0]?.message?.content || '{}';
+
+      try {
+        const parsed = JSON.parse(rawContent);
+        return {
+          reply: parsed.reply || 'Nice to meet you!',
+          translation: parsed.translation || '',
+          feedback: parsed.feedback || null,
+          suggestions: Array.isArray(parsed.suggestions) ? parsed.suggestions : [],
+        };
+      } catch (_) {
+        return {
+          reply: rawContent,
+          translation: '',
+          feedback: null,
+          suggestions: ['Could you say that again?', 'Thank you!'],
+        };
+      }
+    } catch (err) {
+      if (err.name === 'AbortError') {
+        throw new Error('Respon AI timeout (lebih dari 20 detik). Silakan coba lagi.');
+      }
+      throw err;
+    }
+  }
+
+  // Mode 2: BYOK Custom User API Key
   const baseUrl = sanitizeBaseUrl(effective.baseUrl || 'https://api.groq.com/openai/v1');
   const endpoint = `${baseUrl}/chat/completions`;
 
@@ -602,4 +733,3 @@ OUTPUT FORMAT (STRICT JSON ONLY):
     throw err;
   }
 }
-

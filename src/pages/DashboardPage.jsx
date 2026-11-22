@@ -404,20 +404,51 @@ export default function DashboardPage() {
         <div className="space-y-4 sm:space-y-5">
           {/* Integrated Level Pathway Bar & Diagnostic Scan */}
           <div className="space-y-3">
-            <div className="flex items-center justify-between gap-2 overflow-x-auto no-scrollbar pb-1">
+            {/* Prominent CEFR Level Diagnostic / Placement Test Card */}
+            <div className="bg-white rounded-2xl sm:rounded-3xl border-2 border-black shadow-[4px_4px_0px_#000] p-3.5 sm:p-4.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-[#D4F63D] border-2 border-black flex items-center justify-center shrink-0 shadow-[2px_2px_0px_#000]">
+                  <Compass className="w-5 h-5 sm:w-6 sm:h-6 text-black stroke-[2.5]" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-black uppercase tracking-wider text-black bg-[#80ED99] px-2 py-0.5 rounded-md border border-black shadow-[1px_1px_0px_#000]">
+                      ⚡ 3 Menit • Cepat & Akurat
+                    </span>
+                  </div>
+                  <h4 className="text-sm sm:text-base font-black text-black tracking-tight mt-0.5">
+                    Tes Level Bahasa (CEFR Placement Test)
+                  </h4>
+                  <p className="text-xs text-black/70 font-bold line-clamp-1">
+                    Bingung mulai dari mana? Cari tahu apakah levelmu A1, A2, B1, B2, atau C1 sekarang!
+                  </p>
+                </div>
+              </div>
+
+              <button
+                onClick={() => setScannerOpen(true)}
+                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border-2 border-black bg-[#D4F63D] hover:bg-[#c4e62d] text-black text-xs sm:text-sm font-black shadow-[3px_3px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[1px_1px_0px_#000] transition cursor-pointer shrink-0"
+              >
+                <span>Mulai Tes Level</span>
+                <ArrowRight className="w-4 h-4 stroke-[2.5]" />
+              </button>
+            </div>
+
+            {/* Level Selector Pills */}
+            <div className="space-y-1.5 pt-1">
+              <div className="flex items-center justify-between px-1">
+                <span className="text-[11px] font-black uppercase tracking-wider text-black/70">
+                  Pilih Jalur Level Kurikulum:
+                </span>
+                <span className="text-[10px] font-bold text-black/60 hidden sm:inline">
+                  Klik untuk ganti level
+                </span>
+              </div>
               <LevelFilter
                 activeLevel={selectedLevel}
                 onSelectLevel={setSelectedLevel}
                 counts={levelCounts}
               />
-              <button
-                onClick={() => setScannerOpen(true)}
-                className="shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border-2 border-black bg-white hover:bg-[#D4F63D] text-black text-xs font-black shadow-[2px_2px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 transition cursor-pointer"
-                title="Tes level kecakapan bahasamu sekarang"
-              >
-                <Compass className="w-3.5 h-3.5 stroke-[2.5]" />
-                <span className="hidden sm:inline">Scan Level</span>
-              </button>
             </div>
 
             {/* Level Progress Card & Exit Exam */}
