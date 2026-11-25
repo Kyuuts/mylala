@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import {
   Trophy,
   Award,
@@ -63,6 +64,17 @@ export default function LevelExitExamModal({ isOpen, onClose, levelCode = 'A1', 
       setIsTimeUp(false);
     }
   }, [isOpen, levelCode]);
+
+  // Lock body scroll on mobile & desktop when open
+  useEffect(() => {
+    if (isOpen && typeof document !== 'undefined') {
+      const prevOverflow = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = prevOverflow;
+      };
+    }
+  }, [isOpen]);
 
   // Countdown Timer Effect
   useEffect(() => {
@@ -168,11 +180,14 @@ export default function LevelExitExamModal({ isOpen, onClose, levelCode = 'A1', 
   const isPassed = correctAnswersCount >= passingScore;
   const percentScore = Math.round((correctAnswersCount / totalQuestions) * 100);
 
-  return (
+  if (!isOpen || typeof document === 'undefined') return null;
+
+  return createPortal(
     <div
       role="dialog"
       aria-modal="true"
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/75 animate-fade-in"
+      className="fixed inset-0 z-[60] flex items-center justify-center p-2.5 sm:p-4 bg-black/80 backdrop-blur-xs animate-fade-in"
+      onClick={onClose}
     >
       {/* Lightweight Festive Confetti Particles when Passed */}
       {confettiActive && (
@@ -194,7 +209,10 @@ export default function LevelExitExamModal({ isOpen, onClose, levelCode = 'A1', 
         </div>
       )}
 
-      <div className="relative w-full max-w-xl bg-white rounded-3xl border-3 border-black shadow-[8px_8px_0px_#000] overflow-hidden flex flex-col max-h-[94vh] z-20">
+      <div
+        className="relative w-full max-w-xl bg-white rounded-2xl sm:rounded-3xl border-2 sm:border-3 border-black shadow-[4px_4px_0px_#000] sm:shadow-[8px_8px_0px_#000] overflow-hidden flex flex-col max-h-[94vh] z-20"
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Top Header - Neo-Brutalism */}
         <div className="px-6 py-4 border-b-2.5 border-black flex items-center justify-between bg-[#B388FF] text-black">
           <div className="flex items-center gap-2.5">
@@ -503,6 +521,7 @@ export default function LevelExitExamModal({ isOpen, onClose, levelCode = 'A1', 
           </div>
         )}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

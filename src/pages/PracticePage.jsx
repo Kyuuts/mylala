@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Link } from 'react-router-dom';
 import {
   Zap,
@@ -126,6 +127,17 @@ export default function PracticePage() {
     ttsService.stop();
     setActiveModal(null);
   };
+
+  // Lock body scroll when any practice modal is active
+  useEffect(() => {
+    if (activeModal && typeof document !== 'undefined') {
+      const prev = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = prev;
+      };
+    }
+  }, [activeModal]);
 
   // Open & Initialize Modes with Fresh 5 Shuffled Questions
   const openDetective = () => {
@@ -379,10 +391,12 @@ export default function PracticePage() {
       {/* ======================================================== */}
 
       {/* A. GRAMMAR DETECTIVE MODAL */}
-      {activeModal === 'detective' && detQuestions[detIndex] && (
-        <div role="dialog" className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/75 animate-fade-in">
-          <div className="relative w-full max-w-lg bg-white rounded-3xl border-3 border-black shadow-[8px_8px_0px_#000] overflow-hidden p-6 space-y-5">
-            <div className="flex items-center justify-between border-b-2.5 border-black pb-3">
+      {activeModal === 'detective' &&
+        detQuestions[detIndex] &&
+        createPortal(
+          <div role="dialog" className="fixed inset-0 z-[60] flex items-center justify-center p-2.5 sm:p-4 bg-black/80 backdrop-blur-xs animate-fade-in" onClick={handleCloseModal}>
+            <div className="relative w-full max-w-lg bg-white rounded-2xl sm:rounded-3xl border-2 sm:border-3 border-black shadow-[4px_4px_0px_#000] sm:shadow-[8px_8px_0px_#000] overflow-hidden p-4 sm:p-6 space-y-4 sm:space-y-5 max-h-[92vh] overflow-y-auto flex flex-col" onClick={(e) => e.stopPropagation()}>
+              <div className="flex items-center justify-between border-b-2.5 border-black pb-3 shrink-0">
               <div className="flex items-center gap-2">
                 <span className="p-2 rounded-xl bg-[#FFD166] border-2 border-black shadow-[2px_2px_0px_#000] text-black">
                   <Search className="w-4 h-4 stroke-[2.5]" />
@@ -470,14 +484,17 @@ export default function PracticePage() {
               )}
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* B. BRIDGE BUILDER (CONJUNCTION) MODAL */}
-      {activeModal === 'conjunction' && bbQuestions[bbIndex] && (
-        <div role="dialog" className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/75 animate-fade-in">
-          <div className="relative w-full max-w-lg bg-white rounded-3xl border-3 border-black shadow-[8px_8px_0px_#000] overflow-hidden p-6 space-y-5">
-            <div className="flex items-center justify-between border-b-2.5 border-black pb-3">
+      {activeModal === 'conjunction' &&
+        bbQuestions[bbIndex] &&
+        createPortal(
+          <div role="dialog" className="fixed inset-0 z-[60] flex items-center justify-center p-2.5 sm:p-4 bg-black/80 backdrop-blur-xs animate-fade-in" onClick={handleCloseModal}>
+            <div className="relative w-full max-w-lg bg-white rounded-2xl sm:rounded-3xl border-2 sm:border-3 border-black shadow-[4px_4px_0px_#000] sm:shadow-[8px_8px_0px_#000] overflow-hidden p-4 sm:p-6 space-y-4 sm:space-y-5 max-h-[92vh] overflow-y-auto flex flex-col" onClick={(e) => e.stopPropagation()}>
+              <div className="flex items-center justify-between border-b-2.5 border-black pb-3 shrink-0">
               <div className="flex items-center gap-2">
                 <span className="p-2 rounded-xl bg-[#70D6FF] border-2 border-black shadow-[2px_2px_0px_#000] text-black">
                   <GitCommit className="w-4 h-4 stroke-[2.5]" />
@@ -565,14 +582,17 @@ export default function PracticePage() {
               )}
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* C. DICTATION (EAR MASTER) MODAL */}
-      {activeModal === 'dictation' && dtQuestions[dtIndex] && (
-        <div role="dialog" className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/75 animate-fade-in">
-          <div className="relative w-full max-w-lg bg-white rounded-3xl border-3 border-black shadow-[8px_8px_0px_#000] overflow-hidden p-6 space-y-5">
-            <div className="flex items-center justify-between border-b-2.5 border-black pb-3">
+      {activeModal === 'dictation' &&
+        dtQuestions[dtIndex] &&
+        createPortal(
+          <div role="dialog" className="fixed inset-0 z-[60] flex items-center justify-center p-2.5 sm:p-4 bg-black/80 backdrop-blur-xs animate-fade-in" onClick={handleCloseModal}>
+            <div className="relative w-full max-w-lg bg-white rounded-2xl sm:rounded-3xl border-2 sm:border-3 border-black shadow-[4px_4px_0px_#000] sm:shadow-[8px_8px_0px_#000] overflow-hidden p-4 sm:p-6 space-y-4 sm:space-y-5 max-h-[92vh] overflow-y-auto flex flex-col" onClick={(e) => e.stopPropagation()}>
+              <div className="flex items-center justify-between border-b-2.5 border-black pb-3 shrink-0">
               <div className="flex items-center gap-2">
                 <span className="p-2 rounded-xl bg-[#80ED99] border-2 border-black shadow-[2px_2px_0px_#000] text-black">
                   <Headphones className="w-4 h-4 stroke-[2.5]" />
@@ -700,260 +720,283 @@ export default function PracticePage() {
               )}
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* D. ROLEPLAY LOUNGE MODAL */}
-      {activeModal === 'roleplay' && rpScenarios[rpScenarioIndex] && (
-        <div role="dialog" className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/75 animate-fade-in">
-          <div className="relative w-full max-w-lg bg-white rounded-3xl border-3 border-black shadow-[8px_8px_0px_#000] overflow-hidden p-6 space-y-4 flex flex-col max-h-[92vh]">
-            {/* Header */}
-            <div className="flex items-center justify-between border-b-2.5 border-black pb-3">
-              <div className="flex items-center gap-2">
-                <span className="p-2 rounded-xl bg-[#FF85C0] border-2 border-black shadow-[2px_2px_0px_#000] text-black text-lg">
-                  {rpScenarios[rpScenarioIndex].avatar}
-                </span>
-                <div>
-                  <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md bg-black text-white inline-block mb-0.5">
-                    Simulasi Dialog Interaktif
+      {activeModal === 'roleplay' &&
+        rpScenarios[rpScenarioIndex] &&
+        createPortal(
+          <div
+            role="dialog"
+            aria-modal="true"
+            className="fixed inset-0 z-[60] flex items-center justify-center p-2.5 sm:p-4 bg-black/80 backdrop-blur-xs animate-fade-in"
+            onClick={handleCloseModal}
+          >
+            <div
+              className="relative w-full max-w-lg bg-white rounded-2xl sm:rounded-3xl border-2 sm:border-3 border-black shadow-[4px_4px_0px_#000] sm:shadow-[8px_8px_0px_#000] overflow-hidden p-4 sm:p-6 space-y-4 flex flex-col max-h-[92vh] overflow-y-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Header */}
+              <div className="flex items-center justify-between border-b-2.5 border-black pb-3 shrink-0">
+                <div className="flex items-center gap-2">
+                  <span className="p-2 rounded-xl bg-[#FF85C0] border-2 border-black shadow-[2px_2px_0px_#000] text-black text-lg">
+                    {rpScenarios[rpScenarioIndex].avatar}
                   </span>
-                  <h3 className="font-black text-black text-base uppercase">{rpScenarios[rpScenarioIndex].title}</h3>
-                </div>
-              </div>
-              <button onClick={handleCloseModal} className="w-8 h-8 rounded-xl bg-white border-2 border-black shadow-[2px_2px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 text-black flex items-center justify-center transition cursor-pointer">
-                <X className="w-4 h-4 stroke-[2.5]" />
-              </button>
-            </div>
-
-            {/* Chat Transcript Area */}
-            <div className="space-y-3 overflow-y-auto flex-1 p-2">
-              {rpHistory.map((item, idx) => (
-                <div
-                  key={idx}
-                  className={`flex flex-col ${item.sender === 'user' ? 'items-end' : 'items-start'} space-y-1`}
-                >
-                  <div
-                    className={`p-3.5 rounded-2xl text-xs sm:text-sm max-w-[85%] leading-relaxed border-2 border-black shadow-[2px_2px_0px_#000] ${
-                      item.sender === 'user'
-                        ? 'bg-[#B388FF] text-black font-bold'
-                        : 'bg-[#F8FAFC] text-black font-medium'
-                    }`}
-                  >
-                    <div className="flex items-start justify-between gap-2">
-                      <span>{item.text}</span>
-                      {item.sender === 'npc' && (
-                        <button
-                          onClick={() => handleSpeak(item.text)}
-                          className="text-black hover:opacity-70 p-0.5 rounded shrink-0 cursor-pointer"
-                          title="Dengar suara"
-                        >
-                          <Volume2 className="w-3.5 h-3.5 stroke-[2.5]" />
-                        </button>
-                      )}
-                    </div>
-                  </div>
-
-                  {item.feedback && (
-                    <span className="text-[10px] text-black font-black bg-[#80ED99] border border-black px-2 py-0.5 rounded-md shadow-xs">
-                      💡 {item.feedback}
+                  <div>
+                    <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md bg-black text-white inline-block mb-0.5">
+                      Simulasi Dialog Interaktif
                     </span>
-                  )}
+                    <h3 className="font-black text-black text-base uppercase">{rpScenarios[rpScenarioIndex].title}</h3>
+                  </div>
                 </div>
-              ))}
-            </div>
-
-            {/* Response Options */}
-            {!rpCompleted ? (
-              <div className="space-y-2 pt-2 border-t-2 border-black">
-                <span className="text-[11px] font-black text-black block uppercase tracking-wider">Pilih respons balasan Anda:</span>
-                {rpScenarios[rpScenarioIndex].turns[rpTurnIndex]?.options.map((opt, oIdx) => (
-                  <button
-                    key={oIdx}
-                    onClick={() => {
-                      const newHistory = [
-                        ...rpHistory,
-                        { sender: 'user', text: opt.text, feedback: opt.feedback },
-                      ];
-
-                      if (opt.npcReply) {
-                        newHistory.push({ sender: 'npc', text: opt.npcReply });
-                      }
-
-                      setRpHistory(newHistory);
-                      addXp(15, 'Roleplay Dialogue');
-
-                      if (rpTurnIndex < rpScenarios[rpScenarioIndex].turns.length - 1) {
-                        setRpTurnIndex((t) => t + 1);
-                      } else {
-                        setRpCompleted(true);
-                      }
-                    }}
-                    className="w-full p-3 rounded-2xl border-2 border-black bg-white hover:bg-[#D4F63D] text-left text-xs font-bold text-black shadow-[2px_2px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 transition cursor-pointer leading-snug"
-                  >
-                    "{opt.text}"
-                  </button>
-                ))}
-              </div>
-            ) : (
-              <div className="p-4 rounded-2xl bg-[#80ED99] border-2 border-black shadow-[3px_3px_0px_#000] text-center space-y-2 animate-fade-in text-black">
-                <span className="text-2xl">🏆</span>
-                <h4 className="font-black text-black text-sm uppercase">Skenario Percakapan Tuntas!</h4>
-                <p className="text-xs font-bold text-black/80">
-                  Kamu telah menyelesaikan percakapan dengan lancar dan sopan. Bonus +25 XP telah ditambahkan!
-                </p>
-                <button
-                  onClick={handleCloseModal}
-                  className="px-5 py-2.5 rounded-xl bg-black text-white text-xs font-black border-2 border-black shadow-[2px_2px_0px_#fff] active:translate-x-0.5 active:translate-y-0.5 transition cursor-pointer"
-                >
-                  Selesai &amp; Keluar Lounge
+                <button onClick={handleCloseModal} className="w-8 h-8 rounded-xl bg-white border-2 border-black shadow-[2px_2px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 text-black flex items-center justify-center transition cursor-pointer">
+                  <X className="w-4 h-4 stroke-[2.5]" />
                 </button>
               </div>
-            )}
-          </div>
-        </div>
-      )}
+
+              {/* Chat Transcript Area */}
+              <div className="space-y-3 overflow-y-auto flex-1 p-2">
+                {rpHistory.map((item, idx) => (
+                  <div
+                    key={idx}
+                    className={`flex flex-col ${item.sender === 'user' ? 'items-end' : 'items-start'} space-y-1`}
+                  >
+                    <div
+                      className={`p-3.5 rounded-2xl text-xs sm:text-sm max-w-[85%] leading-relaxed border-2 border-black shadow-[2px_2px_0px_#000] ${
+                        item.sender === 'user'
+                          ? 'bg-[#B388FF] text-black font-bold'
+                          : 'bg-[#F8FAFC] text-black font-medium'
+                      }`}
+                    >
+                      <div className="flex items-start justify-between gap-2">
+                        <span>{item.text}</span>
+                        {item.sender === 'npc' && (
+                          <button
+                            onClick={() => handleSpeak(item.text)}
+                            className="text-black hover:opacity-70 p-0.5 rounded shrink-0 cursor-pointer"
+                            title="Dengar suara"
+                          >
+                            <Volume2 className="w-3.5 h-3.5 stroke-[2.5]" />
+                          </button>
+                        )}
+                      </div>
+                    </div>
+
+                    {item.feedback && (
+                      <span className="text-[10px] text-black font-black bg-[#80ED99] border border-black px-2 py-0.5 rounded-md shadow-xs">
+                        💡 {item.feedback}
+                      </span>
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              {/* Response Options */}
+              {!rpCompleted ? (
+                <div className="space-y-2 pt-2 border-t-2 border-black shrink-0">
+                  <span className="text-[11px] font-black text-black block uppercase tracking-wider">Pilih respons balasan Anda:</span>
+                  {rpScenarios[rpScenarioIndex].turns[rpTurnIndex]?.options.map((opt, oIdx) => (
+                    <button
+                      key={oIdx}
+                      onClick={() => {
+                        const newHistory = [
+                          ...rpHistory,
+                          { sender: 'user', text: opt.text, feedback: opt.feedback },
+                        ];
+
+                        if (opt.npcReply) {
+                          newHistory.push({ sender: 'npc', text: opt.npcReply });
+                        }
+
+                        setRpHistory(newHistory);
+                        addXp(15, 'Roleplay Dialogue');
+
+                        if (rpTurnIndex < rpScenarios[rpScenarioIndex].turns.length - 1) {
+                          setRpTurnIndex((t) => t + 1);
+                        } else {
+                          setRpCompleted(true);
+                        }
+                      }}
+                      className="w-full p-3 rounded-2xl border-2 border-black bg-white hover:bg-[#D4F63D] text-left text-xs font-bold text-black shadow-[2px_2px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 transition cursor-pointer leading-snug"
+                    >
+                      "{opt.text}"
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                <div className="p-4 rounded-2xl bg-[#80ED99] border-2 border-black shadow-[3px_3px_0px_#000] text-center space-y-2 animate-fade-in text-black shrink-0">
+                  <span className="text-2xl">🏆</span>
+                  <h4 className="font-black text-black text-sm uppercase">Skenario Percakapan Tuntas!</h4>
+                  <p className="text-xs font-bold text-black/80">
+                    Kamu telah menyelesaikan percakapan dengan lancar dan sopan. Bonus +25 XP telah ditambahkan!
+                  </p>
+                  <button
+                    onClick={handleCloseModal}
+                    className="px-5 py-2.5 rounded-xl bg-black text-white text-xs font-black border-2 border-black shadow-[2px_2px_0px_#fff] active:translate-x-0.5 active:translate-y-0.5 transition cursor-pointer"
+                  >
+                    Selesai &amp; Keluar Lounge
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>,
+          document.body
+        )}
 
       {/* E. SENTENCE BUILDER MODAL */}
-      {activeModal === 'builder' && sbChallenges[sbIndex] && (
-        <div role="dialog" className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/75 animate-fade-in">
-          <div className="relative w-full max-w-lg bg-white rounded-3xl border-3 border-black shadow-[8px_8px_0px_#000] overflow-hidden p-6 space-y-5">
-            <div className="flex items-center justify-between border-b-2.5 border-black pb-3">
-              <div className="flex items-center gap-2">
-                <span className="p-2 rounded-xl bg-[#B388FF] border-2 border-black shadow-[2px_2px_0px_#000] text-black">
-                  <PenTool className="w-4 h-4 stroke-[2.5]" />
-                </span>
-                <div>
-                  <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md bg-black text-white inline-block mb-0.5">
-                    Level {sbIndex + 1} / {sbChallenges.length}
+      {activeModal === 'builder' &&
+        sbChallenges[sbIndex] &&
+        createPortal(
+          <div
+            role="dialog"
+            aria-modal="true"
+            className="fixed inset-0 z-[60] flex items-center justify-center p-2.5 sm:p-4 bg-black/80 backdrop-blur-xs animate-fade-in"
+            onClick={handleCloseModal}
+          >
+            <div
+              className="relative w-full max-w-lg bg-white rounded-2xl sm:rounded-3xl border-2 sm:border-3 border-black shadow-[4px_4px_0px_#000] sm:shadow-[8px_8px_0px_#000] overflow-hidden p-4 sm:p-6 space-y-4 sm:space-y-5 max-h-[92vh] overflow-y-auto flex flex-col"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between border-b-2.5 border-black pb-3 shrink-0">
+                <div className="flex items-center gap-2">
+                  <span className="p-2 rounded-xl bg-[#B388FF] border-2 border-black shadow-[2px_2px_0px_#000] text-black">
+                    <PenTool className="w-4 h-4 stroke-[2.5]" />
                   </span>
-                  <h3 className="font-black text-black text-base uppercase">Sentence Builder ✍️</h3>
+                  <div>
+                    <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md bg-black text-white inline-block mb-0.5">
+                      Level {sbIndex + 1} / {sbChallenges.length}
+                    </span>
+                    <h3 className="font-black text-black text-base uppercase">Sentence Builder ✍️</h3>
+                  </div>
+                </div>
+                <button onClick={handleCloseModal} className="w-8 h-8 rounded-xl bg-white border-2 border-black shadow-[2px_2px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 text-black flex items-center justify-center transition cursor-pointer">
+                  <X className="w-4 h-4 stroke-[2.5]" />
+                </button>
+              </div>
+
+              {/* Target Meaning */}
+              <div className="p-4 rounded-2xl bg-[#B388FF]/20 border-2 border-black shadow-[2px_2px_0px_#000] space-y-1 shrink-0">
+                <span className="text-[10px] font-black uppercase tracking-wider text-black block">
+                  Susun ke Kalimat Bahasa Inggris:
+                </span>
+                <p className="font-black text-black text-sm sm:text-base leading-snug">
+                  "{sbChallenges[sbIndex].indonesianMeaning}"
+                </p>
+              </div>
+
+              {/* Placement Workspace */}
+              <div className="space-y-1.5 shrink-0">
+                <span className="text-[11px] font-black text-black uppercase">Area Susunan Kalimat (Ketuk balok untuk melepas):</span>
+                <div className="min-h-16 p-3 rounded-2xl border-2 border-dashed border-black bg-[#F8FAFC] flex flex-wrap gap-2 items-center">
+                  {sbPlacedTokens.length === 0 ? (
+                    <span className="text-xs text-black/50 font-bold italic">Ketuk balok kata di bawah untuk menyusun kalimat...</span>
+                  ) : (
+                    sbPlacedTokens.map((token, tIdx) => (
+                      <button
+                        key={tIdx}
+                        onClick={() => {
+                          if (sbSubmitted) return;
+                          setSbPlacedTokens(sbPlacedTokens.filter((_, i) => i !== tIdx));
+                          setSbAvailableTokens([...sbAvailableTokens, token]);
+                        }}
+                        className="px-3 py-1.5 rounded-xl bg-[#D4F63D] text-black font-black text-xs border-2 border-black shadow-[2px_2px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 hover:bg-rose-300 transition cursor-pointer"
+                      >
+                        {token}
+                      </button>
+                    ))
+                  )}
                 </div>
               </div>
-              <button onClick={handleCloseModal} className="w-8 h-8 rounded-xl bg-white border-2 border-black shadow-[2px_2px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 text-black flex items-center justify-center transition cursor-pointer">
-                <X className="w-4 h-4 stroke-[2.5]" />
-              </button>
-            </div>
 
-            {/* Target Meaning */}
-            <div className="p-4 rounded-2xl bg-[#B388FF]/20 border-2 border-black shadow-[2px_2px_0px_#000] space-y-1">
-              <span className="text-[10px] font-black uppercase tracking-wider text-black block">
-                Susun ke Kalimat Bahasa Inggris:
-              </span>
-              <p className="font-black text-black text-sm sm:text-base leading-snug">
-                "{sbChallenges[sbIndex].indonesianMeaning}"
-              </p>
-            </div>
-
-            {/* Placement Workspace */}
-            <div className="space-y-1.5">
-              <span className="text-[11px] font-black text-black uppercase">Area Susunan Kalimat (Ketuk balok untuk melepas):</span>
-              <div className="min-h-16 p-3 rounded-2xl border-2 border-dashed border-black bg-[#F8FAFC] flex flex-wrap gap-2 items-center">
-                {sbPlacedTokens.length === 0 ? (
-                  <span className="text-xs text-black/50 font-bold italic">Ketuk balok kata di bawah untuk menyusun kalimat...</span>
-                ) : (
-                  sbPlacedTokens.map((token, tIdx) => (
+              {/* Available Tokens Pool */}
+              <div className="space-y-1.5 shrink-0">
+                <span className="text-[11px] font-black text-black uppercase">Pilihan Balok Kata:</span>
+                <div className="flex flex-wrap gap-2 p-2.5 bg-white border-2 border-black shadow-[2px_2px_0px_#000] rounded-2xl min-h-12 items-center">
+                  {sbAvailableTokens.map((token, aIdx) => (
                     <button
-                      key={tIdx}
+                      key={aIdx}
                       onClick={() => {
                         if (sbSubmitted) return;
-                        setSbPlacedTokens(sbPlacedTokens.filter((_, i) => i !== tIdx));
-                        setSbAvailableTokens([...sbAvailableTokens, token]);
+                        setSbPlacedTokens([...sbPlacedTokens, token]);
+                        setSbAvailableTokens(sbAvailableTokens.filter((_, i) => i !== aIdx));
                       }}
-                      className="px-3 py-1.5 rounded-xl bg-[#D4F63D] text-black font-black text-xs border-2 border-black shadow-[2px_2px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 hover:bg-rose-300 transition cursor-pointer"
+                      className="px-3 py-1.5 rounded-xl bg-white border-2 border-black text-black font-black text-xs shadow-[2px_2px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 hover:bg-[#70D6FF] transition cursor-pointer"
                     >
                       {token}
                     </button>
-                  ))
+                  ))}
+                </div>
+              </div>
+
+              {/* Submit Feedback */}
+              {sbSubmitted && (
+                <div className={`p-4 rounded-2xl text-xs space-y-1.5 animate-fade-in border-2 border-black shadow-[2px_2px_0px_#000] shrink-0 ${sbIsCorrect ? 'bg-[#80ED99] text-black font-bold' : 'bg-[#FF85C0] text-black font-bold'}`}>
+                  <span className="font-black block text-sm">
+                    {sbIsCorrect ? '🎉 Susunan Sempurna (+20 XP)!' : '❌ Susunan Belum Pas'}
+                  </span>
+                  <p className="leading-relaxed text-black/80 font-medium">
+                    {sbChallenges[sbIndex].explanation}
+                  </p>
+                </div>
+              )}
+
+              <div className="flex items-center justify-between pt-2 border-t-2 border-black shrink-0">
+                <button
+                  onClick={() => {
+                    setSbPlacedTokens([]);
+                    setSbAvailableTokens([...sbChallenges[sbIndex].scrambled]);
+                    setSbSubmitted(false);
+                  }}
+                  className="inline-flex items-center gap-1 text-xs font-black text-black hover:underline cursor-pointer"
+                >
+                  <RotateCcw className="w-3.5 h-3.5 stroke-[2.5]" />
+                  <span>Reset Susunan</span>
+                </button>
+
+                {!sbSubmitted ? (
+                  <button
+                    onClick={() => {
+                      const currentSentence = sbPlacedTokens.join(' ').trim();
+                      const targetSentence = sbChallenges[sbIndex].targetTokens.join(' ').trim();
+                      const isCorrect = currentSentence.toLowerCase() === targetSentence.toLowerCase();
+
+                      setSbIsCorrect(isCorrect);
+                      setSbSubmitted(true);
+                      if (isCorrect) {
+                        addXp(20, 'Sentence Builder');
+                      }
+                    }}
+                    disabled={sbPlacedTokens.length === 0}
+                    className="px-5 py-2.5 rounded-xl bg-[#D4F63D] hover:bg-[#c2e42f] text-black text-xs font-black border-2 border-black shadow-[2px_2px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 transition disabled:opacity-40 cursor-pointer"
+                  >
+                    Periksa Susunan ➔
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => {
+                      if (sbIndex < sbChallenges.length - 1) {
+                        const next = sbIndex + 1;
+                        setSbIndex(next);
+                        setSbPlacedTokens([]);
+                        setSbAvailableTokens([...sbChallenges[next].scrambled]);
+                        setSbSubmitted(false);
+                        setSbIsCorrect(false);
+                      } else {
+                        handleCloseModal();
+                      }
+                    }}
+                    className="px-5 py-2.5 rounded-xl bg-black text-white text-xs font-black border-2 border-black shadow-[2px_2px_0px_#fff] active:translate-x-0.5 active:translate-y-0.5 transition cursor-pointer"
+                  >
+                    {sbIndex === sbChallenges.length - 1 ? 'Selesai Tantangan' : 'Level Berikutnya ➔'}
+                  </button>
                 )}
               </div>
             </div>
-
-            {/* Available Tokens Pool */}
-            <div className="space-y-1.5">
-              <span className="text-[11px] font-black text-black uppercase">Pilihan Balok Kata:</span>
-              <div className="flex flex-wrap gap-2 p-2.5 bg-white border-2 border-black shadow-[2px_2px_0px_#000] rounded-2xl min-h-12 items-center">
-                {sbAvailableTokens.map((token, aIdx) => (
-                  <button
-                    key={aIdx}
-                    onClick={() => {
-                      if (sbSubmitted) return;
-                      setSbPlacedTokens([...sbPlacedTokens, token]);
-                      setSbAvailableTokens(sbAvailableTokens.filter((_, i) => i !== aIdx));
-                    }}
-                    className="px-3 py-1.5 rounded-xl bg-white border-2 border-black text-black font-black text-xs shadow-[2px_2px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 hover:bg-[#70D6FF] transition cursor-pointer"
-                  >
-                    {token}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Submit Feedback */}
-            {sbSubmitted && (
-              <div className={`p-4 rounded-2xl text-xs space-y-1.5 animate-fade-in border-2 border-black shadow-[2px_2px_0px_#000] ${sbIsCorrect ? 'bg-[#80ED99] text-black font-bold' : 'bg-[#FF85C0] text-black font-bold'}`}>
-                <span className="font-black block text-sm">
-                  {sbIsCorrect ? '🎉 Susunan Sempurna (+20 XP)!' : '❌ Susunan Belum Pas'}
-                </span>
-                <p className="leading-relaxed text-black/80 font-medium">
-                  {sbChallenges[sbIndex].explanation}
-                </p>
-              </div>
-            )}
-
-            <div className="flex items-center justify-between pt-2 border-t-2 border-black">
-              <button
-                onClick={() => {
-                  setSbPlacedTokens([]);
-                  setSbAvailableTokens([...sbChallenges[sbIndex].scrambled]);
-                  setSbSubmitted(false);
-                }}
-                className="inline-flex items-center gap-1 text-xs font-black text-black hover:underline cursor-pointer"
-              >
-                <RotateCcw className="w-3.5 h-3.5 stroke-[2.5]" />
-                <span>Reset Susunan</span>
-              </button>
-
-              {!sbSubmitted ? (
-                <button
-                  onClick={() => {
-                    const currentSentence = sbPlacedTokens.join(' ').trim();
-                    const targetSentence = sbChallenges[sbIndex].targetTokens.join(' ').trim();
-                    const isCorrect = currentSentence.toLowerCase() === targetSentence.toLowerCase();
-
-                    setSbIsCorrect(isCorrect);
-                    setSbSubmitted(true);
-                    if (isCorrect) {
-                      addXp(20, 'Sentence Builder');
-                    }
-                  }}
-                  disabled={sbPlacedTokens.length === 0}
-                  className="px-5 py-2.5 rounded-xl bg-[#D4F63D] hover:bg-[#c2e42f] text-black text-xs font-black border-2 border-black shadow-[2px_2px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 transition disabled:opacity-40 cursor-pointer"
-                >
-                  Periksa Susunan ➔
-                </button>
-              ) : (
-                <button
-                  onClick={() => {
-                    if (sbIndex < sbChallenges.length - 1) {
-                      const next = sbIndex + 1;
-                      setSbIndex(next);
-                      setSbPlacedTokens([]);
-                      setSbAvailableTokens([...sbChallenges[next].scrambled]);
-                      setSbSubmitted(false);
-                      setSbIsCorrect(false);
-                    } else {
-                      handleCloseModal();
-                    }
-                  }}
-                  className="px-5 py-2.5 rounded-xl bg-black text-white text-xs font-black border-2 border-black shadow-[2px_2px_0px_#fff] active:translate-x-0.5 active:translate-y-0.5 transition cursor-pointer"
-                >
-                  {sbIndex === sbChallenges.length - 1 ? 'Selesai Tantangan' : 'Level Berikutnya ➔'}
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
+          </div>,
+          document.body
+        )}
 
       {/* Lala AI Interactive Roleplay Modal */}
       <LalaAiRoleplayModal

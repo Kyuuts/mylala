@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { useSearchParams, useParams, useNavigate } from 'react-router-dom';
 import {
   BookOpen,
@@ -60,6 +61,17 @@ export default function ReadingPage() {
     return () => {
       ttsService.stop();
     };
+  }, [activeArticle]);
+
+  // Lock body scroll when reading modal is active
+  useEffect(() => {
+    if (activeArticle && typeof document !== 'undefined') {
+      const prev = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = prev;
+      };
+    }
   }, [activeArticle]);
 
   const filteredArticles = selectedLevel === 'ALL'
@@ -297,230 +309,236 @@ export default function ReadingPage() {
       </div>
 
       {/* 4. Interactive Reading Modal with Full Paragraph Audio Player */}
-      {activeArticle && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/75 animate-fade-in"
-        >
-          <div className="relative w-full max-w-2xl bg-white rounded-3xl border-3 border-black shadow-[8px_8px_0px_#000] overflow-hidden flex flex-col max-h-[92vh]">
-            {/* Modal Header */}
-            <div className="px-6 py-4 border-b-2.5 border-black flex items-center justify-between bg-[#FFD166] text-black">
-              <div className="flex items-center gap-2.5 min-w-0">
-                <span className="text-2xl shrink-0">
-                  {CEFR_LEVELS[activeArticle.cefr_level]?.badge || '📖'}
-                </span>
-                <div className="min-w-0">
-                  <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md bg-black text-white inline-block mb-1">
-                    Level {activeArticle.cefr_level} • {activeArticle.category}
+      {activeArticle &&
+        createPortal(
+          <div
+            role="dialog"
+            aria-modal="true"
+            className="fixed inset-0 z-[60] flex items-center justify-center p-2.5 sm:p-4 bg-black/80 backdrop-blur-xs animate-fade-in"
+            onClick={handleCloseModal}
+          >
+            <div
+              className="relative w-full max-w-2xl bg-white rounded-2xl sm:rounded-3xl border-2 sm:border-3 border-black shadow-[4px_4px_0px_#000] sm:shadow-[8px_8px_0px_#000] overflow-hidden flex flex-col h-[94vh] max-h-[94vh]"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Modal Header */}
+              <div className="px-4 py-3 sm:px-6 sm:py-4 border-b-2 sm:border-b-2.5 border-black flex items-center justify-between bg-[#FFD166] text-black shrink-0">
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <span className="text-xl sm:text-2xl shrink-0">
+                    {CEFR_LEVELS[activeArticle.cefr_level]?.badge || '📖'}
                   </span>
-                  <h3 className="text-base sm:text-lg font-black text-black truncate">
-                    {activeArticle.title}
-                  </h3>
+                  <div className="min-w-0">
+                    <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md bg-black text-white inline-block mb-0.5">
+                      Level {activeArticle.cefr_level} • {activeArticle.category}
+                    </span>
+                    <h3 className="text-sm sm:text-lg font-black text-black truncate leading-tight">
+                      {activeArticle.title}
+                    </h3>
+                  </div>
                 </div>
+
+                <button
+                  onClick={handleCloseModal}
+                  className="w-8 h-8 rounded-xl bg-white border-2 border-black shadow-[2px_2px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 text-black flex items-center justify-center transition cursor-pointer shrink-0"
+                >
+                  <X className="w-4 h-4 stroke-[2.5]" />
+                </button>
               </div>
 
-              <button
-                onClick={handleCloseModal}
-                className="w-8 h-8 rounded-xl bg-white border-2 border-black shadow-[2px_2px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 text-black flex items-center justify-center transition cursor-pointer shrink-0"
-              >
-                <X className="w-4 h-4 stroke-[2.5]" />
-              </button>
-            </div>
-
-            {/* Audio Master Control Toolbar */}
-            <div className="px-5 sm:px-6 py-3 bg-[#18181B] text-white flex flex-wrap items-center justify-between gap-3 border-b-2 border-black">
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={handleTogglePlayAll}
-                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-black transition border-2 border-black shadow-[2px_2px_0px_#fff] active:translate-x-0.5 active:translate-y-0.5 cursor-pointer ${
-                    isPlayingAll
-                      ? 'bg-[#FF85C0] text-black'
-                      : 'bg-[#D4F63D] text-black'
-                  }`}
-                >
-                  {isPlayingAll ? (
-                    <>
-                      <Pause className="w-3.5 h-3.5 fill-current stroke-[2.5]" />
-                      <span>Jeda Pembacaan</span>
-                    </>
-                  ) : (
-                    <>
-                      <Play className="w-3.5 h-3.5 fill-current stroke-[2.5]" />
-                      <span>Putar Seluruh Artikel</span>
-                    </>
-                  )}
-                </button>
-
-                {(isPlayingAll || activeParagraphIndex !== null) && (
+              {/* Audio Master Control Toolbar - Structured for Mobile */}
+              <div className="px-3.5 sm:px-5 py-2.5 sm:py-3 bg-[#18181B] text-white flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-3 border-b-2 border-black shrink-0">
+                <div className="flex items-center gap-2">
                   <button
-                    onClick={stopAudio}
-                    className="p-1.5 rounded-xl bg-white text-black border-2 border-black shadow-[2px_2px_0px_#fff] active:translate-x-0.5 active:translate-y-0.5 transition cursor-pointer"
-                    title="Hentikan Audio"
-                  >
-                    <Square className="w-3.5 h-3.5 fill-current" />
-                  </button>
-                )}
-              </div>
-
-              {/* Speed Selector & Voice Modal Trigger */}
-              <div className="flex items-center gap-2">
-                <div className="flex items-center gap-1 text-[11px] font-black">
-                  <span className="text-white/70 mr-1 uppercase">Tempo:</span>
-                  {[
-                    { rate: 0.85, label: '0.85x' },
-                    { rate: 1.0, label: '1.0x' },
-                    { rate: 1.15, label: '1.15x' },
-                  ].map((s) => (
-                    <button
-                      key={s.rate}
-                      onClick={() => setSpeechRate(s.rate)}
-                      className={`px-2 py-0.5 rounded-md border text-xs font-black transition cursor-pointer ${
-                        speechRate === s.rate
-                          ? 'bg-[#70D6FF] text-black border-white'
-                          : 'bg-white/10 text-white border-transparent hover:bg-white/20'
-                      }`}
-                    >
-                      {s.label}
-                    </button>
-                  ))}
-                </div>
-
-                <button
-                  type="button"
-                  onClick={() => setShowVoiceModal(true)}
-                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-xs font-black bg-[#FF85C0] text-black border-2 border-black shadow-[2px_2px_0px_#fff] active:translate-x-0.5 active:translate-y-0.5 transition cursor-pointer"
-                  title="Pilih Karakter Suara AI Microsoft Azure Neural"
-                >
-                  <Volume2 className="w-3.5 h-3.5 stroke-[2.5]" />
-                  <span>Suara AI</span>
-                </button>
-              </div>
-            </div>
-
-            {/* Modal Body: Article Content with Per-Paragraph Audio */}
-            <div className="p-6 sm:p-8 overflow-y-auto space-y-4 text-black leading-relaxed text-sm sm:text-base">
-              {activeArticle.content_paragraphs.map((paragraph, idx) => {
-                const isPlayingThis = activeParagraphIndex === idx;
-
-                return (
-                  <div
-                    key={idx}
-                    id={`reading-paragraph-${idx}`}
-                    className={`p-4 rounded-2xl transition-all relative border-2 ${
-                      isPlayingThis
-                        ? 'bg-[#D4F63D]/30 border-black shadow-[3px_3px_0px_#000]'
-                        : 'bg-[#F8FAFC] border-black/15 hover:border-black'
+                    onClick={handleTogglePlayAll}
+                    className={`flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-black transition border-2 border-black shadow-[2px_2px_0px_#fff] active:translate-x-0.5 active:translate-y-0.5 cursor-pointer ${
+                      isPlayingAll
+                        ? 'bg-[#FF85C0] text-black'
+                        : 'bg-[#D4F63D] text-black'
                     }`}
                   >
-                    <div className="flex items-start justify-between gap-4">
-                      <p className="leading-relaxed font-bold text-black text-base sm:text-lg flex-1">
-                        {paragraph}
-                      </p>
+                    {isPlayingAll ? (
+                      <>
+                        <Pause className="w-3.5 h-3.5 fill-current stroke-[2.5]" />
+                        <span>Jeda Pembacaan</span>
+                      </>
+                    ) : (
+                      <>
+                        <Play className="w-3.5 h-3.5 fill-current stroke-[2.5]" />
+                        <span>Putar Seluruh Artikel</span>
+                      </>
+                    )}
+                  </button>
 
-                      <button
-                        onClick={() => handleToggleParagraph(paragraph, idx)}
-                        className={`p-2 rounded-xl transition shrink-0 cursor-pointer border-2 border-black shadow-[2px_2px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 ${
-                          isPlayingThis
-                            ? 'bg-[#D4F63D] text-black'
-                            : 'bg-white text-black hover:bg-slate-100'
-                        }`}
-                        title={isPlayingThis ? 'Hentikan audio' : 'Dengarkan paragraf ini'}
-                      >
-                        {isPlayingThis ? (
-                          <Volume2 className="w-4 h-4 animate-pulse stroke-[2.5]" />
-                        ) : (
-                          <Volume2 className="w-4 h-4 stroke-[2.5]" />
-                        )}
-                      </button>
-                    </div>
-                  </div>
-                );
-              })}
-
-              {/* Vocabulary Vault Section */}
-              <div className="mt-8 pt-6 border-t-2 border-black space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2 text-black font-black text-sm sm:text-base uppercase tracking-tight">
-                    <Sparkles className="w-4 h-4 stroke-[2.5]" />
-                    <span>Kosakata Kunci (Tap to Save)</span>
-                  </div>
-                  <span className="text-xs font-black px-2 py-0.5 rounded-md bg-[#FFD166] text-black border border-black">
-                    {activeArticle.vocabulary.length} Kata
-                  </span>
+                  {(isPlayingAll || activeParagraphIndex !== null) && (
+                    <button
+                      onClick={stopAudio}
+                      className="p-1.5 rounded-xl bg-white text-black border-2 border-black shadow-[2px_2px_0px_#fff] active:translate-x-0.5 active:translate-y-0.5 transition cursor-pointer shrink-0"
+                      title="Hentikan Audio"
+                    >
+                      <Square className="w-3.5 h-3.5 fill-current" />
+                    </button>
+                  )}
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {activeArticle.vocabulary.map((v) => {
-                    const isSaved = savedVocab[v.word];
-                    return (
-                      <div
-                        key={v.word}
-                        className="p-3.5 rounded-2xl border-2 border-black bg-white shadow-[3px_3px_0px_#000] space-y-2"
+                {/* Speed Selector & Voice Modal Trigger */}
+                <div className="flex items-center justify-between sm:justify-end gap-2 pt-1 sm:pt-0 border-t border-white/10 sm:border-t-0">
+                  <div className="flex items-center gap-1 text-[11px] font-black">
+                    <span className="text-white/70 mr-1 uppercase text-[10px]">Tempo:</span>
+                    {[
+                      { rate: 0.85, label: '0.85x' },
+                      { rate: 1.0, label: '1.0x' },
+                      { rate: 1.15, label: '1.15x' },
+                    ].map((s) => (
+                      <button
+                        key={s.rate}
+                        onClick={() => setSpeechRate(s.rate)}
+                        className={`px-2 py-0.5 rounded-md border text-[11px] font-black transition cursor-pointer ${
+                          speechRate === s.rate
+                            ? 'bg-[#70D6FF] text-black border-white'
+                            : 'bg-white/10 text-white border-transparent hover:bg-white/20'
+                        }`}
                       >
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <span className="font-black text-black text-sm">{v.word}</span>
+                        {s.label}
+                      </button>
+                    ))}
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => setShowVoiceModal(true)}
+                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl text-[11px] sm:text-xs font-black bg-[#FF85C0] text-black border-2 border-black shadow-[2px_2px_0px_#fff] active:translate-x-0.5 active:translate-y-0.5 transition cursor-pointer shrink-0"
+                    title="Pilih Karakter Suara AI Microsoft Azure Neural"
+                  >
+                    <Volume2 className="w-3.5 h-3.5 stroke-[2.5]" />
+                    <span>Suara AI</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Modal Body: Article Content with Per-Paragraph Audio */}
+              <div className="p-3.5 sm:p-6 overflow-y-auto space-y-3 sm:space-y-4 text-black leading-relaxed flex-1">
+                {activeArticle.content_paragraphs.map((paragraph, idx) => {
+                  const isPlayingThis = activeParagraphIndex === idx;
+
+                  return (
+                    <div
+                      key={idx}
+                      id={`reading-paragraph-${idx}`}
+                      className={`p-3.5 sm:p-4 rounded-xl sm:rounded-2xl transition-all relative border-2 ${
+                        isPlayingThis
+                          ? 'bg-[#D4F63D]/30 border-black shadow-[3px_3px_0px_#000]'
+                          : 'bg-[#F8FAFC] border-black/15 hover:border-black shadow-[1px_1px_0px_#000]'
+                      }`}
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <p className="leading-relaxed font-bold text-black text-sm sm:text-base flex-1">
+                          {paragraph}
+                        </p>
+
+                        <button
+                          onClick={() => handleToggleParagraph(paragraph, idx)}
+                          className={`p-2 rounded-xl transition shrink-0 cursor-pointer border-2 border-black shadow-[2px_2px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 ${
+                            isPlayingThis
+                              ? 'bg-[#D4F63D] text-black'
+                              : 'bg-white text-black hover:bg-slate-100'
+                          }`}
+                          title={isPlayingThis ? 'Hentikan audio' : 'Dengarkan paragraf ini'}
+                        >
+                          {isPlayingThis ? (
+                            <Volume2 className="w-4 h-4 animate-pulse stroke-[2.5]" />
+                          ) : (
+                            <Volume2 className="w-4 h-4 stroke-[2.5]" />
+                          )}
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+
+                {/* Vocabulary Vault Section */}
+                <div className="mt-6 pt-4 border-t-2 border-black space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-1.5 text-black font-black text-xs sm:text-sm uppercase tracking-tight">
+                      <Sparkles className="w-4 h-4 stroke-[2.5]" />
+                      <span>Kosakata Kunci (Tap to Save)</span>
+                    </div>
+                    <span className="text-[10px] font-black px-2 py-0.5 rounded-md bg-[#FFD166] text-black border border-black">
+                      {activeArticle.vocabulary.length} Kata
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                    {activeArticle.vocabulary.map((v) => {
+                      const isSaved = savedVocab[v.word];
+                      return (
+                        <div
+                          key={v.word}
+                          className="p-3 rounded-2xl border-2 border-black bg-white shadow-[2px_2px_0px_#000] space-y-1.5"
+                        >
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-1.5">
+                              <span className="font-black text-black text-xs sm:text-sm">{v.word}</span>
+                              <button
+                                onClick={() => handleSpeakWord(v.word)}
+                                title="Dengar pelafalan"
+                                className="text-black hover:text-indigo-600 p-0.5 transition cursor-pointer"
+                              >
+                                <Volume2 className="w-3.5 h-3.5 stroke-[2.5]" />
+                              </button>
+                            </div>
+
                             <button
-                              onClick={() => handleSpeakWord(v.word)}
-                              title="Dengar pelafalan"
-                              className="text-black hover:text-indigo-600 p-0.5 transition cursor-pointer"
+                              onClick={() => handleSaveVocab(v, activeArticle.title)}
+                              disabled={isSaved}
+                              className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-xl text-[11px] font-black transition cursor-pointer border-2 border-black shadow-[1.5px_1.5px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 ${
+                                isSaved
+                                  ? 'bg-[#80ED99] text-black'
+                                  : 'bg-[#FF85C0] text-black hover:bg-[#D4F63D]'
+                              }`}
                             >
-                              <Volume2 className="w-3.5 h-3.5 stroke-[2.5]" />
+                              {isSaved ? (
+                                <>
+                                  <Check className="w-3 h-3 stroke-[2.5]" />
+                                  <span>Tersimpan</span>
+                                </>
+                              ) : (
+                                <>
+                                  <BookmarkPlus className="w-3 h-3 stroke-[2.5]" />
+                                  <span>+ Kartu</span>
+                                </>
+                              )}
                             </button>
                           </div>
 
-                          <button
-                            onClick={() => handleSaveVocab(v, activeArticle.title)}
-                            disabled={isSaved}
-                            className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-xl text-xs font-black transition cursor-pointer border-2 border-black shadow-[2px_2px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 ${
-                              isSaved
-                                ? 'bg-[#80ED99] text-black'
-                                : 'bg-[#FF85C0] text-black hover:bg-[#D4F63D]'
-                            }`}
-                          >
-                            {isSaved ? (
-                              <>
-                                <Check className="w-3 h-3 stroke-[2.5]" />
-                                <span>Tersimpan</span>
-                              </>
-                            ) : (
-                              <>
-                                <BookmarkPlus className="w-3 h-3 stroke-[2.5]" />
-                                <span>+ Kartu</span>
-                              </>
-                            )}
-                          </button>
+                          <p className="text-xs font-bold text-black/80">
+                            {v.meaning}
+                          </p>
+                          <p className="text-[10px] font-medium text-black/60 italic">
+                            "{v.example}"
+                          </p>
                         </div>
-
-                        <p className="text-xs font-bold text-black/80">
-                          {v.meaning}
-                        </p>
-                        <p className="text-[11px] font-medium text-black/60 italic">
-                          "{v.example}"
-                        </p>
-                      </div>
-                    );
-                  })}
+                      );
+                    })}
+                  </div>
                 </div>
               </div>
-            </div>
 
-            {/* Modal Footer */}
-            <div className="px-6 py-4 border-t-2 border-black bg-[#F8FAFC] flex items-center justify-between">
-              <span className="text-xs font-bold text-black/70">
-                Selesai membaca? Kosakata tersimpan siap dilatih di menu <strong>Latihan</strong>.
-              </span>
-              <button
-                onClick={handleCloseModal}
-                className="px-4 py-2 rounded-xl bg-black text-white text-xs font-black border-2 border-black shadow-[2px_2px_0px_#fff] active:translate-x-0.5 active:translate-y-0.5 transition cursor-pointer"
-              >
-                Tutup Bacaan
-              </button>
+              {/* Modal Footer - Mobile Friendly */}
+              <div className="px-4 py-3 sm:px-6 sm:py-3.5 border-t-2 border-black bg-[#F8FAFC] flex flex-col sm:flex-row items-center justify-between gap-2 shrink-0">
+                <span className="text-[11px] font-bold text-black/70 text-center sm:text-left">
+                  Selesai membaca? Kosakata tersimpan siap dilatih di menu <strong>Latihan</strong>.
+                </span>
+                <button
+                  onClick={handleCloseModal}
+                  className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-black text-white text-xs font-black border-2 border-black shadow-[2px_2px_0px_#fff] active:translate-x-0.5 active:translate-y-0.5 transition cursor-pointer shrink-0"
+                >
+                  Tutup Bacaan
+                </button>
+              </div>
             </div>
-          </div>
-        </div>
-      )}
+          </div>,
+          document.body
+        )}
 
       {/* Kokoro AI Voice Selector Modal */}
       <VoiceSelectorModal

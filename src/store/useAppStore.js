@@ -184,15 +184,15 @@ export const useAppStore = create(
         updatedAt: null,
       },
 
-      // AI Integration Configuration (Local preferences & optional personal BYOK)
+      // AI Integration Configuration (Cloud Serverless /api/ai)
       aiConfig: {
         provider: 'groq',
         apiKey: '',
         model: 'llama-3.3-70b-versatile',
-        baseUrl: 'https://api.groq.com/openai/v1',
+        baseUrl: '/api/ai',
         isEnabled: true,
         useCustomKey: false,
-        status: (import.meta.env.VITE_AI_API_KEY || import.meta.env.VITE_GROQ_API_KEY) ? 'ready' : 'unconfigured',
+        status: 'ready',
         lastTested: null,
         lastError: null,
       },

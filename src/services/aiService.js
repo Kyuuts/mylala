@@ -13,7 +13,7 @@ export const AI_PROVIDERS = {
     tag: 'Rekomendasi Utama (Super Cepat & Gratis)',
     description: 'Respon secepat kilat (100+ token/detik). 100% gratis tanpa kartu kredit.',
     baseUrl: 'https://api.groq.com/openai/v1',
-    defaultModel: 'openai/gpt-oss-120b',
+    defaultModel: 'llama-3.3-70b-versatile',
     keyUrl: 'https://console.groq.com/keys',
     keyPlaceholder: 'gsk_...',
     freeTierInfo: '30 request/menit, 14.400 request/hari (Gratis tanpa batas waktu)',
@@ -81,7 +81,7 @@ export const AI_PROVIDERS = {
 export const SYSTEM_FALLBACK_AI_CONFIG = {
   provider: 'groq',
   apiKey: '', // Cleaned! Never bundled to frontend
-  model: 'openai/gpt-oss-120b',
+  model: 'llama-3.3-70b-versatile',
   baseUrl: '/api/ai',
 };
 
@@ -89,34 +89,15 @@ export const SYSTEM_FALLBACK_AI_CONFIG = {
  * Resolve effective AI config between user's custom preference and central developer key
  */
 export function getEffectiveAiConfig(userConfig, systemConfig) {
-  // If user explicitly enabled custom personal key (BYOK)
-  if (userConfig?.useCustomKey && userConfig?.apiKey) {
-    return {
-      provider: userConfig.provider || 'groq',
-      apiKey: userConfig.apiKey.trim(),
-      model: userConfig.model || 'llama-3.3-70b-versatile',
-      baseUrl: userConfig.baseUrl || 'https://api.groq.com/openai/v1',
-      isEnabled: userConfig.isEnabled !== false,
-      isCustom: true,
-      hasKey: true,
-    };
-  }
-
-  // Central Developer / App-provided key via Serverless Proxy / Supabase
-  const sys = systemConfig || {};
-  const provider = sys.provider || userConfig?.provider || SYSTEM_FALLBACK_AI_CONFIG.provider;
-  const apiKey = (sys.apiKey || userConfig?.apiKey || '').trim();
-  const model = sys.model || userConfig?.model || SYSTEM_FALLBACK_AI_CONFIG.model;
-  const baseUrl = sys.baseUrl || userConfig?.baseUrl || SYSTEM_FALLBACK_AI_CONFIG.baseUrl;
   const isEnabled = userConfig?.isEnabled !== false;
 
   return {
-    provider,
-    apiKey,
-    model,
-    baseUrl,
+    provider: 'groq',
+    apiKey: '',
+    model: 'llama-3.3-70b-versatile',
+    baseUrl: '/api/ai',
     isEnabled,
-    isCustom: Boolean(apiKey && userConfig?.useCustomKey),
+    isCustom: false,
     hasKey: true, // Central AI is active via Serverless Proxy
   };
 }
@@ -622,7 +603,7 @@ OUTPUT FORMAT (STRICT JSON ONLY):
         headers: { 'Content-Type': 'application/json' },
         signal: controller.signal,
         body: JSON.stringify({
-          model: effective.model || 'openai/gpt-oss-120b',
+          model: effective.model || 'llama-3.3-70b-versatile',
           messages,
           temperature: 0.7,
           max_tokens: 600,
@@ -686,7 +667,7 @@ OUTPUT FORMAT (STRICT JSON ONLY):
       },
       signal: controller.signal,
       body: JSON.stringify({
-        model: effective.model || 'openai/gpt-oss-120b',
+        model: effective.model || 'llama-3.3-70b-versatile',
         messages,
         temperature: 0.7,
         max_tokens: 600,

@@ -1,6 +1,7 @@
 /**
  * Vercel Serverless Function: Lala AI Secure Proxy
- * Proxies AI queries to Groq Cloud (or configured provider) without leaking API keys to client bundles.
+ * Proxies AI queries to Groq Cloud without leaking API keys to client bundles.
+ * Robust model normalization to official Groq models (llama-3.3-70b-versatile).
  */
 
 export default async function handler(req, res) {
@@ -42,14 +43,14 @@ export default async function handler(req, res) {
 
     if (!serverApiKey) {
       return res.status(503).json({
-        error: 'AI Serverless Key is not configured on the server environment. Please set GROQ_API_KEY in Vercel settings.',
+        error: 'AI Serverless Key belum disetel di Vercel Settings (GROQ_API_KEY).',
       });
     }
 
     const body = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : (req.body || {});
     const {
       messages,
-      model = 'openai/gpt-oss-120b',
+      model = 'llama-3.3-70b-versatile',
       temperature = 0.7,
       max_tokens = 1000,
       response_format,
@@ -61,7 +62,7 @@ export default async function handler(req, res) {
       return res.status(200).json({
         success: true,
         reply: 'PONG',
-        model: 'groq/server-managed',
+        model: 'llama-3.3-70b-versatile',
         provider: 'Groq Cloud (Server Secure)',
       });
     }
@@ -70,9 +71,22 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Invalid messages array' });
     }
 
+    // Map any legacy or non-Groq model names to official Groq models
+    let effectiveModel = model;
+    const validGroqModels = [
+      'llama-3.3-70b-versatile',
+      'llama-3.1-8b-instant',
+      'llama-3.1-70b-versatile',
+      'mixtral-8x7b-32768',
+      'gemma2-9b-it',
+    ];
+    if (!validGroqModels.includes(effectiveModel)) {
+      effectiveModel = 'llama-3.3-70b-versatile';
+    }
+
     const groqEndpoint = 'https://api.groq.com/openai/v1/chat/completions';
     const requestPayload = {
-      model,
+      model: effectiveModel,
       messages,
       temperature,
       max_tokens,

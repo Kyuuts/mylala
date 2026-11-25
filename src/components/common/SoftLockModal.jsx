@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Compass, AlertTriangle, ArrowRight, ArrowLeft, BookOpen, X, ShieldAlert } from 'lucide-react';
 import { CEFR_LEVELS } from '../../utils/moduleLevel';
 
@@ -10,7 +11,18 @@ export default function SoftLockModal({
   onContinue,
   onSwitchToCurrentLevel,
 }) {
-  if (!isOpen || !targetModule) return null;
+  // Lock body scroll on mobile & desktop when open
+  useEffect(() => {
+    if (isOpen && typeof document !== 'undefined') {
+      const prevOverflow = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = prevOverflow;
+      };
+    }
+  }, [isOpen]);
+
+  if (!isOpen || !targetModule || typeof document === 'undefined') return null;
 
   const targetLevelCode = (targetModule.cefr_level || 'A2').toUpperCase();
   const targetLevelInfo = CEFR_LEVELS[targetLevelCode] || {
@@ -28,13 +40,17 @@ export default function SoftLockModal({
     title: userLevelCode,
   };
 
-  return (
+  return createPortal(
     <div
       role="dialog"
       aria-modal="true"
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-xs animate-fade-in"
+      className="fixed inset-0 z-[60] flex items-center justify-center p-2.5 sm:p-4 bg-black/80 backdrop-blur-xs animate-fade-in"
+      onClick={onClose}
     >
-      <div className="relative w-full max-w-lg bg-white rounded-3xl shadow-[8px_8px_0px_#000] overflow-hidden flex flex-col border-3 border-black text-black">
+      <div
+        className="relative w-full max-w-lg bg-white rounded-2xl sm:rounded-3xl shadow-[4px_4px_0px_#000] sm:shadow-[8px_8px_0px_#000] overflow-hidden flex flex-col border-2 sm:border-3 border-black text-black max-h-[92vh]"
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Top Header */}
         <div className="px-5 sm:px-6 py-3.5 sm:py-4 border-b-2.5 border-black flex items-center justify-between bg-[#FFD166]">
           <div className="flex items-center gap-2.5">
@@ -130,6 +146,7 @@ export default function SoftLockModal({
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

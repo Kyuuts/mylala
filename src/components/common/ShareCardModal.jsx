@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { X, Download, Share2, Copy, Check, Sparkles, Smartphone, Square, Flame, Trophy } from 'lucide-react';
 import { useAppStore } from '../../store/useAppStore';
 import { getTierFromXP } from '../../utils/rankSystem';
@@ -7,6 +8,17 @@ import { drawShareCard } from '../../utils/cardCanvasDrawer';
 export default function ShareCardModal({ isOpen, onClose, customStats = null }) {
   const { user, weeklyXp, streak, userProgress } = useAppStore();
   const canvasRef = useRef(null);
+
+  // Lock body scroll on mobile & desktop when open
+  useEffect(() => {
+    if (isOpen && typeof document !== 'undefined') {
+      const prevOverflow = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = prevOverflow;
+      };
+    }
+  }, [isOpen]);
 
   const [format, setFormat] = useState('story'); // 'story' (9:16) | 'square' (1:1)
   const [downloading, setDownloading] = useState(false);
@@ -159,13 +171,19 @@ export default function ShareCardModal({ isOpen, onClose, customStats = null }) 
     }
   };
 
-  return (
+  if (!isOpen || typeof document === 'undefined') return null;
+
+  return createPortal(
     <div
       role="dialog"
       aria-modal="true"
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-xs animate-fade-in"
+      className="fixed inset-0 z-[60] flex items-center justify-center p-2.5 sm:p-4 bg-black/80 backdrop-blur-xs animate-fade-in"
+      onClick={onClose}
     >
-      <div className="relative w-full max-w-lg bg-white border-3 border-black rounded-3xl shadow-[8px_8px_0px_#000] overflow-hidden flex flex-col max-h-[92vh] text-black">
+      <div
+        className="relative w-full max-w-lg bg-white border-2 sm:border-3 border-black rounded-2xl sm:rounded-3xl shadow-[4px_4px_0px_#000] sm:shadow-[8px_8px_0px_#000] overflow-hidden flex flex-col max-h-[92vh] text-black"
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Modal Header */}
         <div className="px-5 py-3.5 sm:py-4 border-b-2.5 border-black flex items-center justify-between bg-[#FF85C0]">
           <div className="flex items-center gap-2">
@@ -272,7 +290,8 @@ export default function ShareCardModal({ isOpen, onClose, customStats = null }) 
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
 

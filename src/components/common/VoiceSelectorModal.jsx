@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Volume2, Check, X, RefreshCw, Trash2, Gauge, Play, Pause } from 'lucide-react';
 import { ttsService, EDGE_AZURE_VOICES } from '../../services/ttsService';
 import { getCacheStats, clearAudioCache } from '../../utils/audioCache';
@@ -41,6 +42,17 @@ export default function VoiceSelectorModal({ isOpen, onClose }) {
       loadStats();
     }
   }, [isOpen, currentVoiceId]);
+
+  // Lock body scroll on mobile & desktop when open
+  useEffect(() => {
+    if (isOpen && typeof document !== 'undefined') {
+      const prevOverflow = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = prevOverflow;
+      };
+    }
+  }, [isOpen]);
 
   const handleSelectVoice = (voiceId) => {
     ttsService.setPreferredVoice(voiceId);
@@ -85,21 +97,21 @@ export default function VoiceSelectorModal({ isOpen, onClose }) {
     setClearingCache(false);
   };
 
-  if (!isOpen) return null;
+  if (!isOpen || typeof document === 'undefined') return null;
 
   const filteredVoices = selectedLocale === 'all'
     ? EDGE_AZURE_VOICES
     : EDGE_AZURE_VOICES.filter((v) => v.locale === selectedLocale);
 
-  return (
+  return createPortal(
     <div
       role="dialog"
       aria-modal="true"
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200"
+      className="fixed inset-0 z-[70] flex items-center justify-center p-2.5 sm:p-4 bg-black/80 backdrop-blur-xs animate-in fade-in duration-200"
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-lg bg-white rounded-3xl border-3 border-black shadow-[8px_8px_0px_#000] p-4 sm:p-6 overflow-hidden flex flex-col text-black max-h-[92vh]"
+        className="relative w-full max-w-lg bg-white rounded-2xl sm:rounded-3xl border-2 sm:border-3 border-black shadow-[4px_4px_0px_#000] sm:shadow-[8px_8px_0px_#000] p-4 sm:p-6 overflow-hidden flex flex-col text-black max-h-[92vh]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Modal Header */}
@@ -312,6 +324,7 @@ export default function VoiceSelectorModal({ isOpen, onClose }) {
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
