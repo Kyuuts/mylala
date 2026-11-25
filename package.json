@@ -1,7 +1,23 @@
 {
   "name": "mylala-pwa",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "description": "Next-Gen AI & Neural Speech English Micro-Learning PWA — Living Flashcards, Conversational AI Roleplay, Azure Neural TTS & CEFR Diagnostic.",
+  "homepage": "https://mylala.vercel.app",
+  "author": "Kyuuts <labib.imam.fai24@mail.umy.ac.id>",
+  "keywords": [
+    "pwa",
+    "english-learning",
+    "spaced-repetition",
+    "azure-speech",
+    "groq-ai",
+    "react",
+    "supabase",
+    "tailwind-css",
+    "micro-learning",
+    "ai-roleplay",
+    "cefr"
+  ],
   "type": "module",
   "scripts": {
     "dev": "vite",

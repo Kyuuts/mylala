@@ -26,3 +26,10 @@ dist-ssr
 .env
 .env*.local
 .vercel
+
+# Reports, Presentations & Audit Documents (Do not upload to GitHub)
+REPORTS/
+reports/
+report/
+*.pdf
+*.pptx
