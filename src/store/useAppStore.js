@@ -179,7 +179,7 @@ export const useAppStore = create(
       systemAiConfig: {
         provider: import.meta.env.VITE_AI_PROVIDER || 'groq',
         apiKey: import.meta.env.VITE_AI_API_KEY || import.meta.env.VITE_GROQ_API_KEY || '',
-        model: import.meta.env.VITE_AI_MODEL || 'llama-3.3-70b-versatile',
+        model: import.meta.env.VITE_AI_MODEL || 'llama-3.1-8b-instant',
         baseUrl: import.meta.env.VITE_AI_BASE_URL || 'https://api.groq.com/openai/v1',
         updatedAt: null,
       },
@@ -188,7 +188,7 @@ export const useAppStore = create(
       aiConfig: {
         provider: 'groq',
         apiKey: '',
-        model: 'llama-3.3-70b-versatile',
+        model: 'llama-3.1-8b-instant',
         baseUrl: '/api/ai',
         isEnabled: true,
         useCustomKey: false,
@@ -2391,7 +2391,7 @@ export const useAppStore = create(
         const payloadConfig = {
           provider: newConfig.provider || 'groq',
           apiKey: (newConfig.apiKey || '').trim(),
-          model: newConfig.model || 'llama-3.3-70b-versatile',
+          model: newConfig.model || 'llama-3.1-8b-instant',
           baseUrl: newConfig.baseUrl || 'https://api.groq.com/openai/v1',
           updatedAt: new Date().toISOString(),
           updatedBy: user?.username || 'admin',

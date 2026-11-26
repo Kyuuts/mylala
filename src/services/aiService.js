@@ -13,16 +13,16 @@ export const AI_PROVIDERS = {
     tag: 'Rekomendasi Utama (Super Cepat & Gratis)',
     description: 'Respon secepat kilat (100+ token/detik). 100% gratis tanpa kartu kredit.',
     baseUrl: 'https://api.groq.com/openai/v1',
-    defaultModel: 'llama-3.3-70b-versatile',
+    defaultModel: 'llama-3.1-8b-instant',
     keyUrl: 'https://console.groq.com/keys',
     keyPlaceholder: 'gsk_...',
     freeTierInfo: '30 request/menit, 14.400 request/hari (Gratis tanpa batas waktu)',
     requiresKey: true,
     models: [
-      { id: 'openai/gpt-oss-120b', name: 'GPT-OSS 120B (Sangat Cerdas & Lengkap)' },
-      { id: 'qwen/qwen3.8-27b', name: 'Qwen 3.8 27B (Cepat & Ringan)' },
-      { id: 'openai/gpt-oss-20b', name: 'GPT-OSS 20B (Ultra Cepat)' },
-      { id: 'llama-3.3-70b-versatile', name: 'Llama 3.3 70B Versatile' },
+      { id: 'llama-3.1-8b-instant', name: 'Llama 3.1 8B Instant (Ultra Cepat & Universal)' },
+      { id: 'llama3-8b-8192', name: 'Llama 3 8B (Stabil & Ringan)' },
+      { id: 'gemma2-9b-it', name: 'Gemma 2 9B (Google AI)' },
+      { id: 'mixtral-8x7b-32768', name: 'Mixtral 8x7B (Konteks Besar)' },
     ],
   },
   openrouter: {
@@ -81,7 +81,7 @@ export const AI_PROVIDERS = {
 export const SYSTEM_FALLBACK_AI_CONFIG = {
   provider: 'groq',
   apiKey: '', // Cleaned! Never bundled to frontend
-  model: 'llama-3.3-70b-versatile',
+  model: 'llama-3.1-8b-instant',
   baseUrl: '/api/ai',
 };
 
@@ -94,7 +94,7 @@ export function getEffectiveAiConfig(userConfig, systemConfig) {
   return {
     provider: 'groq',
     apiKey: '',
-    model: 'llama-3.3-70b-versatile',
+    model: 'llama-3.1-8b-instant',
     baseUrl: '/api/ai',
     isEnabled,
     isCustom: false,
@@ -603,7 +603,7 @@ OUTPUT FORMAT (STRICT JSON ONLY):
         headers: { 'Content-Type': 'application/json' },
         signal: controller.signal,
         body: JSON.stringify({
-          model: effective.model || 'llama-3.3-70b-versatile',
+          model: effective.model || 'llama-3.1-8b-instant',
           messages,
           temperature: 0.7,
           max_tokens: 600,
@@ -667,7 +667,7 @@ OUTPUT FORMAT (STRICT JSON ONLY):
       },
       signal: controller.signal,
       body: JSON.stringify({
-        model: effective.model || 'llama-3.3-70b-versatile',
+        model: effective.model || 'llama-3.1-8b-instant',
         messages,
         temperature: 0.7,
         max_tokens: 600,
