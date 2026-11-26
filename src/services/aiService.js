@@ -20,9 +20,9 @@ export const AI_PROVIDERS = {
     requiresKey: true,
     models: [
       { id: 'llama-3.1-8b-instant', name: 'Llama 3.1 8B Instant (Ultra Cepat & Universal)' },
-      { id: 'llama3-8b-8192', name: 'Llama 3 8B (Stabil & Ringan)' },
-      { id: 'gemma2-9b-it', name: 'Gemma 2 9B (Google AI)' },
-      { id: 'mixtral-8x7b-32768', name: 'Mixtral 8x7B (Konteks Besar)' },
+      { id: 'llama-3.3-70b-versatile', name: 'Llama 3.3 70B Versatile (Cerdas & Komprehensif)' },
+      { id: 'openai/gpt-oss-120b', name: 'GPT-OSS 120B (High Reasoning)' },
+      { id: 'openai/gpt-oss-20b', name: 'GPT-OSS 20B (Ultra Cepat)' },
     ],
   },
   openrouter: {

@@ -1,8 +1,59 @@
 /**
  * Vercel Serverless Function: Lala AI Secure Proxy
  * Proxies AI queries to Groq Cloud without leaking API keys to client bundles.
- * Robust multi-model fallback starting with universally accessible llama-3.1-8b-instant.
+ * Dynamically queries https://api.groq.com/openai/v1/models to use only active, accessible models.
+ * Automatically falls back if any model is deprecated, decommissioned, or tier-restricted.
  */
+
+// In-memory cache for discovered models from Groq API (5 min TTL per serverless container)
+let cachedModels = null;
+let cacheExpiry = 0;
+
+async function getActiveGroqModels(apiKey) {
+  const now = Date.now();
+  if (cachedModels && Array.isArray(cachedModels) && cachedModels.length > 0 && now < cacheExpiry) {
+    return cachedModels;
+  }
+
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 6000);
+    const res = await fetch('https://api.groq.com/openai/v1/models', {
+      headers: { Authorization: `Bearer ${apiKey}` },
+      signal: controller.signal,
+    });
+    clearTimeout(timeout);
+
+    if (res.ok) {
+      const data = await res.json();
+      const chatModels = (data?.data || [])
+        .map((m) => m.id)
+        .filter(
+          (id) =>
+            typeof id === 'string' &&
+            !id.includes('whisper') &&
+            !id.includes('guard') &&
+            !id.includes('orpheus')
+        );
+
+      if (chatModels.length > 0) {
+        cachedModels = chatModels;
+        cacheExpiry = now + 5 * 60 * 1000;
+        return chatModels;
+      }
+    }
+  } catch (err) {
+    console.warn('[Groq Dynamic Models]: Failed to fetch /models:', err.message);
+  }
+
+  // Safe fallback if /models fetch fails
+  return [
+    'llama-3.1-8b-instant',
+    'llama-3.3-70b-versatile',
+    'openai/gpt-oss-120b',
+    'openai/gpt-oss-20b',
+  ];
+}
 
 export default async function handler(req, res) {
   // 1. Strict Origin-based CORS Configuration
@@ -50,76 +101,70 @@ export default async function handler(req, res) {
     const body = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : (req.body || {});
     const {
       messages,
-      model = 'llama-3.1-8b-instant',
+      model,
       temperature = 0.7,
       max_tokens = 1000,
       response_format,
       mode = 'chat', // 'chat' | 'test'
     } = body;
 
-    // Real live ping test against Groq models API
+    // Discover active models dynamically from the user's Groq account
+    const activeModels = await getActiveGroqModels(serverApiKey);
+
+    // Ping / Test endpoint
     if (mode === 'test') {
-      try {
-        const testRes = await fetch('https://api.groq.com/openai/v1/models', {
-          headers: { Authorization: `Bearer ${serverApiKey}` },
-        });
+      const selectedModel =
+        activeModels.find((m) => m === 'llama-3.1-8b-instant') ||
+        activeModels.find((m) => m === 'llama-3.3-70b-versatile') ||
+        activeModels[0] ||
+        'llama-3.1-8b-instant';
 
-        if (!testRes.ok) {
-          let errDetail = '';
-          try {
-            const errJson = await testRes.json();
-            errDetail = errJson?.error?.message || errJson?.message || '';
-          } catch (_) {
-            errDetail = await testRes.text();
-          }
-          return res.status(testRes.status).json({
-            error: `Groq Auth Error (${testRes.status}): ${errDetail || 'API key tidak valid.'}`,
-          });
-        }
-
-        const modelsData = await testRes.json();
-        const availableModels = (modelsData?.data || []).map((m) => m.id);
-        const selectedModel = availableModels.includes('llama-3.1-8b-instant')
-          ? 'llama-3.1-8b-instant'
-          : (availableModels[0] || 'llama-3.1-8b-instant');
-
-        return res.status(200).json({
-          success: true,
-          reply: 'PONG',
-          model: selectedModel,
-          provider: 'Groq Cloud (Server Secure)',
-          availableModelsCount: availableModels.length,
-        });
-      } catch (testErr) {
-        return res.status(500).json({
-          error: `Gagal menguji endpoint Groq: ${testErr.message}`,
-        });
-      }
+      return res.status(200).json({
+        success: true,
+        reply: 'PONG',
+        model: selectedModel,
+        provider: 'Groq Cloud (Server Secure)',
+        activeModels,
+      });
     }
 
     if (!messages || !Array.isArray(messages) || messages.length === 0) {
       return res.status(400).json({ error: 'Invalid messages array' });
     }
 
-    // Determine initial preferred model
-    // llama-3.1-8b-instant is universally free, ultra-fast, and supported on 100% of Groq accounts
-    const preferredModel =
-      model &&
-      model !== 'llama-3.3-70b-versatile' &&
-      model !== 'openai/gpt-oss-120b'
-        ? model
-        : 'llama-3.1-8b-instant';
-
-    // Resilient fallback ladder in case a specific model is deprecated or tier-restricted
-    const fallbackLadder = [
-      preferredModel,
+    // Build candidate models order
+    const priorityPreference = [
       'llama-3.1-8b-instant',
-      'llama3-8b-8192',
-      'gemma2-9b-it',
-      'mixtral-8x7b-32768',
       'llama-3.3-70b-versatile',
+      'openai/gpt-oss-120b',
+      'openai/gpt-oss-20b',
     ];
-    const candidateModels = [...new Set(fallbackLadder)];
+
+    const candidateModels = [];
+
+    // 1. If requested model is in activeModels, try it first
+    if (model && activeModels.includes(model)) {
+      candidateModels.push(model);
+    }
+
+    // 2. Add priority models that exist in activeModels
+    for (const p of priorityPreference) {
+      if (activeModels.includes(p) && !candidateModels.includes(p)) {
+        candidateModels.push(p);
+      }
+    }
+
+    // 3. Add any other active models discovered
+    for (const m of activeModels) {
+      if (!candidateModels.includes(m)) {
+        candidateModels.push(m);
+      }
+    }
+
+    // Fallback safeguard
+    if (candidateModels.length === 0) {
+      candidateModels.push('llama-3.1-8b-instant', 'llama-3.3-70b-versatile');
+    }
 
     let lastError = null;
     let successData = null;
@@ -154,19 +199,9 @@ export default async function handler(req, res) {
 
         if (groqRes.ok) {
           successData = await groqRes.json();
-          break; // Succeeded!
+          break; // Success!
         }
 
-        // If error is 404 (model does not exist or tier restricted), attempt fallback to next model
-        if (groqRes.status === 404) {
-          const errJson = await groqRes.json().catch(() => ({}));
-          const errMsg = errJson?.error?.message || `Model ${tryModel} tidak dapat diakses.`;
-          lastError = { status: 404, message: errMsg };
-          console.warn(`[Groq Fallback]: Model ${tryModel} 404 (${errMsg}). Trying next candidate...`);
-          continue;
-        }
-
-        // For other non-404 status codes (e.g. 401 Unauthorized, 429 Rate Limit), return immediately
         let errDetail = '';
         try {
           const errorJson = await groqRes.json();
@@ -175,6 +210,22 @@ export default async function handler(req, res) {
           errDetail = await groqRes.text();
         }
 
+        const isModelIssue =
+          groqRes.status === 404 ||
+          (groqRes.status === 400 &&
+            (errDetail.toLowerCase().includes('decommissioned') ||
+             errDetail.toLowerCase().includes('not supported') ||
+             errDetail.toLowerCase().includes('does not exist') ||
+             errDetail.toLowerCase().includes('access') ||
+             errDetail.toLowerCase().includes('model')));
+
+        if (isModelIssue) {
+          console.warn(`[Groq Fallback]: Model ${tryModel} rejected (${groqRes.status}: ${errDetail}). Trying next candidate...`);
+          lastError = { status: groqRes.status, message: errDetail };
+          continue;
+        }
+
+        // For other non-model errors (e.g. 401 Invalid Key, 429 Rate Limit), return immediately
         return res.status(groqRes.status).json({
           error: `Groq Cloud error (${groqRes.status}): ${errDetail}`,
         });
@@ -202,4 +253,3 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: 'Internal AI proxy error', details: err.message });
   }
 }
-
